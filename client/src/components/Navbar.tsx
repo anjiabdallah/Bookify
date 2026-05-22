@@ -2,8 +2,11 @@ import { BookOpen, Moon, Sun } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
+import { useAuth } from '../context/useAuth';
+
 function Navbar() {
   const [isDark, setIsDark] = useState(false);
+  const { user, logout } = useAuth();
 
   const toggleTheme = () => {
     const newTheme = isDark ? 'fairy' : 'fairydark';
@@ -20,8 +23,18 @@ function Navbar() {
         </Link>
       </div>
       <div className="flex-none flex items-center gap-4">
-        <Link to="/login" className="btn btn-ghost btn-sm">Login</Link>
-        <Link to="/register" className="btn btn-primary btn-sm">Register</Link>
+        {!user
+          ? (
+              <>
+                <Link to="/login" className="btn btn-ghost btn-sm">Login</Link>
+                <Link to="/register" className="btn btn-primary btn-sm">Register</Link>
+              </>
+            )
+          : (
+              <>
+                <button onClick={logout} className="btn btn-ghost btn-sm">Logout</button>
+              </>
+            )}
         <button onClick={toggleTheme} className="btn btn-ghost btn-circle btn-sm">
           {isDark ? <Sun size={18} /> : <Moon size={18} />}
         </button>

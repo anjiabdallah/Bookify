@@ -1,7 +1,9 @@
 import 'dotenv/config';
 import cors from 'cors';
 import express from 'express';
+import type { Response } from 'express';
 
+import { authMiddleware, type AuthRequest } from './middleware/auth.js';
 import authRouter from './routes/auth.js';
 
 const app = express();
@@ -16,6 +18,12 @@ app.get('/', (req, res) => {
   res.json({ message: 'Bookify API is running!' });
 });
 
+app.get('/api/me', authMiddleware, async (req: AuthRequest, res: Response) => {
+  res.json({ userId: req.userId });
+});
+
+console.log('About to listen...');
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
+console.log('After listen called');

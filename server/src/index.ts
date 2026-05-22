@@ -1,10 +1,11 @@
 import 'dotenv/config';
 import cors from 'cors';
 import express from 'express';
-import type { Response } from 'express';
 
 import { authMiddleware, type AuthRequest } from './middleware/auth.js';
 import authRouter from './routes/auth.js';
+
+import type { Response } from 'express';
 
 const app = express();
 const PORT = process.env.PORT || 3000;

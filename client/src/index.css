@@ -1,3 +1,37 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@plugin "daisyui";
+
+@plugin "daisyui/theme" {
+  name: "fairy";
+  default: true;
+  color-scheme: light;
+  --color-primary: #E8739A;
+  --color-secondary: #F4A7B9;
+  --color-accent: #C45C8A;
+  --color-neutral: #3D1A26;
+  --color-base-100: #FFF0F5;
+  --color-base-200: #FFE4EF;
+  --color-base-300: #F9C8DA;
+  --color-base-content: #8B3A55;
+  --color-info: #93C5FD;
+  --color-success: #86EFAC;
+  --color-warning: #FCD34D;
+  --color-error: #F87171;
+}
+
+@plugin "daisyui/theme" {
+  name: "fairydark";
+  color-scheme: dark;
+  --color-primary: #E8739A;
+  --color-secondary: #7D3D5A;
+  --color-accent: #C45C8A;
+  --color-neutral: #FFE4EF;
+  --color-base-100: #1E0F15;
+  --color-base-200: #2A1520;
+  --color-base-300: #3D1A2C;
+  --color-base-content: #FFB3D1;
+  --color-info: #93C5FD;
+  --color-success: #86EFAC;
+  --color-warning: #FCD34D;
+  --color-error: #F87171;
+}

@@ -9,8 +9,29 @@ export interface UsersTable {
   created_at?: Date;
 }
 
+export interface BooksTable {
+  id?: number;
+  google_books_id: string;
+  title: string;
+  author: string;
+  cover_url?: string | null;
+  description?: string | null;
+  published_date?: string | null;
+  created_at?: Date;
+}
+
+export interface UserBooksTable {
+  id?: number;
+  user_id: number;
+  book_id: number;
+  status: 'reading' | 'read' | 'want_to_read';
+  added_at?: Date;
+}
+
 export interface Database {
   users: UsersTable;
+  books: BooksTable;
+  user_books: UserBooksTable;
 }
 
 const { Pool } = pg;

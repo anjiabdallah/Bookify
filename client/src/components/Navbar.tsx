@@ -32,6 +32,7 @@ function Navbar() {
             )
           : (
               <>
+                <Link to="/profile" className="btn btn-ghost btn-sm">Profile</Link>
                 <button onClick={logout} className="btn btn-ghost btn-sm">Logout</button>
               </>
             )}

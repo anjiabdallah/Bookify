@@ -188,11 +188,16 @@ function HomePage() {
                   </p>
                   <h1 className="text-4xl font-bold">Your reading haven awaits.</h1>
                 </div>
-                <button className="btn btn-primary gap-2" onClick={() => setIsModalOpen(true)}>
-                  <Plus size={18} />
-                  {' '}
-                  Add a Book
-                </button>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <button className="btn btn-primary gap-2" onClick={() => setIsModalOpen(true)}>
+                    <Plus size={18} />
+                    {' '}
+                    Add a Book
+                  </button>
+                  <Link to="/profile" className="btn btn-secondary">
+                    View Profile
+                  </Link>
+                </div>
               </div>
             </div>
 

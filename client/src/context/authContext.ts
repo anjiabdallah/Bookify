@@ -4,6 +4,9 @@ export interface User {
   id: number;
   email: string;
   username: string;
+  age?: number | null;
+  bio?: string | null;
+  favoriteCategories?: string[];
 }
 
 export interface AuthContextType {

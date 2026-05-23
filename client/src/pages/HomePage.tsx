@@ -1,6 +1,6 @@
 import { BookOpen, Search, Star, Users, Plus, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../context/useAuth';
 
@@ -37,6 +37,8 @@ function HomePage() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('All');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
 
   const filteredBooks = myBooks.filter(book => activeTab === 'All' || book.status === activeTab);
 
@@ -65,8 +67,14 @@ function HomePage() {
                     type="text"
                     placeholder="Search for your next favorite book"
                     className="input input-bordered w-full bg-base-100"
+                    value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
                   />
-                  <button className="btn btn-primary gap-2">
+                  <button
+                    type="button"
+                    className="btn btn-primary gap-2"
+                    onClick={() => navigate(`/search?q=${encodeURIComponent(searchQuery)}`)}
+                  >
                     <Search size={18} />
                     {' '}
                     Search

@@ -23,6 +23,7 @@ function Navbar() {
         </Link>
       </div>
       <div className="flex-none flex items-center gap-4">
+        <Link to="/search" className="btn btn-ghost btn-sm">Search</Link>
         {!user
           ? (
               <>

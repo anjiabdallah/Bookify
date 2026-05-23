@@ -3,6 +3,9 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { useAuth } from '../context/useAuth';
+import { requestServer } from '../lib/requestServer';
+
+import type { RegisterResponse } from '../../../server/src/api/types';
 
 function RegisterPage() {
   const { setAuth } = useAuth();
@@ -20,22 +23,15 @@ function RegisterPage() {
     setError('');
 
     try {
-      const res = await fetch('http://localhost:3001/api/auth/register', {
+      const data = await requestServer<RegisterResponse>('/api/auth/register', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.error || 'Something went wrong');
-        return;
-      }
-
       setAuth(data.user, data.token);
       window.location.href = '/';
-      setError('Could not connect to server');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not connect to server');
     } finally {
       setLoading(false);
     }

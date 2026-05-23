@@ -3,6 +3,9 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { useAuth } from '../context/authContext';
+import { requestServer } from '../lib/requestServer';
+
+import type { LoginResponse } from '../../../server/src/api/types';
 
 function LoginPage() {
   const { setAuth } = useAuth();
@@ -19,23 +22,15 @@ function LoginPage() {
     setError('');
 
     try {
-      const res = await fetch('http://localhost:3001/api/auth/login', {
+      const data = await requestServer<LoginResponse>('/api/auth/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.error || 'Something went wrong');
-        return;
-      }
-
       setAuth(data.user, data.token);
       window.location.href = '/';
-    } catch {
-      setError('Could not connect to server');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not connect to server');
     } finally {
       setLoading(false);
     }

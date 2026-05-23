@@ -4,6 +4,7 @@ import express from 'express';
 
 import { authMiddleware, type AuthRequest } from './middleware/auth.js';
 import authRouter from './routes/auth.js';
+import booksRouter from './routes/books.js';
 
 import type { Response } from 'express';
 
@@ -12,6 +13,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
+app.use('/api/books', booksRouter);
 
 app.use('/api/auth', authRouter);
 

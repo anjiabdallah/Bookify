@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../context/useAuth';
 
@@ -128,6 +128,14 @@ function SearchPage() {
                       <p className="text-base-content/80 line-clamp-4">
                         {result.description ?? 'No description available.'}
                       </p>
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        <Link
+                          to={`/book/${result.google_books_id}`}
+                          className="btn btn-sm btn-primary"
+                        >
+                          View Details
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 </article>

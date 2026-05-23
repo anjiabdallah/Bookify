@@ -21,6 +21,24 @@ interface GoogleBooksResponse {
   }>;
 }
 
+interface GoogleBookItem {
+  id: string;
+  volumeInfo: {
+    title: string;
+    authors?: string[];
+    description?: string;
+    publishedDate?: string;
+    publisher?: string;
+    pageCount?: number;
+    categories?: string[];
+    language?: string;
+    previewLink?: string;
+    imageLinks?: {
+      thumbnail?: string;
+    };
+  };
+}
+
 const addBookSchema = z.object({
   google_books_id: z.string(),
   title: z.string(),
@@ -54,6 +72,40 @@ router.get('/search', async (req, res) => {
   })) ?? [];
 
   res.json(books);
+});
+
+router.get('/details/:id', async (req, res) => {
+  const id = req.params.id;
+  if (!id) {
+    res.status(400).json({ error: 'Book ID is required' });
+    return;
+  }
+
+  const response = await fetch(
+    `https://www.googleapis.com/books/v1/volumes/${encodeURIComponent(id)}?key=${process.env.GOOGLE_BOOKS_API_KEY}`,
+  );
+  const data = await response.json() as GoogleBookItem | { error?: unknown };
+
+  if (!data || 'error' in data) {
+    res.status(404).json({ error: 'Book not found' });
+    return;
+  }
+
+  const bookData = data as GoogleBookItem;
+
+  res.json({
+    google_books_id: bookData.id,
+    title: bookData.volumeInfo.title,
+    authors: bookData.volumeInfo.authors ?? ['Unknown'],
+    cover_url: bookData.volumeInfo.imageLinks?.thumbnail ?? null,
+    description: bookData.volumeInfo.description ?? null,
+    published_date: bookData.volumeInfo.publishedDate ?? null,
+    publisher: bookData.volumeInfo.publisher ?? null,
+    page_count: bookData.volumeInfo.pageCount ?? null,
+    categories: bookData.volumeInfo.categories ?? [],
+    language: bookData.volumeInfo.language ?? null,
+    preview_link: bookData.volumeInfo.previewLink ?? null,
+  });
 });
 
 // Add book to shelf

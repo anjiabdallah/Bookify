@@ -8,6 +8,7 @@ import {
   ProfilePage,
   RegisterPage,
   SearchPage,
+  BookDetailPage,
 } from './pages';
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/search" element={<SearchPage />} />
+          <Route path="/book/:id" element={<BookDetailPage />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

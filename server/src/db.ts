@@ -29,6 +29,7 @@ export interface UserBooksTable {
   book_id: number;
   status: 'reading' | 'want_to_read' | 'read' | 'dnf';
   rating?: number | null;
+  finish_date?: string | null;
   added_at?: Date;
 }
 

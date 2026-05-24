@@ -32,6 +32,7 @@ function SearchPage() {
   const [selectedBook, setSelectedBook] = useState<SearchBooksResponse[number] | null>(null);
   const [selectedShelf, setSelectedShelf] = useState<'reading' | 'want_to_read' | 'read'>('reading');
   const [selectedRating, setSelectedRating] = useState<number>(0);
+  const [selectedFinishDate, setSelectedFinishDate] = useState<string>('');
   const searchRunner = useAsync<SearchBooksResponse>();
   const addShelfRunner = useAsync<AddToShelfResponse>();
 
@@ -68,6 +69,7 @@ function SearchPage() {
   const closeAddShelfModal = () => {
     setSelectedBook(null);
     setSelectedRating(0);
+    setSelectedFinishDate('');
     const checkbox = document.getElementById('add-shelf-modal') as HTMLInputElement | null;
     if (checkbox) checkbox.checked = false;
   };
@@ -84,6 +86,7 @@ function SearchPage() {
       published_date: selectedBook.published_date,
       status: selectedShelf,
       ...(selectedShelf === 'read' && selectedRating > 0 ? { rating: selectedRating } : {}),
+      ...(selectedShelf === 'read' && selectedFinishDate ? { finish_date: selectedFinishDate } : {}),
     });
 
     await addShelfRunner.execute(() =>
@@ -199,8 +202,15 @@ function SearchPage() {
           book={selectedBook}
           selectedShelf={selectedShelf}
           selectedRating={selectedRating}
-          onShelfChange={value => setSelectedShelf(value)}
+          selectedFinishDate={selectedFinishDate}
+          onShelfChange={(value) => {
+            setSelectedShelf(value);
+            if (value !== 'read') {
+              setSelectedFinishDate('');
+            }
+          }}
           onRatingChange={setSelectedRating}
+          onFinishDateChange={setSelectedFinishDate}
           onConfirm={handleAddToShelf}
           onClose={closeAddShelfModal}
           error={addShelfRunner.error ?? undefined}

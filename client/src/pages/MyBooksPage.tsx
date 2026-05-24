@@ -230,22 +230,34 @@ function MyBooksPage() {
                                   )}
                               className="p-4 shadow-sm"
                             >
-                              {status === 'read'
-                                ? (
-                                    <StarRating
-                                      value={book.rating ?? 0}
-                                      onChange={value => handleRate(book, value)}
-                                    />
-                                  )
-                                : (
-                                    <div className="flex items-center gap-1 text-primary">
-                                      <span>★</span>
-                                      <span>★</span>
-                                      <span>★</span>
-                                      <span>☆</span>
-                                      <span>☆</span>
-                                    </div>
-                                  )}
+                              <div className="space-y-3">
+                                {status === 'read'
+                                  ? (
+                                      <div className="space-y-3">
+                                        <StarRating
+                                          value={book.rating ?? 0}
+                                          onChange={value => handleRate(book, value)}
+                                        />
+                                        {book.finish_date
+                                          ? (
+                                              <div className="text-sm text-base-content/70">
+                                                Finished on
+                                                {book.finish_date}
+                                              </div>
+                                            )
+                                          : null}
+                                      </div>
+                                    )
+                                  : (
+                                      <div className="flex items-center gap-1 text-primary">
+                                        <span>★</span>
+                                        <span>★</span>
+                                        <span>★</span>
+                                        <span>☆</span>
+                                        <span>☆</span>
+                                      </div>
+                                    )}
+                              </div>
                             </BookCard>
                           ))}
                         </div>

@@ -1,4 +1,5 @@
 import { BookOpen } from 'lucide-react';
+
 import BackButton from '../components/BackButton';
 
 function NotFoundPage() {

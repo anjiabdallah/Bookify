@@ -29,6 +29,7 @@ function BookDetailPage() {
   const book = bookQuery.data;
   const [selectedShelf, setSelectedShelf] = useState<ShelfStatus>('want_to_read');
   const [selectedRating, setSelectedRating] = useState<number>(0);
+  const [selectedFinishDate, setSelectedFinishDate] = useState<string>('');
 
   useEffect(() => {
     if (!id) return;
@@ -51,6 +52,7 @@ function BookDetailPage() {
           published_date: book.published_date,
           status: selectedShelf,
           ...(selectedShelf === 'read' && selectedRating > 0 ? { rating: selectedRating } : {}),
+          ...(selectedShelf === 'read' && selectedFinishDate ? { finish_date: selectedFinishDate } : {}),
         }),
       }),
     );
@@ -149,7 +151,13 @@ function BookDetailPage() {
                     </label>
                     <select
                       value={selectedShelf}
-                      onChange={event => setSelectedShelf(event.target.value as ShelfStatus)}
+                      onChange={(event) => {
+                        const nextShelf = event.target.value as ShelfStatus;
+                        setSelectedShelf(nextShelf);
+                        if (nextShelf !== 'read') {
+                          setSelectedFinishDate('');
+                        }
+                      }}
                       className="select select-bordered w-full"
                     >
                       {shelfOptions.map(([value, label]) => (
@@ -161,13 +169,28 @@ function BookDetailPage() {
                   </div>
 
                   {selectedShelf === 'read' && (
-                    <div>
-                      <label className="label">
-                        <span className="label-text">Rate it now</span>
-                      </label>
-                      <StarRating value={selectedRating} onChange={setSelectedRating} />
-                      <p className="text-sm text-base-content/60 mt-2">Optional: choose a rating when you save this book as Read.</p>
-                    </div>
+                    <>
+                      <div>
+                        <label className="label">
+                          <span className="label-text">Rate it now</span>
+                        </label>
+                        <StarRating value={selectedRating} onChange={setSelectedRating} />
+                        <p className="text-sm text-base-content/60 mt-2">Optional: choose a rating when you save this book as Read.</p>
+                      </div>
+
+                      <div className="mt-5">
+                        <label className="label">
+                          <span className="label-text">Finish date</span>
+                        </label>
+                        <input
+                          type="date"
+                          className="input input-bordered w-full"
+                          value={selectedFinishDate}
+                          onChange={event => setSelectedFinishDate(event.target.value)}
+                        />
+                        <p className="text-sm text-base-content/60 mt-2">Optionally set when you finished this book.</p>
+                      </div>
+                    </>
                   )}
 
                   <button

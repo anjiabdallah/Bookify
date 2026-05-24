@@ -41,6 +41,7 @@ export type AddToShelfResponse = {
     book_id: number;
     status: ShelfStatus;
     rating: number | null;
+    finish_date: string | null;
     added_at: string;
   };
 };
@@ -55,5 +56,6 @@ export type GetShelfResponse = Array<{
   published_date: string | null;
   status: ShelfStatus;
   rating: number | null;
+  finish_date: string | null;
   added_at: string;
 }>;

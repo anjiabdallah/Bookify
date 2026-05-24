@@ -48,6 +48,12 @@ const addBookSchema = z.object({
   published_date: z.string().optional(),
   status: z.enum(['reading', 'want_to_read', 'read', 'dnf']),
   rating: z.number().int().min(1).max(5).nullable().optional(),
+  finish_date: z.preprocess((value) => {
+    if (typeof value === 'string' && value.trim() === '') {
+      return null;
+    }
+    return value;
+  }, z.string().regex(/^\d{4}-\d{2}-\d{2}$/, { message: 'Finish date must be a valid YYYY-MM-DD date.' }).nullable().optional()),
 });
 
 // Search Google Books
@@ -117,7 +123,7 @@ router.post('/shelf', authMiddleware, async (req: AuthRequest, res) => {
     return;
   }
 
-  const { google_books_id, title, author, cover_url, description, published_date, status, rating } = result.data;
+  const { google_books_id, title, author, cover_url, description, published_date, status, rating, finish_date } = result.data;
 
   let book = await db
     .selectFrom('books')
@@ -149,6 +155,7 @@ router.post('/shelf', authMiddleware, async (req: AuthRequest, res) => {
         book_id: book.id!,
         status,
         rating: status === 'read' ? rating ?? null : null,
+        finish_date: status === 'read' ? finish_date ?? null : null,
       })
       .returningAll()
       .executeTakeFirstOrThrow();
@@ -157,10 +164,14 @@ router.post('/shelf', authMiddleware, async (req: AuthRequest, res) => {
     const statusChanged = existing.status !== status;
     const ratingChanged = rating !== undefined && rating !== existing.rating;
 
-    if (statusChanged || ratingChanged) {
+    if (statusChanged || ratingChanged || existing.finish_date !== (status === 'read' ? finish_date ?? null : null)) {
       userBook = await db
         .updateTable('user_books')
-        .set({ status, rating: ratingUpdate })
+        .set({
+          status,
+          rating: ratingUpdate,
+          finish_date: status === 'read' ? finish_date ?? null : null,
+        })
         .where('id', '=', existing.id)
         .returningAll()
         .executeTakeFirstOrThrow();
@@ -188,6 +199,7 @@ router.get('/shelf', authMiddleware, async (req: AuthRequest, res) => {
       'books.published_date',
       'user_books.status',
       'user_books.rating',
+      'user_books.finish_date',
       'user_books.added_at',
     ])
     .execute();

@@ -76,7 +76,7 @@ function BookDetailPage() {
           </div>
         )}
 
-        {bookQuery.data && !bookQuery.loading && !bookQuery.error && (
+        {book && !bookQuery.loading && !bookQuery.error && (
           <div className="grid gap-8 lg:grid-cols-[320px_1fr]">
             <div className="rounded-3xl bg-base-200 p-6 shadow-sm">
               <div className="h-96 overflow-hidden rounded-3xl bg-base-100">
@@ -180,7 +180,7 @@ function BookDetailPage() {
 
                   {shelfSaver.data && (
                     <div className="alert alert-success">
-                      <span>{shelfSaver.data.message}</span>
+                      <span>Book saved to your shelf.</span>
                     </div>
                   )}
                 </div>

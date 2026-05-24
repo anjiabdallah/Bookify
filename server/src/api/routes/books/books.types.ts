@@ -53,11 +53,3 @@ export type GetShelfResponse = Array<{
   status: ShelfStatus;
   added_at: string;
 }>;
-  id: number;
-  google_books_id: string;
-  title: string;
-  author: string;
-  cover_url: string | null;
-  status: string;
-  added_at: string;
-}>;

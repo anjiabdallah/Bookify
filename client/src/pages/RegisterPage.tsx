@@ -1,6 +1,9 @@
+import { zodResolver } from '@hookform/resolvers/zod';
 import { BookOpen } from 'lucide-react';
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useMemo } from 'react';
+import { useForm } from 'react-hook-form';
+import { Link, useNavigate } from 'react-router-dom';
+import { z } from 'zod';
 
 import { useAuth } from '../context/useAuth';
 import { useAsync } from '../hooks/useAsync';
@@ -8,30 +11,45 @@ import { requestServer } from '../lib/requestServer';
 
 import type { RegisterResponse } from '../../../server/src/api/types';
 
+const registerSchema = z.object({
+  email: z.string().email({ message: 'Enter a valid email address' }),
+  username: z.string().min(3, { message: 'Username must be at least 3 characters' }),
+  password: z.string().min(6, { message: 'Password must be at least 6 characters' }),
+});
+
+type RegisterFormData = z.infer<typeof registerSchema>;
+
 function RegisterPage() {
+  const navigate = useNavigate();
   const { setAuth } = useAuth();
-  const [form, setForm] = useState({
-    email: '',
-    username: '',
-    password: '',
+  const registerRequest = useAsync<RegisterResponse>();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<RegisterFormData>({
+    resolver: zodResolver(registerSchema),
+    mode: 'onBlur',
   });
-  const register = useAsync<RegisterResponse>();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const data = await register.execute(() =>
+  const onSubmit = async (values: RegisterFormData) => {
+    const data = await registerRequest.execute(() =>
       requestServer<RegisterResponse>('/api/auth/register', {
         method: 'POST',
-        body: JSON.stringify(form),
+        body: JSON.stringify(values),
       }),
     );
 
     if (data) {
       setAuth(data.user, data.token);
-      window.location.href = '/';
+      navigate('/');
     }
   };
+
+  const emailError = useMemo(() => errors.email?.message, [errors.email]);
+  const usernameError = useMemo(() => errors.username?.message, [errors.username]);
+  const passwordError = useMemo(() => errors.password?.message, [errors.password]);
 
   return (
     <div className="min-h-screen bg-base-100 flex items-center justify-center p-4">
@@ -43,13 +61,13 @@ function RegisterPage() {
           </div>
           <h2 className="text-xl font-semibold text-center mb-6">Create your account</h2>
 
-          {register.error && (
+          {registerRequest.error && (
             <div className="alert alert-error mb-4">
-              <span>{register.error}</span>
+              <span>{registerRequest.error}</span>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
             <label className="form-control">
               <div className="label">
                 <span className="label-text">Email</span>
@@ -58,10 +76,9 @@ function RegisterPage() {
                 type="email"
                 placeholder="you@example.com"
                 className="input input-bordered"
-                value={form.email}
-                onChange={e => setForm({ ...form, email: e.target.value })}
-                required
+                {...register('email')}
               />
+              {emailError && <span className="text-sm text-error mt-1">{emailError}</span>}
             </label>
 
             <label className="form-control">
@@ -72,10 +89,9 @@ function RegisterPage() {
                 type="text"
                 placeholder="bookworm123"
                 className="input input-bordered"
-                value={form.username}
-                onChange={e => setForm({ ...form, username: e.target.value })}
-                required
+                {...register('username')}
               />
+              {usernameError && <span className="text-sm text-error mt-1">{usernameError}</span>}
             </label>
 
             <label className="form-control">
@@ -86,18 +102,13 @@ function RegisterPage() {
                 type="password"
                 placeholder="••••••••"
                 className="input input-bordered"
-                value={form.password}
-                onChange={e => setForm({ ...form, password: e.target.value })}
-                required
+                {...register('password')}
               />
+              {passwordError && <span className="text-sm text-error mt-1">{passwordError}</span>}
             </label>
 
-            <button
-              type="submit"
-              className="btn btn-primary mt-2"
-              disabled={register.loading}
-            >
-              {register.loading ? <span className="loading loading-spinner loading-sm" /> : 'Create Account'}
+            <button type="submit" className="btn btn-primary mt-2" disabled={isSubmitting}>
+              {isSubmitting ? <span className="loading loading-spinner loading-sm" /> : 'Create Account'}
             </button>
           </form>
 

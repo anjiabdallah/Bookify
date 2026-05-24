@@ -1,6 +1,9 @@
+import { zodResolver } from '@hookform/resolvers/zod';
 import { BookOpen } from 'lucide-react';
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useMemo } from 'react';
+import { useForm } from 'react-hook-form';
+import { Link, useNavigate } from 'react-router-dom';
+import { z } from 'zod';
 
 import { useAuth } from '../context/authContext';
 import { useAsync } from '../hooks/useAsync';
@@ -8,29 +11,43 @@ import { requestServer } from '../lib/requestServer';
 
 import type { LoginResponse } from '../../../server/src/api/types';
 
+const loginSchema = z.object({
+  email: z.string().email({ message: 'Enter a valid email address' }),
+  password: z.string().min(6, { message: 'Password must be at least 6 characters' }),
+});
+
+type LoginFormData = z.infer<typeof loginSchema>;
+
 function LoginPage() {
+  const navigate = useNavigate();
   const { setAuth } = useAuth();
-  const [form, setForm] = useState({
-    email: '',
-    password: '',
-  });
   const login = useAsync<LoginResponse>();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    mode: 'onBlur',
+  });
 
+  const onSubmit = async (values: LoginFormData) => {
     const data = await login.execute(() =>
       requestServer<LoginResponse>('/api/auth/login', {
         method: 'POST',
-        body: JSON.stringify(form),
+        body: JSON.stringify(values),
       }),
     );
 
     if (data) {
       setAuth(data.user, data.token);
-      window.location.href = '/';
+      navigate('/');
     }
   };
+
+  const emailError = useMemo(() => errors.email?.message, [errors.email]);
+  const passwordError = useMemo(() => errors.password?.message, [errors.password]);
 
   return (
     <div className="min-h-screen bg-base-100 flex items-center justify-center p-4">
@@ -48,7 +65,7 @@ function LoginPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
             <label className="form-control">
               <div className="label">
                 <span className="label-text">Email</span>
@@ -57,10 +74,9 @@ function LoginPage() {
                 type="email"
                 placeholder="you@example.com"
                 className="input input-bordered"
-                value={form.email}
-                onChange={e => setForm({ ...form, email: e.target.value })}
-                required
+                {...register('email')}
               />
+              {emailError && <span className="text-sm text-error mt-1">{emailError}</span>}
             </label>
 
             <label className="form-control">
@@ -71,18 +87,13 @@ function LoginPage() {
                 type="password"
                 placeholder="••••••••"
                 className="input input-bordered"
-                value={form.password}
-                onChange={e => setForm({ ...form, password: e.target.value })}
-                required
+                {...register('password')}
               />
+              {passwordError && <span className="text-sm text-error mt-1">{passwordError}</span>}
             </label>
 
-            <button
-              type="submit"
-              className="btn btn-primary mt-2"
-              disabled={login.loading}
-            >
-              {login.loading ? <span className="loading loading-spinner loading-sm" /> : 'Login'}
+            <button type="submit" className="btn btn-primary mt-2" disabled={isSubmitting}>
+              {isSubmitting ? <span className="loading loading-spinner loading-sm" /> : 'Login'}
             </button>
           </form>
 

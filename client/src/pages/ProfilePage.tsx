@@ -1,9 +1,12 @@
-import { useEffect, useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect, useMemo } from 'react';
+import { useForm, useWatch } from 'react-hook-form';
 import { Link } from 'react-router-dom';
+import { z } from 'zod';
 
 import { useAuth } from '../context/useAuth';
-import { requestServer } from '../lib/requestServer';
 import { useAsync } from '../hooks/useAsync';
+import { requestServer } from '../lib/requestServer';
 
 import type { ProfileResponse } from '../../../server/src/api/types';
 
@@ -18,71 +21,73 @@ const categories = [
   'Nonfiction',
 ];
 
+const profileSchema = z.object({
+  age: z.string().optional(),
+  bio: z.string().max(500).optional(),
+  favoriteCategories: z.array(z.string()).optional(),
+});
+
+type ProfileFormData = z.infer<typeof profileSchema>;
+
 function ProfilePage() {
   const { user, token, setAuth, logout } = useAuth();
-  const [form, setForm] = useState({
-    age: '',
-    favoriteCategories: [] as string[],
-    bio: '',
-  });
-  const [message, setMessage] = useState('');
   const profileLoader = useAsync<ProfileResponse>();
   const profileSaver = useAsync<ProfileResponse>();
 
-  const loading = profileLoader.loading || profileSaver.loading;
-  const error = profileSaver.error ?? profileLoader.error;
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    control,
+    formState: { errors, isSubmitting },
+  } = useForm<ProfileFormData>({
+    resolver: zodResolver(profileSchema),
+    defaultValues: {
+      age: undefined,
+      bio: undefined,
+      favoriteCategories: [],
+    },
+  });
+
+  const favoriteCategories = useWatch({
+    control,
+    name: 'favoriteCategories',
+    defaultValue: [],
+  }) ?? [];
 
   useEffect(() => {
     if (!token) return;
 
-    profileLoader.execute(() => requestServer<ProfileResponse>('/api/auth/profile')).then(data => {
+    profileLoader.execute(() => requestServer<ProfileResponse>('/api/auth/profile')).then((data) => {
       if (data) {
-        setForm({
-          age: data.age ? String(data.age) : '',
-          favoriteCategories: data.favoriteCategories ?? [],
-          bio: data.bio ?? '',
-        });
+        setValue('age', data.age ? String(data.age) : '');
+        setValue('bio', data.bio ?? '');
+        setValue('favoriteCategories', data.favoriteCategories ?? []);
       }
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token]);
+  }, [token, setValue]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!token) return;
-
-    setMessage('');
+  const onSubmit = async (values: ProfileFormData) => {
+    const payload = {
+      age: values.age ? Number(values.age) : null,
+      bio: values.bio ?? null,
+      favorite_categories: values.favoriteCategories ?? [],
+    };
 
     const data = await profileSaver.execute(() =>
       requestServer<ProfileResponse>('/api/auth/profile', {
         method: 'PUT',
-        body: JSON.stringify({
-          age: form.age ? Number(form.age) : null,
-          bio: form.bio || null,
-          favorite_categories: form.favoriteCategories,
-        }),
+        body: JSON.stringify(payload),
       }),
     );
 
-    if (data) {
-      setMessage('Profile saved successfully.');
-      if (user) {
-        setAuth({ ...user, age: data.age, bio: data.bio, favoriteCategories: data.favoriteCategories }, token);
-      }
+    if (data && user && token) {
+      setAuth({ ...user, age: data.age, bio: data.bio ?? null, favoriteCategories: data.favoriteCategories ?? [] }, token);
     }
   };
 
-  const toggleCategory = (category: string) => {
-    setForm(current => {
-      const hasCategory = current.favoriteCategories.includes(category);
-      return {
-        ...current,
-        favoriteCategories: hasCategory
-          ? current.favoriteCategories.filter(item => item !== category)
-          : [...current.favoriteCategories, category],
-      };
-    });
-  };
+  const ageError = useMemo(() => errors.age?.message, [errors.age]);
+  const bioError = useMemo(() => errors.bio?.message, [errors.bio]);
 
   if (!user) {
     return (
@@ -104,7 +109,10 @@ function ProfilePage() {
           <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm uppercase tracking-[0.3em] text-primary">Profile</p>
-              <h1 className="text-4xl font-bold">Hi, {user.username}</h1>
+              <h1 className="text-4xl font-bold">
+                Hi,
+                {user.username}
+              </h1>
               <p className="text-base-content/70">Add your age, favorite categories, and a short bio.</p>
             </div>
             <button onClick={logout} className="btn btn-ghost btn-sm">
@@ -112,18 +120,19 @@ function ProfilePage() {
             </button>
           </div>
 
-          {error && (
+          {(profileLoader.error || profileSaver.error) && (
             <div className="alert alert-error mb-4">
-              <span>{error}</span>
-            </div>
-          )}
-          {message && (
-            <div className="alert alert-success mb-4">
-              <span>{message}</span>
+              <span>{profileSaver.error ?? profileLoader.error}</span>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          {profileSaver.data && (
+            <div className="alert alert-success mb-4">
+              <span>Profile saved successfully.</span>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <label className="form-control w-full">
               <span className="label-text">Age</span>
               <input
@@ -131,9 +140,9 @@ function ProfilePage() {
                 min="1"
                 placeholder="Your age"
                 className="input input-bordered w-full"
-                value={form.age}
-                onChange={e => setForm({ ...form, age: e.target.value })}
+                {...register('age')}
               />
+              {ageError && <span className="text-sm text-error mt-1">{ageError}</span>}
             </label>
 
             <div>
@@ -143,8 +152,15 @@ function ProfilePage() {
                   <button
                     type="button"
                     key={category}
-                    className={`btn btn-outline justify-start ${form.favoriteCategories.includes(category) ? 'btn-primary text-white' : ''}`}
-                    onClick={() => toggleCategory(category)}
+                    className={`btn btn-outline justify-start ${favoriteCategories.includes(category) ? 'btn-primary text-white' : ''}`}
+                    onClick={() => {
+                      setValue(
+                        'favoriteCategories',
+                        favoriteCategories.includes(category)
+                          ? favoriteCategories.filter(item => item !== category)
+                          : [...favoriteCategories, category],
+                      );
+                    }}
                   >
                     {category}
                   </button>
@@ -157,14 +173,14 @@ function ProfilePage() {
               <textarea
                 placeholder="Tell other readers a little about your tastes..."
                 className="textarea textarea-bordered w-full"
-                value={form.bio}
-                onChange={e => setForm({ ...form, bio: e.target.value })}
+                {...register('bio')}
                 rows={5}
               />
+              {bioError && <span className="text-sm text-error mt-1">{bioError}</span>}
             </label>
 
-            <button type="submit" className="btn btn-primary" disabled={loading}>
-              {loading ? 'Saving...' : 'Save Profile'}
+            <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
+              {isSubmitting ? 'Saving...' : 'Save Profile'}
             </button>
           </form>
         </div>

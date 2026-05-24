@@ -60,6 +60,17 @@ This project is VERY STRICT with types. All API responses must be properly typed
 2. Add a new numbered migration file for schema changes in `server/src/migrations/`.
 3. When adding/removing DB fields, update the migration AND `server/src/db.ts`.
 
+## Form Conventions
+1. Always use `react-hook-form` with `zodResolver` for all forms — no uncontrolled inputs or manual state for forms.
+2. Always define a Zod schema for the form and infer the type from it:
+   - `const schema = z.object({...})`
+   - `type FormData = z.infer<typeof schema>`
+3. Use `useForm<FormData>({ resolver: zodResolver(schema) })` to initialize the form.
+4. Use `register`, `handleSubmit`, and `formState: { errors, isSubmitting }` from `useForm`.
+5. Display field errors using `errors.fieldName?.message`.
+6. Use `isSubmitting` from `formState` for loading state — no separate `useState` for loading on forms.
+7. Never use `useState` for form field values — let react-hook-form manage form state.
+
 # Documentation Maintenance
 1. When reusable components change (new props, behavior, moved location, deprecation), update this file’s component sections in the same task.
 2. When hooks or utilities are added or edited (new options, return shape, conventions), update the related guidance in this file in the same task.

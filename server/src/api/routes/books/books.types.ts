@@ -9,6 +9,8 @@ export type BookResult = {
 
 export type SearchBooksResponse = BookResult[];
 
+export type ShelfStatus = 'favorite' | 'reading' | 'want_to_read' | 'read' | 'dnf';
+
 export type BookDetailResponse = {
   google_books_id: string;
   title: string;
@@ -37,12 +39,20 @@ export type AddToShelfResponse = {
     id: number;
     user_id: number;
     book_id: number;
-    status: string;
+    status: ShelfStatus;
     added_at: string;
   };
 };
 
 export type GetShelfResponse = Array<{
+  id: number;
+  google_books_id: string;
+  title: string;
+  author: string;
+  cover_url: string | null;
+  status: ShelfStatus;
+  added_at: string;
+}>;
   id: number;
   google_books_id: string;
   title: string;

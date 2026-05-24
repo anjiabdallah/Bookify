@@ -9,6 +9,7 @@ import {
   RegisterPage,
   SearchPage,
   BookDetailPage,
+  MyBooksPage,
 } from './pages';
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/my-books" element={<MyBooksPage />} />
           <Route path="/search" element={<SearchPage />} />
           <Route path="/book/:id" element={<BookDetailPage />} />
         </Routes>

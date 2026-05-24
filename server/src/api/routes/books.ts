@@ -46,7 +46,7 @@ const addBookSchema = z.object({
   cover_url: z.string().optional(),
   description: z.string().optional(),
   published_date: z.string().optional(),
-  status: z.enum(['reading', 'read', 'want_to_read']),
+  status: z.enum(['favorite', 'reading', 'want_to_read', 'read', 'dnf']),
 });
 
 // Search Google Books
@@ -139,18 +139,25 @@ router.post('/shelf', authMiddleware, async (req: AuthRequest, res) => {
     .selectAll()
     .executeTakeFirst();
 
-  if (existing) {
-    res.status(409).json({ error: 'Book already on your shelf' });
-    return;
+  let userBook;
+  if (!existing) {
+    userBook = await db
+      .insertInto('user_books')
+      .values({ user_id: req.userId!, book_id: book.id!, status })
+      .returningAll()
+      .executeTakeFirstOrThrow();
+  } else if (existing.status !== status) {
+    userBook = await db
+      .updateTable('user_books')
+      .set({ status })
+      .where('id', '=', existing.id)
+      .returningAll()
+      .executeTakeFirstOrThrow();
+  } else {
+    userBook = existing;
   }
 
-  const userBook = await db
-    .insertInto('user_books')
-    .values({ user_id: req.userId!, book_id: book.id!, status })
-    .returningAll()
-    .executeTakeFirstOrThrow();
-
-  res.status(201).json({ book, userBook });
+  res.status(existing ? 200 : 201).json({ book, userBook });
 });
 
 // Get user's shelf

@@ -15,8 +15,9 @@ function YearlyBooksPage() {
   const yearlyQuery = useAsync<YearlyBooksResponse>();
 
   useEffect(() => {
+    if (!user) return;
     yearlyQuery.execute(() => requestServer<YearlyBooksResponse>('/api/books/years'));
-  }, []);
+  }, [user]);
 
   if (!user) {
     return (

@@ -14,6 +14,9 @@ const shelfOptions: Array<[ShelfStatus, string]> = [
   ['dnf', 'DNFed'],
 ];
 
+const stripHtml = (html: string | null) =>
+  html?.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim() ?? null;
+
 function BookDetailPage() {
   const { id } = useParams();
   const { user } = useAuth();
@@ -39,7 +42,7 @@ function BookDetailPage() {
           title: book.title,
           author: book.authors[0] ?? 'Unknown',
           cover_url: book.cover_url,
-          description: book.description,
+          description: stripHtml(book.description),
           published_date: book.published_date,
           status: selectedShelf,
         }),
@@ -137,7 +140,7 @@ function BookDetailPage() {
             <div className="rounded-3xl bg-base-200 p-8 shadow-sm">
               <h2 className="text-2xl font-semibold mb-4">About this book</h2>
               <p className="text-base-content/80 whitespace-pre-line">
-                {book.description ?? 'No description available for this title.'}
+                {stripHtml(book.description) ?? 'No description available for this title.'}
               </p>
 
               {user && (

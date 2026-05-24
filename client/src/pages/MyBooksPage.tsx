@@ -234,7 +234,8 @@ function MyBooksPage() {
                                             >
                                               <Star
                                                 size={18}
-                                                className={book.rating && book.rating >= value ? 'text-primary' : 'text-base-content/30'}
+                                                fill={book.rating && book.rating >= value ? 'currentColor' : 'none'}
+                                                className={book.rating && book.rating >= value ? 'text-primary fill-current' : 'text-base-content/30'}
                                               />
                                             </button>
                                           ))}

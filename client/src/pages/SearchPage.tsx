@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Search, Star } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
@@ -7,6 +7,7 @@ import { z } from 'zod';
 
 import BookCard from '../components/BookCard';
 import PageCard from '../components/PageCard';
+import StarRating from '../components/StarRating';
 import { useAuth } from '../context/useAuth';
 import { useAsync } from '../hooks/useAsync';
 import { requestServer } from '../lib/requestServer';
@@ -222,22 +223,7 @@ function SearchPage() {
                     <label className="label">
                       <span className="label-text">Rate it now</span>
                     </label>
-                    <div className="flex items-center gap-2">
-                      {[1, 2, 3, 4, 5].map(value => (
-                        <button
-                          key={value}
-                          type="button"
-                          className="btn btn-ghost btn-square btn-sm p-0"
-                          onClick={() => setSelectedRating(value)}
-                        >
-                          <Star
-                            size={18}
-                            fill={selectedRating >= value ? 'currentColor' : 'none'}
-                            className={selectedRating >= value ? 'text-primary fill-current' : 'text-base-content/30'}
-                          />
-                        </button>
-                      ))}
-                    </div>
+                    <StarRating value={selectedRating} onChange={setSelectedRating} />
                     <p className="text-sm text-base-content/60 mt-2">Choose a star rating before you save this book as Read.</p>
                   </div>
                 )}

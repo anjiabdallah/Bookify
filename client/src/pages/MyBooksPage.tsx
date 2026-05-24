@@ -1,9 +1,10 @@
-import { BookOpen, Bookmark, CheckCircle, Star, XCircle } from 'lucide-react';
+import { BookOpen, Bookmark, CheckCircle, XCircle } from 'lucide-react';
 import { type ReactNode, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import BookCard from '../components/BookCard';
 import PageCard from '../components/PageCard';
+import StarRating from '../components/StarRating';
 import { useAuth } from '../context/useAuth';
 import { useAsync } from '../hooks/useAsync';
 import { requestServer } from '../lib/requestServer';
@@ -232,22 +233,10 @@ function MyBooksPage() {
                             >
                               {status === 'read'
                                 ? (
-                                    <div className="flex items-center gap-2">
-                                      {[1, 2, 3, 4, 5].map(value => (
-                                        <button
-                                          key={value}
-                                          type="button"
-                                          onClick={() => handleRate(book, value)}
-                                          className="btn btn-ghost btn-square btn-sm p-0"
-                                        >
-                                          <Star
-                                            size={18}
-                                            fill={book.rating && book.rating >= value ? 'currentColor' : 'none'}
-                                            className={book.rating && book.rating >= value ? 'text-primary fill-current' : 'text-base-content/30'}
-                                          />
-                                        </button>
-                                      ))}
-                                    </div>
+                                    <StarRating
+                                      value={book.rating ?? 0}
+                                      onChange={value => handleRate(book, value)}
+                                    />
                                   )
                                 : (
                                     <div className="flex items-center gap-1 text-primary">

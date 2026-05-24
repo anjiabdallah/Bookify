@@ -1,9 +1,9 @@
-import { Star } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import BackButton from '../components/BackButton';
 import PageSectionHeader from '../components/PageSectionHeader';
+import StarRating from '../components/StarRating';
 import { useAuth } from '../context/useAuth';
 import { useAsync } from '../hooks/useAsync';
 import { requestServer } from '../lib/requestServer';
@@ -164,22 +164,7 @@ function BookDetailPage() {
                       <label className="label">
                         <span className="label-text">Rate it now</span>
                       </label>
-                      <div className="flex items-center gap-2">
-                        {[1, 2, 3, 4, 5].map(value => (
-                          <button
-                            key={value}
-                            type="button"
-                            className="btn btn-ghost btn-square btn-sm p-0"
-                            onClick={() => setSelectedRating(value)}
-                          >
-                            <Star
-                              size={18}
-                              fill={selectedRating >= value ? 'currentColor' : 'none'}
-                              className={selectedRating >= value ? 'text-primary fill-current' : 'text-base-content/30'}
-                            />
-                          </button>
-                        ))}
-                      </div>
+                      <StarRating value={selectedRating} onChange={setSelectedRating} />
                       <p className="text-sm text-base-content/60 mt-2">Optional: choose a rating when you save this book as Read.</p>
                     </div>
                   )}

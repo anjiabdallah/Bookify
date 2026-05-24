@@ -1,10 +1,11 @@
-import { BookOpen, Search, Star, Users, Plus, ChevronRight } from 'lucide-react';
+import { BookOpen, Search, Users, Plus, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import BookCard from '../components/BookCard';
 import PageCard from '../components/PageCard';
 import PageSectionHeader from '../components/PageSectionHeader';
+import StarRating from '../components/StarRating';
 import { useAuth } from '../context/useAuth';
 
 const trendingBooks = [
@@ -130,9 +131,8 @@ function HomePage() {
                   <div className="h-56 rounded-3xl bg-pink-100" />
                   <p className="mt-6 text-sm text-base-content/70">{book.author}</p>
                   <div className="mt-4 flex items-center gap-2 text-sm text-primary">
-                    <Star size={16} />
-                    {' '}
-                    {book.rating}
+                    <StarRating value={book.rating} />
+                    <span>{book.rating.toFixed(1)}</span>
                   </div>
                 </BookCard>
               ))}

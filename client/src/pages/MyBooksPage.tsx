@@ -33,6 +33,19 @@ const sectionIcons: Record<ShelfStatus, ReactNode> = {
   dnf: <XCircle size={18} className="text-primary/50" />,
 };
 
+const formatFinishDate = (dateString: string) => {
+  const date = new Date(dateString);
+  if (Number.isNaN(date.getTime())) {
+    return dateString;
+  }
+
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = String(date.getFullYear());
+
+  return `${day}/${month}/${year}`;
+};
+
 function MyBooksPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -242,7 +255,8 @@ function MyBooksPage() {
                                           ? (
                                               <div className="text-sm text-base-content/70">
                                                 Finished on
-                                                {book.finish_date}
+                                                {' '}
+                                                {formatFinishDate(book.finish_date)}
                                               </div>
                                             )
                                           : null}

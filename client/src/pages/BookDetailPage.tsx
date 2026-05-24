@@ -127,13 +127,6 @@ function BookDetailPage() {
                     </div>
                   </div>
                 )}
-                {book.preview_link && (
-                  <div>
-                    <a href={book.preview_link} target="_blank" rel="noreferrer" className="link link-primary">
-                      Preview on Google Books
-                    </a>
-                  </div>
-                )}
               </div>
             </div>
 

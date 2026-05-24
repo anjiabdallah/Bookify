@@ -70,6 +70,7 @@ function ShelfBookCard({ book, status, onRate }: ShelfBookCardProps) {
                 {book.finish_date && (
                   <div className="text-sm text-base-content/70">
                     Finished on
+                    {' '}
                     {formatFinishDate(book.finish_date)}
                   </div>
                 )}

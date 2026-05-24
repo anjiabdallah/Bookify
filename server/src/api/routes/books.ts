@@ -54,6 +54,8 @@ const addBookSchema = z.object({
     }
     return value;
   }, z.string().regex(/^\d{4}-\d{2}-\d{2}$/, { message: 'Finish date must be a valid YYYY-MM-DD date.' }).nullable().optional()),
+  favorite: z.boolean().optional(),
+  physical_copy: z.boolean().optional(),
 });
 
 // Search Google Books
@@ -123,7 +125,7 @@ router.post('/shelf', authMiddleware, async (req: AuthRequest, res) => {
     return;
   }
 
-  const { google_books_id, title, author, cover_url, description, published_date, status, rating, finish_date } = result.data;
+  const { google_books_id, title, author, cover_url, description, published_date, status, rating, finish_date, favorite, physical_copy } = result.data;
 
   let book = await db
     .selectFrom('books')
@@ -156,21 +158,30 @@ router.post('/shelf', authMiddleware, async (req: AuthRequest, res) => {
         status,
         rating: status === 'read' ? rating ?? null : null,
         finish_date: status === 'read' ? finish_date ?? null : null,
+        favorite: favorite ?? false,
+        physical_copy: physical_copy ?? false,
       })
       .returningAll()
       .executeTakeFirstOrThrow();
   } else {
     const ratingUpdate = status === 'read' ? rating ?? existing.rating ?? null : null;
+    const favoriteUpdate = favorite !== undefined ? favorite : existing.favorite ?? false;
+    const physicalCopyUpdate = physical_copy !== undefined ? physical_copy : existing.physical_copy ?? false;
     const statusChanged = existing.status !== status;
     const ratingChanged = rating !== undefined && rating !== existing.rating;
+    const favoriteChanged = favorite !== undefined && favorite !== existing.favorite;
+    const physicalCopyChanged = physical_copy !== undefined && physical_copy !== existing.physical_copy;
+    const finishDateChanged = existing.finish_date !== (status === 'read' ? finish_date ?? null : null);
 
-    if (statusChanged || ratingChanged || existing.finish_date !== (status === 'read' ? finish_date ?? null : null)) {
+    if (statusChanged || ratingChanged || favoriteChanged || physicalCopyChanged || finishDateChanged) {
       userBook = await db
         .updateTable('user_books')
         .set({
           status,
           rating: ratingUpdate,
           finish_date: status === 'read' ? finish_date ?? null : null,
+          favorite: favoriteUpdate,
+          physical_copy: physicalCopyUpdate,
         })
         .where('id', '=', existing.id)
         .returningAll()
@@ -200,6 +211,8 @@ router.get('/shelf', authMiddleware, async (req: AuthRequest, res) => {
       'user_books.status',
       'user_books.rating',
       'user_books.finish_date',
+      'user_books.favorite',
+      'user_books.physical_copy',
       'user_books.added_at',
     ])
     .execute();

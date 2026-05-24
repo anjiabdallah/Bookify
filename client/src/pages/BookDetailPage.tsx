@@ -30,6 +30,8 @@ function BookDetailPage() {
   const [selectedShelf, setSelectedShelf] = useState<ShelfStatus>('want_to_read');
   const [selectedRating, setSelectedRating] = useState<number>(0);
   const [selectedFinishDate, setSelectedFinishDate] = useState<string>('');
+  const [selectedFavorite, setSelectedFavorite] = useState<boolean>(false);
+  const [selectedPhysicalCopy, setSelectedPhysicalCopy] = useState<boolean>(false);
 
   useEffect(() => {
     if (!id) return;
@@ -53,6 +55,8 @@ function BookDetailPage() {
           status: selectedShelf,
           ...(selectedShelf === 'read' && selectedRating > 0 ? { rating: selectedRating } : {}),
           ...(selectedShelf === 'read' && selectedFinishDate ? { finish_date: selectedFinishDate } : {}),
+          favorite: selectedFavorite,
+          physical_copy: selectedPhysicalCopy,
         }),
       }),
     );
@@ -168,6 +172,28 @@ function BookDetailPage() {
                     </select>
                   </div>
 
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <label className="cursor-pointer rounded-2xl border border-base-200 p-4 flex items-center justify-start gap-3">
+                      <input
+                        type="checkbox"
+                        className="checkbox checkbox-primary"
+                        checked={selectedFavorite}
+                        onChange={event => setSelectedFavorite(event.target.checked)}
+                      />
+                      <span className="text-base font-medium">Favorites</span>
+                    </label>
+
+                    <label className="cursor-pointer rounded-2xl border border-base-200 p-4 flex items-center justify-start gap-3">
+                      <input
+                        type="checkbox"
+                        className="checkbox checkbox-primary"
+                        checked={selectedPhysicalCopy}
+                        onChange={event => setSelectedPhysicalCopy(event.target.checked)}
+                      />
+                      <span className="text-base font-medium">Physical copy</span>
+                    </label>
+                  </div>
+
                   {selectedShelf === 'read' && (
                     <>
                       <div>
@@ -175,7 +201,7 @@ function BookDetailPage() {
                           <span className="label-text">Rate it now</span>
                         </label>
                         <StarRating value={selectedRating} onChange={setSelectedRating} />
-                        <p className="text-sm text-base-content/60 mt-2">Optional: choose a rating when you save this book as Read.</p>
+                        <p className="text-sm text-base-content/60 mt-2">Optional: choose a star rating when you save this book as Read.</p>
                       </div>
 
                       <div className="mt-5">

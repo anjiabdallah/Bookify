@@ -30,6 +30,8 @@ export interface UserBooksTable {
   status: 'reading' | 'want_to_read' | 'read' | 'dnf';
   rating?: number | null;
   finish_date?: string | null;
+  favorite?: boolean;
+  physical_copy?: boolean;
   added_at?: Date;
 }
 

@@ -19,9 +19,13 @@ type ShelfActionModalProps = {
   selectedShelf: 'reading' | 'want_to_read' | 'read';
   selectedRating: number;
   selectedFinishDate: string;
+  selectedFavorite: boolean;
+  selectedPhysicalCopy: boolean;
   onShelfChange: (value: 'reading' | 'want_to_read' | 'read') => void;
   onRatingChange: (value: number) => void;
   onFinishDateChange: (value: string) => void;
+  onFavoriteChange: (value: boolean) => void;
+  onPhysicalCopyChange: (value: boolean) => void;
   onConfirm: () => void;
   onClose: () => void;
   error?: string;
@@ -37,9 +41,13 @@ function ShelfActionModal({
   selectedShelf,
   selectedRating,
   selectedFinishDate,
+  selectedFavorite,
+  selectedPhysicalCopy,
   onShelfChange,
   onRatingChange,
   onFinishDateChange,
+  onFavoriteChange,
+  onPhysicalCopyChange,
   onConfirm,
   onClose,
   error,
@@ -83,6 +91,28 @@ function ShelfActionModal({
                     <option value="want_to_read">Want to Read</option>
                     <option value="read">Read</option>
                   </select>
+                </div>
+
+                <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                  <label className="cursor-pointer rounded-2xl border border-base-200 p-4 flex items-center justify-start gap-3">
+                    <input
+                      type="checkbox"
+                      className="checkbox checkbox-primary"
+                      checked={selectedFavorite}
+                      onChange={event => onFavoriteChange(event.target.checked)}
+                    />
+                    <span className="text-base font-medium">Favorites</span>
+                  </label>
+
+                  <label className="cursor-pointer rounded-2xl border border-base-200 p-4 flex items-center justify-start gap-3">
+                    <input
+                      type="checkbox"
+                      className="checkbox checkbox-primary"
+                      checked={selectedPhysicalCopy}
+                      onChange={event => onPhysicalCopyChange(event.target.checked)}
+                    />
+                    <span className="text-base font-medium">Physical copy</span>
+                  </label>
                 </div>
 
                 {selectedShelf === 'read' && (

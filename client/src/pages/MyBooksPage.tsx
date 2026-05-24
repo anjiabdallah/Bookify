@@ -71,6 +71,16 @@ function MyBooksPage() {
     return map;
   }, [shelfQuery.data]);
 
+  const favoriteBooks = useMemo(
+    () => (shelfQuery.data ?? []).filter(book => book.favorite),
+    [shelfQuery.data],
+  );
+
+  const physicalCopyBooks = useMemo(
+    () => (shelfQuery.data ?? []).filter(book => book.physical_copy),
+    [shelfQuery.data],
+  );
+
   const stats = useMemo(
     () => ({
       reading: shelves.reading.length,
@@ -176,6 +186,66 @@ function MyBooksPage() {
         </PageCard>
 
         <div className="mt-10 space-y-8">
+          {favoriteBooks.length > 0 && (
+            <section className="mb-10">
+              <div className="mb-6 flex items-center justify-between">
+                <h2 className="text-2xl font-semibold">Favorites</h2>
+                <span className="badge badge-primary badge-outline">{favoriteBooks.length}</span>
+              </div>
+              <div className="grid gap-4 md:grid-cols-2">
+                {favoriteBooks.map(book => (
+                  <BookCard
+                    key={`fav-${book.id}`}
+                    coverUrl={book.cover_url}
+                    title={book.title}
+                    author={book.author}
+                    topRight={(
+                      <Link to={`/book/${book.google_books_id}`} className="badge badge-outline badge-sm">
+                        View details
+                      </Link>
+                    )}
+                    className="p-4 shadow-sm"
+                  >
+                    <div className="flex flex-wrap gap-2 text-sm text-base-content/70">
+                      {book.favorite && <span className="badge badge-primary badge-sm">Favorite</span>}
+                      {book.physical_copy && <span className="badge badge-accent badge-sm">Physical copy</span>}
+                    </div>
+                  </BookCard>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {physicalCopyBooks.length > 0 && (
+            <section className="mb-10">
+              <div className="mb-6 flex items-center justify-between">
+                <h2 className="text-2xl font-semibold">Physical copies</h2>
+                <span className="badge badge-primary badge-outline">{physicalCopyBooks.length}</span>
+              </div>
+              <div className="grid gap-4 md:grid-cols-2">
+                {physicalCopyBooks.map(book => (
+                  <BookCard
+                    key={`phys-${book.id}`}
+                    coverUrl={book.cover_url}
+                    title={book.title}
+                    author={book.author}
+                    topRight={(
+                      <Link to={`/book/${book.google_books_id}`} className="badge badge-outline badge-sm">
+                        View details
+                      </Link>
+                    )}
+                    className="p-4 shadow-sm"
+                  >
+                    <div className="flex flex-wrap gap-2 text-sm text-base-content/70">
+                      {book.favorite && <span className="badge badge-primary badge-sm">Favorite</span>}
+                      {book.physical_copy && <span className="badge badge-accent badge-sm">Physical copy</span>}
+                    </div>
+                  </BookCard>
+                ))}
+              </div>
+            </section>
+          )}
+
           {shelfOrder.map(([status, label]) => {
             const books = shelves[status];
             const [emptyTitle, emptySubtitle] = emptyStateText[status];

@@ -42,6 +42,8 @@ export type AddToShelfResponse = {
     status: ShelfStatus;
     rating: number | null;
     finish_date: string | null;
+    favorite: boolean;
+    physical_copy: boolean;
     added_at: string;
   };
 };
@@ -57,5 +59,7 @@ export type GetShelfResponse = Array<{
   status: ShelfStatus;
   rating: number | null;
   finish_date: string | null;
+  favorite: boolean;
+  physical_copy: boolean;
   added_at: string;
 }>;

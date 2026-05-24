@@ -33,6 +33,8 @@ function SearchPage() {
   const [selectedShelf, setSelectedShelf] = useState<'reading' | 'want_to_read' | 'read'>('reading');
   const [selectedRating, setSelectedRating] = useState<number>(0);
   const [selectedFinishDate, setSelectedFinishDate] = useState<string>('');
+  const [selectedFavorite, setSelectedFavorite] = useState<boolean>(false);
+  const [selectedPhysicalCopy, setSelectedPhysicalCopy] = useState<boolean>(false);
   const searchRunner = useAsync<SearchBooksResponse>();
   const addShelfRunner = useAsync<AddToShelfResponse>();
 
@@ -70,6 +72,8 @@ function SearchPage() {
     setSelectedBook(null);
     setSelectedRating(0);
     setSelectedFinishDate('');
+    setSelectedFavorite(false);
+    setSelectedPhysicalCopy(false);
     const checkbox = document.getElementById('add-shelf-modal') as HTMLInputElement | null;
     if (checkbox) checkbox.checked = false;
   };
@@ -87,6 +91,8 @@ function SearchPage() {
       status: selectedShelf,
       ...(selectedShelf === 'read' && selectedRating > 0 ? { rating: selectedRating } : {}),
       ...(selectedShelf === 'read' && selectedFinishDate ? { finish_date: selectedFinishDate } : {}),
+      favorite: selectedFavorite,
+      physical_copy: selectedPhysicalCopy,
     });
 
     await addShelfRunner.execute(() =>
@@ -141,6 +147,10 @@ function SearchPage() {
                   onClick={() => {
                     setSelectedBook(result);
                     setSelectedShelf('reading');
+                    setSelectedRating(0);
+                    setSelectedFinishDate('');
+                    setSelectedFavorite(false);
+                    setSelectedPhysicalCopy(false);
                   }}
                 >
                   + Add to Shelf
@@ -203,6 +213,8 @@ function SearchPage() {
           selectedShelf={selectedShelf}
           selectedRating={selectedRating}
           selectedFinishDate={selectedFinishDate}
+          selectedFavorite={selectedFavorite}
+          selectedPhysicalCopy={selectedPhysicalCopy}
           onShelfChange={(value) => {
             setSelectedShelf(value);
             if (value !== 'read') {
@@ -211,6 +223,8 @@ function SearchPage() {
           }}
           onRatingChange={setSelectedRating}
           onFinishDateChange={setSelectedFinishDate}
+          onFavoriteChange={setSelectedFavorite}
+          onPhysicalCopyChange={setSelectedPhysicalCopy}
           onConfirm={handleAddToShelf}
           onClose={closeAddShelfModal}
           error={addShelfRunner.error ?? undefined}

@@ -223,6 +223,38 @@ router.post('/shelf', authMiddleware, async (req: AuthRequest, res) => {
 });
 
 router.get('/years', authMiddleware, async (req: AuthRequest, res) => {
+  type YearlyBookRow = {
+    finished_at: string | Date;
+    id: number;
+    status: 'reading' | 'want_to_read' | 'read' | 'dnf';
+    rating: number | null;
+    favorite: boolean;
+    physical_copy: boolean;
+    added_at: string | Date;
+    google_books_id: string;
+    title: string;
+    author: string;
+    cover_url: string | null;
+    description: string | null;
+    published_date: string | null;
+  };
+
+  type YearlyBookEntry = {
+    id: number;
+    google_books_id: string;
+    title: string;
+    author: string;
+    cover_url: string | null;
+    description: string | null;
+    published_date: string | null;
+    status: 'reading' | 'want_to_read' | 'read' | 'dnf';
+    rating: number | null;
+    favorite: boolean;
+    physical_copy: boolean;
+    finished_at: string;
+    added_at: string;
+  };
+
   const rows = await db
     .selectFrom('user_book_finish_dates')
     .innerJoin('user_books', 'user_books.id', 'user_book_finish_dates.user_book_id')
@@ -244,13 +276,15 @@ router.get('/years', authMiddleware, async (req: AuthRequest, res) => {
       'books.published_date as published_date',
     ])
     .orderBy('user_book_finish_dates.finished_at', 'desc')
-    .execute();
+    .execute() as YearlyBookRow[];
 
-  const grouped = rows.reduce<Record<string, Array<any>>>((acc, row) => {
-    const rowData = row as Record<string, any>;
-    const finishedAt = String(rowData.finished_at);
-    const year = new Date(finishedAt).getFullYear().toString();
-    const entry = {
+  const grouped = rows.reduce<Record<string, YearlyBookEntry[]>>((acc, row) => {
+    const finishedAt = typeof row.finished_at === 'string'
+      ? row.finished_at
+      : row.finished_at.toISOString().split('T')[0];
+    const finishedAtString = finishedAt as string;
+    const year = new Date(finishedAtString).getFullYear().toString();
+    const entry: YearlyBookEntry = {
       id: row.id,
       google_books_id: row.google_books_id,
       title: row.title,
@@ -262,8 +296,8 @@ router.get('/years', authMiddleware, async (req: AuthRequest, res) => {
       rating: row.rating,
       favorite: row.favorite,
       physical_copy: row.physical_copy,
-      finished_at: finishedAt,
-      added_at: row.added_at instanceof Date ? row.added_at.toISOString() : row.added_at,
+      finished_at: finishedAtString,
+      added_at: typeof row.added_at === 'string' ? row.added_at : row.added_at.toISOString(),
     };
 
     if (!acc[year]) {

@@ -2,6 +2,7 @@ import { BookOpen, Search, Star, Users, Plus, ChevronRight } from 'lucide-react'
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
+import BookCard from '../components/BookCard';
 import PageCard from '../components/PageCard';
 import PageSectionHeader from '../components/PageSectionHeader';
 import { useAuth } from '../context/useAuth';
@@ -120,18 +121,20 @@ function HomePage() {
             />
             <div className="flex gap-4 overflow-x-auto pb-2">
               {trendingBooks.map(book => (
-                <div key={book.title} className="card w-80 shrink-0 bg-base-200 shadow-sm">
-                  <div className="card-body">
-                    <div className="h-56 rounded-3xl bg-pink-100" />
-                    <h3 className="mt-6 text-xl font-semibold">{book.title}</h3>
-                    <p className="text-sm text-base-content/70">{book.author}</p>
-                    <div className="mt-4 flex items-center gap-2 text-sm text-primary">
-                      <Star size={16} />
-                      {' '}
-                      {book.rating}
-                    </div>
+                <BookCard
+                  key={book.title}
+                  title={book.title}
+                  author={book.author}
+                  className="w-80 shrink-0"
+                >
+                  <div className="h-56 rounded-3xl bg-pink-100" />
+                  <p className="mt-6 text-sm text-base-content/70">{book.author}</p>
+                  <div className="mt-4 flex items-center gap-2 text-sm text-primary">
+                    <Star size={16} />
+                    {' '}
+                    {book.rating}
                   </div>
-                </div>
+                </BookCard>
               ))}
             </div>
           </section>
@@ -231,17 +234,13 @@ function HomePage() {
 
               <div className="mt-8 grid gap-4">
                 {filteredBooks.map(book => (
-                  <div key={book.title} className="card bg-base-100 shadow-sm">
-                    <div className="card-body">
-                      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                          <h3 className="text-xl font-semibold">{book.title}</h3>
-                          <p className="text-sm text-base-content/70">{book.author}</p>
-                        </div>
-                        <div className="badge badge-outline">{book.status}</div>
-                      </div>
-                    </div>
-                  </div>
+                  <BookCard
+                    key={book.title}
+                    title={book.title}
+                    author={book.author}
+                    topRight={<span className="badge badge-outline">{book.status}</span>}
+                    className="shadow-sm"
+                  />
                 ))}
               </div>
             </div>

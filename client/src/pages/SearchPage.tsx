@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
+import BookCard from '../components/BookCard';
 import PageCard from '../components/PageCard';
 import { useAuth } from '../context/useAuth';
 import { useAsync } from '../hooks/useAsync';
@@ -115,46 +116,32 @@ function SearchPage() {
       <div className="mt-6 flex flex-col gap-4">
         {results.map((result) => {
           return (
-            <article key={result.google_books_id} className="rounded-2xl border border-base-200 bg-base-100 p-5">
-              <div className="grid gap-5 lg:grid-cols-[100px_1fr] lg:items-start">
-                <div className="h-36 w-full overflow-hidden rounded-xl bg-base-200">
-                  {result.cover_url
-                    ? (
-                        <img src={result.cover_url} alt={result.title} className="h-full w-full object-cover" />
-                      )
-                    : (
-                        <div className="flex h-full items-center justify-center text-xs text-base-content/30">
-                          No cover
-                        </div>
-                      )}
-                </div>
-                <div className="space-y-4">
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                    <div>
-                      <h2 className="text-xl font-semibold text-base-content">{result.title}</h2>
-                      <p className="text-sm text-base-content/60">{result.author}</p>
-                    </div>
-                    <div className="badge badge-outline">{result.published_date ?? 'Unknown'}</div>
-                  </div>
-                  <p className="text-sm text-base-content/70 line-clamp-3">{result.description ?? 'No description available.'}</p>
-                  <div className="flex flex-wrap gap-2">
-                    <Link to={`/book/${result.google_books_id}`} className="btn btn-sm btn-primary rounded-xl">
-                      View Details
-                    </Link>
-                    <label
-                      htmlFor="add-shelf-modal"
-                      className="btn btn-sm btn-outline btn-primary rounded-xl"
-                      onClick={() => {
-                        setSelectedBook(result);
-                        setSelectedShelf('reading');
-                      }}
-                    >
-                      + Add to Shelf
-                    </label>
-                  </div>
-                </div>
+            <BookCard
+              key={result.google_books_id}
+              coverUrl={result.cover_url}
+              title={result.title}
+              author={result.author}
+              topRight={(
+                <div className="badge badge-outline">{result.published_date ?? 'Unknown'}</div>
+              )}
+            >
+              <p className="text-sm text-base-content/70 line-clamp-3">{result.description ?? 'No description available.'}</p>
+              <div className="flex flex-wrap gap-2">
+                <Link to={`/book/${result.google_books_id}`} className="btn btn-sm btn-primary rounded-xl">
+                  View Details
+                </Link>
+                <label
+                  htmlFor="add-shelf-modal"
+                  className="btn btn-sm btn-outline btn-primary rounded-xl"
+                  onClick={() => {
+                    setSelectedBook(result);
+                    setSelectedShelf('reading');
+                  }}
+                >
+                  + Add to Shelf
+                </label>
               </div>
-            </article>
+            </BookCard>
           );
         })}
       </div>

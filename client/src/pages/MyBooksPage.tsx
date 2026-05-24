@@ -2,6 +2,7 @@ import { BookOpen, Bookmark, CheckCircle, Star, XCircle } from 'lucide-react';
 import { type ReactNode, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
+import BookCard from '../components/BookCard';
 import PageCard from '../components/PageCard';
 import { useAuth } from '../context/useAuth';
 import { useAsync } from '../hooks/useAsync';
@@ -209,66 +210,55 @@ function MyBooksPage() {
                     : (
                         <div className="grid gap-4 md:grid-cols-2">
                           {books.map(book => (
-                            <article key={book.id} className="rounded-2xl border border-base-200 bg-base-100 p-4 shadow-sm">
-                              <div className="grid gap-4 sm:grid-cols-[80px_1fr_auto] sm:items-center">
-                                <div className="h-20 w-20 overflow-hidden rounded-xl bg-base-200">
-                                  {book.cover_url
-                                    ? (
-                                        <img src={book.cover_url} alt={book.title} className="h-full w-full object-cover" />
-                                      )
-                                    : (
-                                        <div className="flex h-full items-center justify-center text-base-content/50">No cover</div>
-                                      )}
-                                </div>
-                                <div className="space-y-2">
-                                  <h3 className="text-lg font-semibold">{book.title}</h3>
-                                  <p className="text-sm text-base-content/60">{book.author}</p>
-                                  {status === 'read'
-                                    ? (
-                                        <div className="flex items-center gap-2">
-                                          {[1, 2, 3, 4, 5].map(value => (
-                                            <button
-                                              key={value}
-                                              type="button"
-                                              onClick={() => handleRate(book, value)}
-                                              className="btn btn-ghost btn-square btn-sm p-0"
-                                            >
-                                              <Star
-                                                size={18}
-                                                fill={book.rating && book.rating >= value ? 'currentColor' : 'none'}
-                                                className={book.rating && book.rating >= value ? 'text-primary fill-current' : 'text-base-content/30'}
-                                              />
-                                            </button>
-                                          ))}
-                                        </div>
-                                      )
-                                    : (
-                                        <div className="flex items-center gap-1 text-primary">
-                                          <span>★</span>
-                                          <span>★</span>
-                                          <span>★</span>
-                                          <span>☆</span>
-                                          <span>☆</span>
-                                        </div>
-                                      )}
-                                </div>
-                                <div className="flex items-start justify-end">
-                                  {status === 'read'
-                                    ? (
-                                        <Link to={`/book/${book.google_books_id}`} className="badge badge-outline badge-sm">
-                                          View details
-                                        </Link>
-                                      )
-                                    : (
-                                        <span className={`${badgeClass} gap-2`}>
-                                          ✔
-                                          {' '}
-                                          {status === 'want_to_read' ? 'To read' : status === 'dnf' ? 'DNFed' : 'Reading'}
-                                        </span>
-                                      )}
-                                </div>
-                              </div>
-                            </article>
+                            <BookCard
+                              key={book.id}
+                              coverUrl={book.cover_url}
+                              title={book.title}
+                              author={book.author}
+                              topRight={status === 'read'
+                                ? (
+                                    <Link to={`/book/${book.google_books_id}`} className="badge badge-outline badge-sm">
+                                      View details
+                                    </Link>
+                                  )
+                                : (
+                                    <span className={`${badgeClass} gap-2`}>
+                                      ✔
+                                      {' '}
+                                      {status === 'want_to_read' ? 'To read' : status === 'dnf' ? 'DNFed' : 'Reading'}
+                                    </span>
+                                  )}
+                              className="p-4 shadow-sm"
+                            >
+                              {status === 'read'
+                                ? (
+                                    <div className="flex items-center gap-2">
+                                      {[1, 2, 3, 4, 5].map(value => (
+                                        <button
+                                          key={value}
+                                          type="button"
+                                          onClick={() => handleRate(book, value)}
+                                          className="btn btn-ghost btn-square btn-sm p-0"
+                                        >
+                                          <Star
+                                            size={18}
+                                            fill={book.rating && book.rating >= value ? 'currentColor' : 'none'}
+                                            className={book.rating && book.rating >= value ? 'text-primary fill-current' : 'text-base-content/30'}
+                                          />
+                                        </button>
+                                      ))}
+                                    </div>
+                                  )
+                                : (
+                                    <div className="flex items-center gap-1 text-primary">
+                                      <span>★</span>
+                                      <span>★</span>
+                                      <span>★</span>
+                                      <span>☆</span>
+                                      <span>☆</span>
+                                    </div>
+                                  )}
+                            </BookCard>
                           ))}
                         </div>
                       )}

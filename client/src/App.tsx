@@ -11,6 +11,7 @@ import {
   BookDetailPage,
   MyBooksPage,
 } from './pages';
+import NotFoundPage from './pages/NotFoundPage';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
           <Route path="/my-books" element={<MyBooksPage />} />
           <Route path="/search" element={<SearchPage />} />
           <Route path="/book/:id" element={<BookDetailPage />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

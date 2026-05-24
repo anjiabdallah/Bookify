@@ -47,6 +47,7 @@ const addBookSchema = z.object({
   description: z.string().optional(),
   published_date: z.string().optional(),
   status: z.enum(['reading', 'want_to_read', 'read', 'dnf']),
+  rating: z.number().int().min(1).max(5).nullable().optional(),
 });
 
 // Search Google Books
@@ -116,7 +117,7 @@ router.post('/shelf', authMiddleware, async (req: AuthRequest, res) => {
     return;
   }
 
-  const { google_books_id, title, author, cover_url, description, published_date, status } = result.data;
+  const { google_books_id, title, author, cover_url, description, published_date, status, rating } = result.data;
 
   let book = await db
     .selectFrom('books')
@@ -143,18 +144,29 @@ router.post('/shelf', authMiddleware, async (req: AuthRequest, res) => {
   if (!existing) {
     userBook = await db
       .insertInto('user_books')
-      .values({ user_id: req.userId!, book_id: book.id!, status })
-      .returningAll()
-      .executeTakeFirstOrThrow();
-  } else if (existing.status !== status) {
-    userBook = await db
-      .updateTable('user_books')
-      .set({ status })
-      .where('id', '=', existing.id)
+      .values({
+        user_id: req.userId!,
+        book_id: book.id!,
+        status,
+        rating: status === 'read' ? rating ?? null : null,
+      })
       .returningAll()
       .executeTakeFirstOrThrow();
   } else {
-    userBook = existing;
+    const ratingUpdate = status === 'read' ? rating ?? existing.rating ?? null : null;
+    const statusChanged = existing.status !== status;
+    const ratingChanged = rating !== undefined && rating !== existing.rating;
+
+    if (statusChanged || ratingChanged) {
+      userBook = await db
+        .updateTable('user_books')
+        .set({ status, rating: ratingUpdate })
+        .where('id', '=', existing.id)
+        .returningAll()
+        .executeTakeFirstOrThrow();
+    } else {
+      userBook = existing;
+    }
   }
 
   res.status(existing ? 200 : 201).json({ book, userBook });
@@ -172,7 +184,10 @@ router.get('/shelf', authMiddleware, async (req: AuthRequest, res) => {
       'books.title',
       'books.author',
       'books.cover_url',
+      'books.description',
+      'books.published_date',
       'user_books.status',
+      'user_books.rating',
       'user_books.added_at',
     ])
     .execute();

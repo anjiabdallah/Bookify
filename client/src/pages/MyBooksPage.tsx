@@ -1,4 +1,4 @@
-import { BookOpen, Bookmark, CheckCircle, XCircle } from 'lucide-react';
+import { BookOpen, Bookmark, CheckCircle, Star, XCircle } from 'lucide-react';
 import { type ReactNode, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -6,7 +6,7 @@ import { useAuth } from '../context/useAuth';
 import { useAsync } from '../hooks/useAsync';
 import { requestServer } from '../lib/requestServer';
 
-import type { GetShelfResponse, ShelfStatus } from '../../../server/src/api/types';
+import type { AddToShelfResponse, GetShelfResponse, ShelfStatus } from '../../../server/src/api/types';
 
 const shelfOrder: Array<[ShelfStatus, string]> = [
   ['reading', 'Currently Reading'],
@@ -33,6 +33,7 @@ function MyBooksPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const shelfQuery = useAsync<GetShelfResponse>();
+  const ratingSaver = useAsync<AddToShelfResponse>();
 
   useEffect(() => {
     shelfQuery.execute(() => requestServer<GetShelfResponse>('/api/books/shelf'));
@@ -62,6 +63,30 @@ function MyBooksPage() {
     }),
     [shelves],
   );
+
+  const handleRate = async (book: GetShelfResponse[number], rating: number) => {
+    if (book.status !== 'read') return;
+
+    const result = await ratingSaver.execute(() =>
+      requestServer<AddToShelfResponse>('/api/books/shelf', {
+        method: 'POST',
+        body: JSON.stringify({
+          google_books_id: book.google_books_id,
+          title: book.title,
+          author: book.author,
+          cover_url: book.cover_url,
+          description: book.description,
+          published_date: book.published_date,
+          status: 'read',
+          rating,
+        }),
+      }),
+    );
+
+    if (result) {
+      shelfQuery.execute(() => requestServer<GetShelfResponse>('/api/books/shelf'));
+    }
+  };
 
   if (!user) {
     return (
@@ -99,6 +124,18 @@ function MyBooksPage() {
             <div className="mt-4 text-center text-sm text-base-content/70">A gentle stack of stories waiting for you.</div>
           </div>
         </div>
+
+        {ratingSaver.error && (
+          <div className="alert alert-error mb-6">
+            <span>{ratingSaver.error}</span>
+          </div>
+        )}
+
+        {ratingSaver.data && (
+          <div className="alert alert-success mb-6">
+            <span>Book rating saved.</span>
+          </div>
+        )}
 
         <div className="grid gap-4 rounded-2xl border border-base-200 bg-base-100 p-6 shadow-sm md:grid-cols-4">
           <div className="flex flex-col items-center gap-3 border-r border-base-200 pr-4 last:border-r-0 last:pr-0">
@@ -185,13 +222,33 @@ function MyBooksPage() {
                                 <div className="space-y-2">
                                   <h3 className="text-lg font-semibold">{book.title}</h3>
                                   <p className="text-sm text-base-content/60">{book.author}</p>
-                                  <div className="flex items-center gap-1 text-primary">
-                                    <span>★</span>
-                                    <span>★</span>
-                                    <span>★</span>
-                                    <span>☆</span>
-                                    <span>☆</span>
-                                  </div>
+                                  {status === 'read'
+                                    ? (
+                                        <div className="flex items-center gap-2">
+                                          {[1, 2, 3, 4, 5].map(value => (
+                                            <button
+                                              key={value}
+                                              type="button"
+                                              onClick={() => handleRate(book, value)}
+                                              className="btn btn-ghost btn-square btn-sm p-0"
+                                            >
+                                              <Star
+                                                size={18}
+                                                className={book.rating && book.rating >= value ? 'text-primary' : 'text-base-content/30'}
+                                              />
+                                            </button>
+                                          ))}
+                                        </div>
+                                      )
+                                    : (
+                                        <div className="flex items-center gap-1 text-primary">
+                                          <span>★</span>
+                                          <span>★</span>
+                                          <span>★</span>
+                                          <span>☆</span>
+                                          <span>☆</span>
+                                        </div>
+                                      )}
                                 </div>
                                 <div className="flex items-start justify-end">
                                   <span className={`${badgeClass} gap-2`}>

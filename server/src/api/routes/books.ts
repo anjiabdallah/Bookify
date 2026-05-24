@@ -46,7 +46,7 @@ const addBookSchema = z.object({
   cover_url: z.string().optional(),
   description: z.string().optional(),
   published_date: z.string().optional(),
-  status: z.enum(['favorite', 'reading', 'want_to_read', 'read', 'dnf']),
+  status: z.enum(['reading', 'want_to_read', 'read', 'dnf']),
 });
 
 // Search Google Books

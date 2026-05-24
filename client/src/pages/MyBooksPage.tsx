@@ -8,7 +8,6 @@ import { requestServer } from '../lib/requestServer';
 import type { GetShelfResponse, ShelfStatus } from '../../../server/src/api/types';
 
 const shelfOrder: Array<[ShelfStatus, string]> = [
-  ['favorite', 'Favorites'],
   ['reading', 'Currently reading'],
   ['want_to_read', 'To read'],
   ['read', 'Read'],
@@ -26,7 +25,6 @@ function MyBooksPage() {
 
   const shelves = useMemo(() => {
     const map: Record<ShelfStatus, GetShelfResponse> = {
-      favorite: [],
       reading: [],
       want_to_read: [],
       read: [],
@@ -60,7 +58,7 @@ function MyBooksPage() {
           <div>
             <p className="text-sm uppercase tracking-[0.3em] text-primary">My Books</p>
             <h1 className="text-4xl font-bold">Organize your shelves</h1>
-            <p className="text-base-content/70 mt-1">View your favorites, current reads, to-read list, finished books, and DNFed titles.</p>
+            <p className="text-base-content/70 mt-1">View your current reads, to-read list, finished books, and DNFed titles.</p>
           </div>
         </div>
 

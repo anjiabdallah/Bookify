@@ -8,7 +8,6 @@ import { useAsync } from '../hooks/useAsync';
 import type { AddToShelfResponse, BookDetailResponse, ShelfStatus } from '../../../server/src/api/types';
 
 const shelfOptions: Array<[ShelfStatus, string]> = [
-  ['favorite', 'Favorite'],
   ['reading', 'Currently reading'],
   ['want_to_read', 'To read'],
   ['read', 'Read'],

@@ -9,7 +9,7 @@ export type BookResult = {
 
 export type SearchBooksResponse = BookResult[];
 
-export type ShelfStatus = 'favorite' | 'reading' | 'want_to_read' | 'read' | 'dnf';
+export type ShelfStatus = 'reading' | 'want_to_read' | 'read' | 'dnf';
 
 export type BookDetailResponse = {
   google_books_id: string;

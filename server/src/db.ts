@@ -27,7 +27,7 @@ export interface UserBooksTable {
   id?: number;
   user_id: number;
   book_id: number;
-  status: 'favorite' | 'reading' | 'want_to_read' | 'read' | 'dnf';
+  status: 'reading' | 'want_to_read' | 'read' | 'dnf';
   added_at?: Date;
 }
 

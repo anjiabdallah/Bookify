@@ -5,18 +5,10 @@ import { useAuth } from '../context/useAuth';
 import { useAsync } from '../hooks/useAsync';
 import { requestServer } from '../lib/requestServer';
 
-import type { AddToShelfResponse, GetShelfResponse, ShelfStatus } from '../../../server/src/api/types';
+import type { GetShelfResponse, ShelfStatus } from '../../../server/src/api/types';
 
 const shelfOrder: Array<[ShelfStatus, string]> = [
   ['favorite', 'Favorites'],
-  ['reading', 'Currently reading'],
-  ['want_to_read', 'To read'],
-  ['read', 'Read'],
-  ['dnf', 'DNFed'],
-];
-
-const shelfOptions: Array<[ShelfStatus, string]> = [
-  ['favorite', 'Favorite'],
   ['reading', 'Currently reading'],
   ['want_to_read', 'To read'],
   ['read', 'Read'],
@@ -27,7 +19,6 @@ function MyBooksPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const shelfQuery = useAsync<GetShelfResponse>();
-  const shelfUpdater = useAsync<AddToShelfResponse>();
 
   useEffect(() => {
     shelfQuery.execute(() => requestServer<GetShelfResponse>('/api/books/shelf'));
@@ -48,29 +39,6 @@ function MyBooksPage() {
 
     return map;
   }, [shelfQuery.data]);
-
-  const moveBook = async (book: GetShelfResponse[number], status: ShelfStatus) => {
-    if (book.status === status) return;
-
-    const result = await shelfUpdater.execute(() =>
-      requestServer<AddToShelfResponse>('/api/books/shelf', {
-        method: 'POST',
-        body: JSON.stringify({
-          google_books_id: book.google_books_id,
-          title: book.title,
-          author: book.author,
-          cover_url: book.cover_url,
-          published_date: null,
-          description: null,
-          status,
-        }),
-      }),
-    );
-
-    if (result) {
-      shelfQuery.execute(() => requestServer<GetShelfResponse>('/api/books/shelf'));
-    }
-  };
 
   if (!user) {
     return (
@@ -95,18 +63,6 @@ function MyBooksPage() {
             <p className="text-base-content/70 mt-1">View your favorites, current reads, to-read list, finished books, and DNFed titles.</p>
           </div>
         </div>
-
-        {shelfUpdater.error && (
-          <div className="alert alert-error mb-4">
-            <span>{shelfUpdater.error}</span>
-          </div>
-        )}
-
-        {shelfUpdater.data && (
-          <div className="alert alert-success mb-4">
-            <span>Book moved to {shelfUpdater.data.userBook.status}.</span>
-          </div>
-        )}
 
         <div className="space-y-8">
           {shelfOrder.map(([status, label]) => (
@@ -144,16 +100,6 @@ function MyBooksPage() {
                             <Link to={`/book/${book.google_books_id}`} className="btn btn-sm btn-ghost">
                               View Details
                             </Link>
-                            <select
-                              className="select select-bordered select-sm"
-                              defaultValue={book.status}
-                              onChange={e => moveBook(book, e.target.value as ShelfStatus)}
-                              disabled={shelfUpdater.loading}
-                            >
-                              {shelfOptions.map(([value, label]) => (
-                                <option key={value} value={value}>{label}</option>
-                              ))}
-                            </select>
                           </div>
                         </div>
                       </div>

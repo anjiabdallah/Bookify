@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 import BookCard from '../components/BookCard';
 import PageCard from '../components/PageCard';
+import PageSectionHeader from '../components/PageSectionHeader';
 import StarRating from '../components/StarRating';
 import { useAuth } from '../context/useAuth';
 import { useAsync } from '../hooks/useAsync';
@@ -109,22 +110,20 @@ function MyBooksPage() {
       <main className="container mx-auto px-6 py-10">
         <div className="mb-10 grid gap-8 lg:grid-cols-[1fr_auto] lg:items-start">
           <div>
-            <p className="text-sm uppercase tracking-[0.5em] text-primary">MY BOOKS</p>
-            <h1 className="mt-4 text-4xl font-bold">Organize your shelves</h1>
+            <PageSectionHeader
+              label="My Books"
+              heading="Organize your shelves"
+              right={(
+                <div className="relative flex h-full w-full max-w-xs flex-col items-center justify-center rounded-[2rem] border border-primary/10 bg-primary/10 p-8 text-primary/80 shadow-lg shadow-primary/10">
+                  <div className="text-6xl">📚</div>
+                  <div className="mt-3 flex items-center gap-2 text-primary/30 text-2xl">✦</div>
+                  <div className="mt-4 text-center text-sm text-base-content/70">A gentle stack of stories waiting for you.</div>
+                </div>
+              )}
+            />
             <p className="mt-4 max-w-2xl text-base text-base-content/70">
               View your current reads, to-read list, finished books, and DNFed titles.
             </p>
-            <div className="mt-8 flex items-center justify-center gap-3 text-base-content/70">
-              <div className="h-px flex-1 border-t border-base-300" />
-              <span className="text-xl">🦋</span>
-              <div className="h-px flex-1 border-t border-base-300" />
-            </div>
-          </div>
-
-          <div className="relative flex h-full w-full max-w-xs flex-col items-center justify-center rounded-[2rem] border border-primary/10 bg-primary/10 p-8 text-primary/80 shadow-lg shadow-primary/10">
-            <div className="text-6xl">📚</div>
-            <div className="mt-3 flex items-center gap-2 text-primary/30 text-2xl">✦</div>
-            <div className="mt-4 text-center text-sm text-base-content/70">A gentle stack of stories waiting for you.</div>
           </div>
         </div>
 

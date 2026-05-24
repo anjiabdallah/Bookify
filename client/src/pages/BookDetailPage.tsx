@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import BackButton from '../components/BackButton';
+import PageCard from '../components/PageCard';
 import PageSectionHeader from '../components/PageSectionHeader';
 import StarRating from '../components/StarRating';
 import { useAuth } from '../context/useAuth';
@@ -74,7 +75,7 @@ function BookDetailPage() {
         </div>
 
         {bookQuery.loading && (
-          <div className="rounded-3xl bg-base-200 p-8 text-center">Loading book details…</div>
+          <PageCard className="text-center">Loading book details…</PageCard>
         )}
 
         {bookQuery.error && (
@@ -85,7 +86,7 @@ function BookDetailPage() {
 
         {book && !bookQuery.loading && !bookQuery.error && (
           <div className="grid gap-8 lg:grid-cols-[320px_1fr]">
-            <div className="rounded-3xl bg-base-200 p-6 shadow-sm">
+            <PageCard className="p-6 shadow-sm">
               <div className="h-96 overflow-hidden rounded-3xl bg-base-100">
                 {book.cover_url
                   ? (
@@ -132,9 +133,9 @@ function BookDetailPage() {
                   </div>
                 )}
               </div>
-            </div>
+            </PageCard>
 
-            <div className="rounded-3xl bg-base-200 p-8 shadow-sm">
+            <PageCard>
               <h2 className="text-2xl font-semibold mb-4">About this book</h2>
               <p className="text-base-content/80 whitespace-pre-line">
                 {stripHtml(book.description) ?? 'No description available for this title.'}
@@ -191,7 +192,7 @@ function BookDetailPage() {
                   )}
                 </div>
               )}
-            </div>
+            </PageCard>
           </div>
         )}
       </main>

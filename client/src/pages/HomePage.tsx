@@ -140,10 +140,10 @@ function HomePage() {
           </section>
 
           <section className="mb-16">
-            <div className="mb-8">
-              <p className="text-sm uppercase tracking-[0.3em] text-primary">Browse by Genre</p>
-              <h2 className="text-3xl font-bold">Find your next adventure</h2>
-            </div>
+            <PageSectionHeader
+              label="Browse by Genre"
+              heading="Find your next adventure"
+            />
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {genres.map((genre, index) => (
                 <div
@@ -214,24 +214,22 @@ function HomePage() {
               </div>
             </div>
 
-            <div className="rounded-3xl bg-base-200 p-8 shadow-sm">
-              <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-                <div className="space-y-4">
-                  <p className="text-sm uppercase tracking-[0.3em] text-primary">My Books</p>
-                  <div className="tabs tabs-boxed">
-                    {['All', 'Reading', 'Read', 'Want to Read'].map(tab => (
-                      <button
-                        key={tab}
-                        className={`tab ${activeTab === tab ? 'tab-active' : ''}`}
-                        onClick={() => setActiveTab(tab)}
-                      >
-                        {tab}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+            <PageCard>
+              <PageSectionHeader
+                label="My Books"
+                heading="Your current reads"
+              />
+              <div className="tabs tabs-boxed">
+                {['All', 'Reading', 'Read', 'Want to Read'].map(tab => (
+                  <button
+                    key={tab}
+                    className={`tab ${activeTab === tab ? 'tab-active' : ''}`}
+                    onClick={() => setActiveTab(tab)}
+                  >
+                    {tab}
+                  </button>
+                ))}
               </div>
-
               <div className="mt-8 grid gap-4">
                 {filteredBooks.map(book => (
                   <BookCard
@@ -243,18 +241,16 @@ function HomePage() {
                   />
                 ))}
               </div>
-            </div>
+            </PageCard>
           </section>
 
           <aside className="space-y-8">
-            <div className="rounded-3xl bg-base-200 p-8 shadow-sm">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <p className="text-sm uppercase tracking-[0.3em] text-primary">Currently Reading</p>
-                  <h2 className="text-2xl font-bold">The Starlight Journal</h2>
-                </div>
-                <BookOpen size={28} className="text-primary" />
-              </div>
+            <PageCard>
+              <PageSectionHeader
+                label="Currently Reading"
+                heading="The Starlight Journal"
+                right={<BookOpen size={28} className="text-primary" />}
+              />
               <div className="rounded-3xl bg-base-100 p-5">
                 <div className="h-52 rounded-3xl bg-pink-100" />
                 <div className="mt-6">
@@ -270,16 +266,14 @@ function HomePage() {
                 </div>
                 <button className="btn btn-primary btn-block mt-6">Update Progress</button>
               </div>
-            </div>
+            </PageCard>
 
-            <div className="rounded-3xl bg-base-200 p-8 shadow-sm">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <p className="text-sm uppercase tracking-[0.3em] text-primary">Community Updates</p>
-                  <h2 className="text-2xl font-bold">Latest activity</h2>
-                </div>
-                <Users size={24} className="text-primary" />
-              </div>
+            <PageCard>
+              <PageSectionHeader
+                label="Community Updates"
+                heading="Latest activity"
+                right={<Users size={24} className="text-primary" />}
+              />
               <div className="space-y-4">
                 {communityUpdates.map(update => (
                   <div key={update.name} className="flex items-center gap-4 rounded-3xl bg-base-100 p-4">
@@ -299,7 +293,7 @@ function HomePage() {
                   </div>
                 ))}
               </div>
-            </div>
+            </PageCard>
           </aside>
         </div>
       </main>

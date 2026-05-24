@@ -7,6 +7,7 @@ import { z } from 'zod';
 
 import BookCard from '../components/BookCard';
 import PageCard from '../components/PageCard';
+import PageSectionHeader from '../components/PageSectionHeader';
 import ShelfActionModal from '../components/ShelfActionModal';
 import { useAuth } from '../context/useAuth';
 import { useAsync } from '../hooks/useAsync';
@@ -155,19 +156,17 @@ function SearchPage() {
         <PageCard>
           <PageCard className="relative overflow-hidden">
             <div className="absolute right-6 top-6 text-primary/20 text-3xl">✦ ✦</div>
-            <div className="mb-8 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-              <div>
-                <p className="text-sm uppercase tracking-[0.5em] text-primary">BOOK SEARCH</p>
-                <h1 className="mt-4 text-4xl font-bold text-base-content">Find your next favorite read.</h1>
-              </div>
-              {user && (
+            <PageSectionHeader
+              label="Book Search"
+              heading="Find your next favorite read."
+              right={user && (
                 <div className="text-sm text-base-content/50">
                   Logged in as
                   <br />
                   {user.username}
                 </div>
               )}
-            </div>
+            />
 
             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3 sm:flex-row sm:items-center">
               <div className="relative w-full">

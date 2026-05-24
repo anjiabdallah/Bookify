@@ -5,6 +5,7 @@ import { useForm, useWatch } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
+import PageCard from '../components/PageCard';
 import { useAuth } from '../context/useAuth';
 import { useAsync } from '../hooks/useAsync';
 import { requestServer } from '../lib/requestServer';
@@ -118,7 +119,7 @@ function ProfilePage() {
   return (
     <div className="min-h-screen bg-base-100 text-base-content">
       <main className="container mx-auto px-6 py-10">
-        <div className="rounded-3xl border border-base-200 bg-base-100 p-8 shadow-sm">
+        <PageCard variant="bordered" className="p-8">
           <div className="mb-10 grid gap-6 lg:grid-cols-[1fr_auto] lg:items-start">
             <div className="flex items-center gap-5">
               <div className="relative flex h-24 w-24 items-center justify-center rounded-3xl bg-primary/10 text-primary/40">
@@ -235,7 +236,7 @@ function ProfilePage() {
               {isSubmitting ? 'Saving...' : 'Save Profile'}
             </button>
           </form>
-        </div>
+        </PageCard>
       </main>
     </div>
   );

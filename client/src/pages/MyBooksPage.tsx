@@ -2,10 +2,9 @@ import { BookOpen, Bookmark, CheckCircle, XCircle } from 'lucide-react';
 import { type ReactNode, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-import BookCard from '../components/BookCard';
 import PageCard from '../components/PageCard';
 import PageSectionHeader from '../components/PageSectionHeader';
-import StarRating from '../components/StarRating';
+import ShelfBookCard from '../components/ShelfBookCard';
 import { useAuth } from '../context/useAuth';
 import { useAsync } from '../hooks/useAsync';
 import { requestServer } from '../lib/requestServer';
@@ -31,19 +30,6 @@ const sectionIcons: Record<ShelfStatus, ReactNode> = {
   want_to_read: <Bookmark size={18} className="text-primary/50" />,
   read: <CheckCircle size={18} className="text-primary/50" />,
   dnf: <XCircle size={18} className="text-primary/50" />,
-};
-
-const formatFinishDate = (dateString: string) => {
-  const date = new Date(dateString);
-  if (Number.isNaN(date.getTime())) {
-    return dateString;
-  }
-
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const year = String(date.getFullYear());
-
-  return `${day}/${month}/${year}`;
 };
 
 function MyBooksPage() {
@@ -194,23 +180,11 @@ function MyBooksPage() {
               </div>
               <div className="grid gap-4 md:grid-cols-2">
                 {favoriteBooks.map(book => (
-                  <BookCard
+                  <ShelfBookCard
                     key={`fav-${book.id}`}
-                    coverUrl={book.cover_url}
-                    title={book.title}
-                    author={book.author}
-                    topRight={(
-                      <Link to={`/book/${book.google_books_id}`} className="badge badge-outline badge-sm">
-                        View details
-                      </Link>
-                    )}
-                    className="p-4 shadow-sm"
-                  >
-                    <div className="flex flex-wrap gap-2 text-sm text-base-content/70">
-                      {book.favorite && <span className="badge badge-primary badge-sm">Favorite</span>}
-                      {book.physical_copy && <span className="badge badge-accent badge-sm">Physical copy</span>}
-                    </div>
-                  </BookCard>
+                    book={book}
+                    status={book.status}
+                  />
                 ))}
               </div>
             </section>
@@ -224,23 +198,11 @@ function MyBooksPage() {
               </div>
               <div className="grid gap-4 md:grid-cols-2">
                 {physicalCopyBooks.map(book => (
-                  <BookCard
+                  <ShelfBookCard
                     key={`phys-${book.id}`}
-                    coverUrl={book.cover_url}
-                    title={book.title}
-                    author={book.author}
-                    topRight={(
-                      <Link to={`/book/${book.google_books_id}`} className="badge badge-outline badge-sm">
-                        View details
-                      </Link>
-                    )}
-                    className="p-4 shadow-sm"
-                  >
-                    <div className="flex flex-wrap gap-2 text-sm text-base-content/70">
-                      {book.favorite && <span className="badge badge-primary badge-sm">Favorite</span>}
-                      {book.physical_copy && <span className="badge badge-accent badge-sm">Physical copy</span>}
-                    </div>
-                  </BookCard>
+                    book={book}
+                    status={book.status}
+                  />
                 ))}
               </div>
             </section>
@@ -249,14 +211,6 @@ function MyBooksPage() {
           {shelfOrder.map(([status, label]) => {
             const books = shelves[status];
             const [emptyTitle, emptySubtitle] = emptyStateText[status];
-            const badgeClass
-              = status === 'reading'
-                ? 'badge badge-primary'
-                : status === 'want_to_read'
-                  ? 'badge badge-ghost'
-                  : status === 'read'
-                    ? 'badge badge-success'
-                    : 'badge badge-error';
 
             return (
               <section key={status}>
@@ -293,56 +247,12 @@ function MyBooksPage() {
                     : (
                         <div className="grid gap-4 md:grid-cols-2">
                           {books.map(book => (
-                            <BookCard
+                            <ShelfBookCard
                               key={book.id}
-                              coverUrl={book.cover_url}
-                              title={book.title}
-                              author={book.author}
-                              topRight={status === 'read'
-                                ? (
-                                    <Link to={`/book/${book.google_books_id}`} className="badge badge-outline badge-sm">
-                                      View details
-                                    </Link>
-                                  )
-                                : (
-                                    <span className={`${badgeClass} gap-2`}>
-                                      ✔
-                                      {' '}
-                                      {status === 'want_to_read' ? 'To read' : status === 'dnf' ? 'DNFed' : 'Reading'}
-                                    </span>
-                                  )}
-                              className="p-4 shadow-sm"
-                            >
-                              <div className="space-y-3">
-                                {status === 'read'
-                                  ? (
-                                      <div className="space-y-3">
-                                        <StarRating
-                                          value={book.rating ?? 0}
-                                          onChange={value => handleRate(book, value)}
-                                        />
-                                        {book.finish_date
-                                          ? (
-                                              <div className="text-sm text-base-content/70">
-                                                Finished on
-                                                {' '}
-                                                {formatFinishDate(book.finish_date)}
-                                              </div>
-                                            )
-                                          : null}
-                                      </div>
-                                    )
-                                  : (
-                                      <div className="flex items-center gap-1 text-primary">
-                                        <span>★</span>
-                                        <span>★</span>
-                                        <span>★</span>
-                                        <span>☆</span>
-                                        <span>☆</span>
-                                      </div>
-                                    )}
-                              </div>
-                            </BookCard>
+                              book={book}
+                              status={status}
+                              onRate={value => handleRate(book, value)}
+                            />
                           ))}
                         </div>
                       )}

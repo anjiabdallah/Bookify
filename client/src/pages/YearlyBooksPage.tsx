@@ -1,26 +1,13 @@
 import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-import BookCard from '../components/BookCard';
 import PageSectionHeader from '../components/PageSectionHeader';
+import ShelfBookCard from '../components/ShelfBookCard';
 import { useAuth } from '../context/useAuth';
 import { useAsync } from '../hooks/useAsync';
 import { requestServer } from '../lib/requestServer';
 
 import type { YearlyBooksResponse } from '../../../server/src/api/types';
-
-const formatFinishDate = (dateString: string) => {
-  const date = new Date(dateString);
-  if (Number.isNaN(date.getTime())) {
-    return dateString;
-  }
-
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const year = String(date.getFullYear());
-
-  return `${day}/${month}/${year}`;
-};
 
 function YearlyBooksPage() {
   const navigate = useNavigate();
@@ -100,30 +87,11 @@ function YearlyBooksPage() {
 
               <div className="grid gap-4 md:grid-cols-2">
                 {group.finishes.map((finish) => (
-                  <BookCard
+                  <ShelfBookCard
                     key={`${group.year}-${finish.id}`}
-                    coverUrl={finish.cover_url}
-                    title={finish.title}
-                    author={finish.author}
-                    topRight={(
-                      <Link to={`/book/${finish.google_books_id}`} className="badge badge-outline badge-sm">
-                        View details
-                      </Link>
-                    )}
-                    className="p-4 shadow-sm"
-                  >
-                    <div className="space-y-3 text-sm text-base-content/70">
-                      <div className="flex flex-wrap gap-2">
-                        <span className="badge badge-success badge-sm">Finished</span>
-                        {finish.favorite && <span className="badge badge-primary badge-sm">Favorite</span>}
-                        {finish.physical_copy && <span className="badge badge-accent badge-sm">Physical copy</span>}
-                      </div>
-                      <div>Finished on {formatFinishDate(finish.finished_at)}</div>
-                      {finish.rating !== null && (
-                        <div>Rating: {finish.rating.toFixed(2)}</div>
-                      )}
-                    </div>
-                  </BookCard>
+                    book={finish}
+                    status="read"
+                  />
                 ))}
               </div>
             </section>

@@ -76,6 +76,7 @@ export type YearlyBooksResponse = Array<{
     published_date: string | null;
     status: ShelfStatus;
     rating: number | null;
+    finish_date: string | null;
     favorite: boolean;
     physical_copy: boolean;
     finished_at: string;

@@ -35,7 +35,14 @@ const categoryIcons: Record<string, ReactNode> = {
 };
 
 const profileSchema = z.object({
-  age: z.string().optional(),
+  age: z.string().optional().refine((value) => {
+    if (value === undefined || value.trim() === '') {
+      return true;
+    }
+
+    const numberValue = Number(value);
+    return Number.isInteger(numberValue) && numberValue >= 13 && numberValue <= 120;
+  }, { message: 'Age must be a whole number between 13 and 120.' }),
   bio: z.string().max(500).optional(),
   favoriteCategories: z.array(z.string()).optional(),
 });
@@ -173,8 +180,9 @@ function ProfilePage() {
                 </label>
                 <input
                   type="number"
-                  min="1"
-                  placeholder="Your age"
+                  min="13"
+                  max="120"
+                  placeholder="Your age (13-120)"
                   className="input input-bordered w-full bg-base-100 pr-12"
                   {...register('age')}
                 />

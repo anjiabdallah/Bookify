@@ -15,7 +15,7 @@ const registerSchema = z.object({
 });
 
 const profileSchema = z.object({
-  age: z.number().int().positive().nullable().optional(),
+  age: z.number().int().min(6).max(100).nullable().optional(),
   bio: z.string().max(500).nullable().optional(),
   favorite_categories: z.array(z.string().min(1)).nullable().optional(),
 });

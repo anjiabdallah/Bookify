@@ -119,12 +119,8 @@ function BookDetailPage() {
                 {book.categories.length > 0 && (
                   <div>
                     <div className="font-semibold">Categories</div>
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {book.categories.map(category => (
-                        <span key={category} className="badge badge-outline">
-                          {category}
-                        </span>
-                      ))}
+                    <div className="mt-2 text-sm text-base-content/80">
+                      {book.categories.join(', ')}
                     </div>
                   </div>
                 )}

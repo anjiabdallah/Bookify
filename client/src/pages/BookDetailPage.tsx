@@ -1,3 +1,4 @@
+import { Star } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
@@ -24,6 +25,7 @@ function BookDetailPage() {
   const shelfSaver = useAsync<AddToShelfResponse>();
   const book = bookQuery.data;
   const [selectedShelf, setSelectedShelf] = useState<ShelfStatus>('want_to_read');
+  const [selectedRating, setSelectedRating] = useState<number>(0);
 
   useEffect(() => {
     if (!id) return;
@@ -45,6 +47,7 @@ function BookDetailPage() {
           description: stripHtml(book.description),
           published_date: book.published_date,
           status: selectedShelf,
+          ...(selectedShelf === 'read' && selectedRating > 0 ? { rating: selectedRating } : {}),
         }),
       }),
     );
@@ -154,6 +157,31 @@ function BookDetailPage() {
                       ))}
                     </select>
                   </div>
+
+                  {selectedShelf === 'read' && (
+                    <div>
+                      <label className="label">
+                        <span className="label-text">Rate it now</span>
+                      </label>
+                      <div className="flex items-center gap-2">
+                        {[1, 2, 3, 4, 5].map(value => (
+                          <button
+                            key={value}
+                            type="button"
+                            className="btn btn-ghost btn-square btn-sm p-0"
+                            onClick={() => setSelectedRating(value)}
+                          >
+                            <Star
+                              size={18}
+                              fill={selectedRating >= value ? 'currentColor' : 'none'}
+                              className={selectedRating >= value ? 'text-primary fill-current' : 'text-base-content/30'}
+                            />
+                          </button>
+                        ))}
+                      </div>
+                      <p className="text-sm text-base-content/60 mt-2">Optional: choose a rating when you save this book as Read.</p>
+                    </div>
+                  )}
 
                   <button
                     type="button"

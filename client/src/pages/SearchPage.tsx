@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Search } from 'lucide-react';
+import { Search, Star } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
@@ -27,6 +27,7 @@ function SearchPage() {
   const [results, setResults] = useState<SearchBooksResponse>([]);
   const [selectedBook, setSelectedBook] = useState<SearchBooksResponse[number] | null>(null);
   const [selectedShelf, setSelectedShelf] = useState<'reading' | 'want_to_read' | 'read'>('reading');
+  const [selectedRating, setSelectedRating] = useState<number>(0);
   const searchRunner = useAsync<SearchBooksResponse>();
   const addShelfRunner = useAsync<AddToShelfResponse>();
 
@@ -62,6 +63,7 @@ function SearchPage() {
 
   const closeAddShelfModal = () => {
     setSelectedBook(null);
+    setSelectedRating(0);
     const checkbox = document.getElementById('add-shelf-modal') as HTMLInputElement | null;
     if (checkbox) checkbox.checked = false;
   };
@@ -77,6 +79,7 @@ function SearchPage() {
       description: selectedBook.description,
       published_date: selectedBook.published_date,
       status: selectedShelf,
+      ...(selectedShelf === 'read' && selectedRating > 0 ? { rating: selectedRating } : {}),
     });
 
     await addShelfRunner.execute(() =>
@@ -225,6 +228,31 @@ function SearchPage() {
                     <option value="read">Read</option>
                   </select>
                 </div>
+
+                {selectedShelf === 'read' && (
+                  <div className="mt-5">
+                    <label className="label">
+                      <span className="label-text">Rate it now</span>
+                    </label>
+                    <div className="flex items-center gap-2">
+                      {[1, 2, 3, 4, 5].map(value => (
+                        <button
+                          key={value}
+                          type="button"
+                          className="btn btn-ghost btn-square btn-sm p-0"
+                          onClick={() => setSelectedRating(value)}
+                        >
+                          <Star
+                            size={18}
+                            fill={selectedRating >= value ? 'currentColor' : 'none'}
+                            className={selectedRating >= value ? 'text-primary fill-current' : 'text-base-content/30'}
+                          />
+                        </button>
+                      ))}
+                    </div>
+                    <p className="text-sm text-base-content/60 mt-2">Choose a star rating before you save this book as Read.</p>
+                  </div>
+                )}
 
                 {addShelfRunner.error && (
                   <div className="alert alert-error mt-4">

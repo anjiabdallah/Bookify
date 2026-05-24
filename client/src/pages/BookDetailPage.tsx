@@ -1,7 +1,8 @@
 import { Star } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
+import BackButton from '../components/BackButton';
 import { useAuth } from '../context/useAuth';
 import { useAsync } from '../hooks/useAsync';
 import { requestServer } from '../lib/requestServer';
@@ -57,6 +58,7 @@ function BookDetailPage() {
     <div className="min-h-screen bg-base-100 text-base-content">
       <main className="container mx-auto px-6 py-10">
         <div className="mb-6 flex items-center justify-between gap-4">
+          <BackButton to="/search" className="btn-ghost" />
           <div>
             <p className="text-sm uppercase tracking-[0.3em] text-primary">Book Details</p>
             <h1 className="text-3xl font-bold">{book?.title ?? 'Loading...'}</h1>
@@ -67,9 +69,6 @@ function BookDetailPage() {
               </p>
             )}
           </div>
-          <Link to="/search" className="btn btn-ghost btn-sm">
-            Back to Search
-          </Link>
         </div>
 
         {bookQuery.loading && (

@@ -252,11 +252,19 @@ function MyBooksPage() {
                                       )}
                                 </div>
                                 <div className="flex items-start justify-end">
-                                  <span className={`${badgeClass} gap-2`}>
-                                    ✔
-                                    {' '}
-                                    {status === 'want_to_read' ? 'To read' : status === 'dnf' ? 'DNFed' : status === 'read' ? 'Read' : 'Reading'}
-                                  </span>
+                                  {status === 'read'
+                                    ? (
+                                        <Link to={`/book/${book.google_books_id}`} className="badge badge-outline badge-sm">
+                                          View details
+                                        </Link>
+                                      )
+                                    : (
+                                        <span className={`${badgeClass} gap-2`}>
+                                          ✔
+                                          {' '}
+                                          {status === 'want_to_read' ? 'To read' : status === 'dnf' ? 'DNFed' : 'Reading'}
+                                        </span>
+                                      )}
                                 </div>
                               </div>
                             </article>

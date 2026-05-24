@@ -66,7 +66,7 @@ function BookDetailPage() {
     <div className="min-h-screen bg-base-100 text-base-content">
       <main className="container mx-auto px-6 py-10">
         <div className="mb-6">
-          <BackButton to="/search" className="btn-ghost mb-4" />
+          <BackButton className="btn-ghost mb-4" />
           <PageSectionHeader
             label="Book Details"
             heading={book?.title ?? 'Loading...'}

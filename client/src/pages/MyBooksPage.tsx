@@ -31,7 +31,7 @@ function MyBooksPage() {
       dnf: [],
     };
 
-    (shelfQuery.data ?? []).forEach(book => {
+    (shelfQuery.data ?? []).forEach((book) => {
       map[book.status as ShelfStatus]?.push(book);
     });
 
@@ -68,47 +68,56 @@ function MyBooksPage() {
               <div className="mb-4 flex items-center justify-between gap-4">
                 <div>
                   <h2 className="text-2xl font-semibold">{label}</h2>
-                  <p className="text-sm text-base-content/70">{shelves[status].length} book{ shelves[status].length === 1 ? '' : 's' }</p>
+                  <p className="text-sm text-base-content/70">
+                    {shelves[status].length}
+                    {' '}
+                    book
+                    { shelves[status].length === 1 ? '' : 's' }
+                  </p>
                 </div>
               </div>
 
-              {shelves[status].length > 0 ? (
-                <div className="grid gap-4 md:grid-cols-2">
-                  {shelves[status].map(book => (
-                    <article key={book.id} className="card bg-base-100 shadow-sm">
-                      <div className="card-body grid gap-4 lg:grid-cols-[120px_1fr] lg:items-start">
-                        <div className="h-36 w-full overflow-hidden rounded-3xl bg-base-200 lg:h-full">
-                          {book.cover_url ? (
-                            <img src={book.cover_url} alt={book.title} className="h-full w-full object-cover" />
-                          ) : (
-                            <div className="flex h-full items-center justify-center text-sm text-base-content/50">
-                              No cover
+              {shelves[status].length > 0
+                ? (
+                    <div className="grid gap-4 md:grid-cols-2">
+                      {shelves[status].map(book => (
+                        <article key={book.id} className="card bg-base-100 shadow-sm">
+                          <div className="card-body grid gap-4 lg:grid-cols-[120px_1fr] lg:items-start">
+                            <div className="h-36 w-full overflow-hidden rounded-3xl bg-base-200 lg:h-full">
+                              {book.cover_url
+                                ? (
+                                    <img src={book.cover_url} alt={book.title} className="h-full w-full object-cover" />
+                                  )
+                                : (
+                                    <div className="flex h-full items-center justify-center text-sm text-base-content/50">
+                                      No cover
+                                    </div>
+                                  )}
                             </div>
-                          )}
-                        </div>
-                        <div className="space-y-3">
-                          <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                            <div>
-                              <h3 className="text-xl font-semibold">{book.title}</h3>
-                              <p className="text-sm text-base-content/70">{book.author}</p>
+                            <div className="space-y-3">
+                              <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                                <div>
+                                  <h3 className="text-xl font-semibold">{book.title}</h3>
+                                  <p className="text-sm text-base-content/70">{book.author}</p>
+                                </div>
+                                <div className="badge badge-outline">{book.status.replace('_', ' ')}</div>
+                              </div>
+                              <div className="flex flex-wrap gap-2">
+                                <Link to={`/book/${book.google_books_id}`} className="btn btn-sm btn-ghost">
+                                  View Details
+                                </Link>
+                              </div>
                             </div>
-                            <div className="badge badge-outline">{book.status.replace('_', ' ')}</div>
                           </div>
-                          <div className="flex flex-wrap gap-2">
-                            <Link to={`/book/${book.google_books_id}`} className="btn btn-sm btn-ghost">
-                              View Details
-                            </Link>
-                          </div>
-                        </div>
-                      </div>
-                    </article>
-                  ))}
-                </div>
-              ) : (
-                <div className="rounded-3xl border border-base-200 bg-base-100 p-8 text-center text-base-content/70">
-                  No books in this shelf yet.
-                </div>
-              )}
+                        </article>
+                      ))}
+                    </div>
+                  )
+                : (
+                    <div className="rounded-3xl border border-base-200 bg-base-100 p-8 text-center text-base-content/70">
+                      No books in this shelf yet.
+                    </div>
+                  )}
             </section>
           ))}
         </div>

@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import { useAuth } from '../context/useAuth';
-import { requestServer } from '../lib/requestServer';
 import { useAsync } from '../hooks/useAsync';
+import { requestServer } from '../lib/requestServer';
 
 import type { AddToShelfResponse, BookDetailResponse, ShelfStatus } from '../../../server/src/api/types';
 
@@ -54,7 +54,12 @@ function BookDetailPage() {
           <div>
             <p className="text-sm uppercase tracking-[0.3em] text-primary">Book Details</p>
             <h1 className="text-3xl font-bold">{book?.title ?? 'Loading...'}</h1>
-            {user && <p className="text-sm text-base-content/70">Viewing as {user.username}</p>}
+            {user && (
+              <p className="text-sm text-base-content/70">
+                Viewing as
+                {user.username}
+              </p>
+            )}
           </div>
           <Link to="/search" className="btn btn-ghost btn-sm">
             Back to Search
@@ -75,17 +80,19 @@ function BookDetailPage() {
           <div className="grid gap-8 lg:grid-cols-[320px_1fr]">
             <div className="rounded-3xl bg-base-200 p-6 shadow-sm">
               <div className="h-96 overflow-hidden rounded-3xl bg-base-100">
-                {book.cover_url ? (
-                  <img
-                    src={book.cover_url}
-                    alt={book.title}
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <div className="flex h-full items-center justify-center text-base-content/50">
-                    No cover available
-                  </div>
-                )}
+                {book.cover_url
+                  ? (
+                      <img
+                        src={book.cover_url}
+                        alt={book.title}
+                        className="h-full w-full object-cover"
+                      />
+                    )
+                  : (
+                      <div className="flex h-full items-center justify-center text-base-content/50">
+                        No cover available
+                      </div>
+                    )}
               </div>
 
               <div className="mt-6 space-y-3 text-sm text-base-content/80">

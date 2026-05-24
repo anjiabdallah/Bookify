@@ -43,9 +43,9 @@ const addBookSchema = z.object({
   google_books_id: z.string(),
   title: z.string(),
   author: z.string(),
-  cover_url: z.string().optional(),
-  description: z.string().optional(),
-  published_date: z.string().optional(),
+  cover_url: z.string().nullable().optional(),
+  description: z.string().nullable().optional(),
+  published_date: z.string().nullable().optional(),
   status: z.enum(['reading', 'want_to_read', 'read', 'dnf']),
   rating: z.number().min(0.25).max(5).nullable().optional().refine((value) => {
     if (value === null || value === undefined) {
@@ -126,7 +126,11 @@ router.get('/details/:id', async (req, res) => {
 router.post('/shelf', authMiddleware, async (req: AuthRequest, res) => {
   const result = addBookSchema.safeParse(req.body);
   if (!result.success) {
-    res.status(400).json({ error: result.error.flatten() });
+    const flattened = result.error.flatten();
+    const message = flattened.formErrors.length > 0
+      ? flattened.formErrors.join(', ')
+      : Object.values(flattened.fieldErrors).flat().join(', ');
+    res.status(400).json({ error: message || 'Invalid book data' });
     return;
   }
 

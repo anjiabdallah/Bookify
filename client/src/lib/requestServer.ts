@@ -14,8 +14,16 @@ export async function requestServer<T>(
   });
 
   if (!res.ok) {
-    const error = await res.json().catch(() => ({ error: 'Something went wrong' }));
-    throw new Error((error as { error?: string }).error || 'Something went wrong');
+    const errorBody = await res.json().catch(() => ({ error: 'Something went wrong' }));
+    const errorValue = (errorBody as any).error;
+    const message = typeof errorValue === 'string'
+      ? errorValue
+      : errorValue?.message
+        ? errorValue.message
+        : Array.isArray(errorValue)
+          ? errorValue.join(', ')
+          : JSON.stringify(errorValue);
+    throw new Error(message || 'Something went wrong');
   }
 
   return res.json() as Promise<T>;

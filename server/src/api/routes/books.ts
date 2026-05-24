@@ -47,7 +47,12 @@ const addBookSchema = z.object({
   description: z.string().optional(),
   published_date: z.string().optional(),
   status: z.enum(['reading', 'want_to_read', 'read', 'dnf']),
-  rating: z.number().int().min(1).max(5).nullable().optional(),
+  rating: z.number().min(0.25).max(5).nullable().optional().refine((value) => {
+    if (value === null || value === undefined) {
+      return true;
+    }
+    return Number.isInteger(value * 4);
+  }, { message: 'Rating must be in 0.25 increments.' }),
   finish_date: z.preprocess((value) => {
     if (typeof value === 'string' && value.trim() === '') {
       return null;

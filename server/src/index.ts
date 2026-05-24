@@ -2,9 +2,9 @@ import 'dotenv/config';
 import cors from 'cors';
 import express from 'express';
 
+import authRouter from './api/routes/auth.js';
+import booksRouter from './api/routes/books.js';
 import { authMiddleware, type AuthRequest } from './middleware/auth.js';
-import authRouter from './routes/auth.js';
-import booksRouter from './routes/books.js';
 
 import type { Response } from 'express';
 

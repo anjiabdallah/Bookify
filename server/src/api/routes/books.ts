@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import { z } from 'zod';
 
-import { db } from '../db.js';
-import { authMiddleware, type AuthRequest } from '../middleware/auth.js';
+import { db } from '../../db.js';
+import { authMiddleware, type AuthRequest } from '../../middleware/auth.js';
 
 const router = Router();
 
@@ -121,14 +121,14 @@ router.post('/shelf', authMiddleware, async (req: AuthRequest, res) => {
   let book = await db
     .selectFrom('books')
     .where('google_books_id', '=', google_books_id)
-    .selectAll()
+    .select(['id', 'google_books_id', 'title', 'author', 'cover_url', 'description', 'published_date'])
     .executeTakeFirst();
 
   if (!book) {
     book = await db
       .insertInto('books')
       .values({ google_books_id, title, author, cover_url, description, published_date })
-      .returningAll()
+      .returning(['id', 'google_books_id', 'title', 'author', 'cover_url', 'description', 'published_date'])
       .executeTakeFirstOrThrow();
   }
 
@@ -159,7 +159,15 @@ router.get('/shelf', authMiddleware, async (req: AuthRequest, res) => {
     .selectFrom('user_books')
     .innerJoin('books', 'books.id', 'user_books.book_id')
     .where('user_books.user_id', '=', req.userId!)
-    .selectAll()
+    .select([
+      'books.id',
+      'books.google_books_id',
+      'books.title',
+      'books.author',
+      'books.cover_url',
+      'user_books.status',
+      'user_books.added_at',
+    ])
     .execute();
 
   res.json(books);

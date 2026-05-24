@@ -1,54 +1,22 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import { useAuth } from '../context/useAuth';
+import { requestServer } from '../lib/requestServer';
+import { useAsync } from '../hooks/useAsync';
 
-interface BookDetail {
-  google_books_id: string;
-  title: string;
-  authors: string[];
-  cover_url?: string | null;
-  description?: string | null;
-  published_date?: string | null;
-  publisher?: string | null;
-  page_count?: number | null;
-  categories: string[];
-  language?: string | null;
-  preview_link?: string | null;
-}
+import type { BookDetailResponse } from '../../../server/src/api/types';
 
 function BookDetailPage() {
   const { id } = useParams();
   const { user } = useAuth();
-  const [book, setBook] = useState<BookDetail | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const bookQuery = useAsync<BookDetailResponse>();
+  const book = bookQuery.data;
 
   useEffect(() => {
     if (!id) return;
 
-    const loadBook = async () => {
-      setLoading(true);
-      setError('');
-
-      try {
-        const res = await fetch(`http://localhost:3001/api/books/details/${encodeURIComponent(id)}`);
-        const data = await res.json();
-
-        if (!res.ok) {
-          setError(data.error || 'Unable to load book details.');
-          return;
-        }
-
-        setBook(data);
-      } catch {
-        setError('Could not connect to the server.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadBook();
+    bookQuery.execute(() => requestServer<BookDetailResponse>(`/api/books/details/${encodeURIComponent(id)}`));
   }, [id]);
 
   return (
@@ -65,17 +33,17 @@ function BookDetailPage() {
           </Link>
         </div>
 
-        {loading && (
+        {bookQuery.loading && (
           <div className="rounded-3xl bg-base-200 p-8 text-center">Loading book details…</div>
         )}
 
-        {error && (
+        {bookQuery.error && (
           <div className="alert alert-error">
-            <span>{error}</span>
+            <span>{bookQuery.error}</span>
           </div>
         )}
 
-        {book && !loading && !error && (
+        {bookQuery.data && !bookQuery.loading && !bookQuery.error && (
           <div className="grid gap-8 lg:grid-cols-[320px_1fr]">
             <div className="rounded-3xl bg-base-200 p-6 shadow-sm">
               <div className="h-96 overflow-hidden rounded-3xl bg-base-100">

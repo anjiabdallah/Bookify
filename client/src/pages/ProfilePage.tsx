@@ -2,6 +2,10 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { useAuth } from '../context/useAuth';
+import { requestServer } from '../lib/requestServer';
+import { useAsync } from '../hooks/useAsync';
+
+import type { ProfileResponse } from '../../../server/src/api/types';
 
 const categories = [
   'Fantasy',
@@ -21,84 +25,50 @@ function ProfilePage() {
     favoriteCategories: [] as string[],
     bio: '',
   });
-  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
+  const profileLoader = useAsync<ProfileResponse>();
+  const profileSaver = useAsync<ProfileResponse>();
+
+  const loading = profileLoader.loading || profileSaver.loading;
+  const error = profileSaver.error ?? profileLoader.error;
 
   useEffect(() => {
     if (!token) return;
 
-    const loadProfile = async () => {
-      setLoading(true);
-      setError('');
-
-      try {
-        const res = await fetch('http://localhost:3001/api/auth/profile', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (!res.ok) {
-          const data = await res.json();
-          setError(data.error || 'Unable to load profile');
-          return;
-        }
-
-        const data = await res.json();
+    profileLoader.execute(() => requestServer<ProfileResponse>('/api/auth/profile')).then(data => {
+      if (data) {
         setForm({
           age: data.age ? String(data.age) : '',
           favoriteCategories: data.favoriteCategories ?? [],
           bio: data.bio ?? '',
         });
-      } catch {
-        setError('Could not connect to the server');
-      } finally {
-        setLoading(false);
       }
-    };
-
-    loadProfile();
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!token) return;
 
-    setLoading(true);
-    setError('');
     setMessage('');
 
-    try {
-      const res = await fetch('http://localhost:3001/api/auth/profile', {
+    const data = await profileSaver.execute(() =>
+      requestServer<ProfileResponse>('/api/auth/profile', {
         method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({
           age: form.age ? Number(form.age) : null,
           bio: form.bio || null,
           favorite_categories: form.favoriteCategories,
         }),
-      });
+      }),
+    );
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.error || 'Could not save profile');
-        return;
-      }
-
+    if (data) {
       setMessage('Profile saved successfully.');
       if (user) {
         setAuth({ ...user, age: data.age, bio: data.bio, favoriteCategories: data.favoriteCategories }, token);
       }
-    } catch {
-      setError('Could not connect to the server');
-    } finally {
-      setLoading(false);
     }
   };
 

@@ -2,15 +2,10 @@ import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../context/useAuth';
+import { useAsync } from '../hooks/useAsync';
+import { requestServer } from '../lib/requestServer';
 
-interface SearchResult {
-  google_books_id: string;
-  title: string;
-  author: string;
-  cover_url?: string | null;
-  description?: string | null;
-  published_date?: string | null;
-}
+import type { SearchBooksResponse } from '../../../server/src/api/types';
 
 function SearchPage() {
   const { user } = useAuth();
@@ -20,44 +15,26 @@ function SearchPage() {
   const initialQuery = params.get('q') ?? '';
 
   const [query, setQuery] = useState(initialQuery);
-  const [results, setResults] = useState<SearchResult[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [results, setResults] = useState<SearchBooksResponse>([]);
+  const searchRunner = useAsync<SearchBooksResponse>();
 
   const performSearch = async (searchTerm: string) => {
     if (!searchTerm.trim()) {
       setResults([]);
-      setError('Please enter a search term.');
       return;
     }
 
-    setLoading(true);
-    setError('');
+    const data = await searchRunner.execute(() =>
+      requestServer<SearchBooksResponse>(`/api/books/search?q=${encodeURIComponent(searchTerm)}`),
+    );
 
-    try {
-      const res = await fetch(`http://localhost:3001/api/books/search?q=${encodeURIComponent(searchTerm)}`);
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.error || 'Unable to search books.');
-        setResults([]);
-        return;
-      }
-
-      setResults(data);
-    } catch {
-      setError('Could not connect to the server.');
-      setResults([]);
-    } finally {
-      setLoading(false);
-    }
+    setResults(data ?? []);
   };
 
   useEffect(() => {
     if (initialQuery.trim()) {
       performSearch(initialQuery);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialQuery]);
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -76,7 +53,10 @@ function SearchPage() {
               <h1 className="text-4xl font-bold">Find your next favorite read.</h1>
             </div>
             {user && (
-              <div className="text-sm text-base-content/70">Logged in as {user.username}</div>
+              <div className="text-sm text-base-content/70">
+                Logged in as
+                {user.username}
+              </div>
             )}
           </div>
 
@@ -89,33 +69,35 @@ function SearchPage() {
               className="input input-bordered w-full bg-base-100"
             />
             <button type="submit" className="btn btn-primary">
-              {loading ? 'Searching...' : 'Search'}
+              {searchRunner.loading ? 'Searching...' : 'Search'}
             </button>
           </form>
 
-          {error && (
+          {searchRunner.error && (
             <div className="alert alert-error mt-6">
-              <span>{error}</span>
+              <span>{searchRunner.error}</span>
             </div>
           )}
 
           <div className="mt-8 grid gap-4">
-            {results.length > 0 ? (
-              results.map(result => (
+            {results.length > 0
+              && results.map(result => (
                 <article key={result.google_books_id} className="card bg-base-100 shadow-sm">
                   <div className="card-body grid gap-4 lg:grid-cols-[120px_1fr] lg:items-start">
                     <div className="h-40 w-full overflow-hidden rounded-3xl bg-base-200 lg:h-full">
-                      {result.cover_url ? (
-                        <img
-                          src={result.cover_url}
-                          alt={result.title}
-                          className="h-full w-full object-cover"
-                        />
-                      ) : (
-                        <div className="flex h-full items-center justify-center text-sm text-base-content/50">
-                          No cover available
-                        </div>
-                      )}
+                      {result.cover_url
+                        ? (
+                            <img
+                              src={result.cover_url}
+                              alt={result.title}
+                              className="h-full w-full object-cover"
+                            />
+                          )
+                        : (
+                            <div className="flex h-full items-center justify-center text-sm text-base-content/50">
+                              No cover available
+                            </div>
+                          )}
                     </div>
                     <div className="space-y-3">
                       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -139,13 +121,11 @@ function SearchPage() {
                     </div>
                   </div>
                 </article>
-              ))
-            ) : (
-              !loading && (
-                <div className="rounded-3xl border border-base-200 bg-base-100 p-8 text-center text-base-content/70">
-                  Enter a book title, author, or keyword to begin searching.
-                </div>
-              )
+              ))}
+            {results.length === 0 && !searchRunner.loading && (
+              <div className="rounded-3xl border border-base-200 bg-base-100 p-8 text-center text-base-content/70">
+                Enter a book title, author, or keyword to begin searching.
+              </div>
             )}
           </div>
         </div>

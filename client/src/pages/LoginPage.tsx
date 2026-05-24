@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { useAuth } from '../context/authContext';
+import { useAsync } from '../hooks/useAsync';
 import { requestServer } from '../lib/requestServer';
 
 import type { LoginResponse } from '../../../server/src/api/types';
@@ -13,26 +14,21 @@ function LoginPage() {
     email: '',
     password: '',
   });
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const login = useAsync<LoginResponse>();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setError('');
 
-    try {
-      const data = await requestServer<LoginResponse>('/api/auth/login', {
+    const data = await login.execute(() =>
+      requestServer<LoginResponse>('/api/auth/login', {
         method: 'POST',
         body: JSON.stringify(form),
-      });
+      }),
+    );
 
+    if (data) {
       setAuth(data.user, data.token);
       window.location.href = '/';
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not connect to server');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -46,9 +42,9 @@ function LoginPage() {
           </div>
           <h2 className="text-xl font-semibold text-center mb-6">Welcome back!</h2>
 
-          {error && (
+          {login.error && (
             <div className="alert alert-error mb-4">
-              <span>{error}</span>
+              <span>{login.error}</span>
             </div>
           )}
 
@@ -84,9 +80,9 @@ function LoginPage() {
             <button
               type="submit"
               className="btn btn-primary mt-2"
-              disabled={loading}
+              disabled={login.loading}
             >
-              {loading ? <span className="loading loading-spinner loading-sm" /> : 'Login'}
+              {login.loading ? <span className="loading loading-spinner loading-sm" /> : 'Login'}
             </button>
           </form>
 

@@ -9,6 +9,20 @@ export type BookResult = {
 
 export type SearchBooksResponse = BookResult[];
 
+export type BookDetailResponse = {
+  google_books_id: string;
+  title: string;
+  authors: string[];
+  cover_url: string | null;
+  description: string | null;
+  published_date: string | null;
+  publisher: string | null;
+  page_count: number | null;
+  categories: string[];
+  language: string | null;
+  preview_link: string | null;
+};
+
 export type AddToShelfResponse = {
   book: {
     id: number;
@@ -24,7 +38,7 @@ export type AddToShelfResponse = {
     user_id: number;
     book_id: number;
     status: string;
-    added_at: Date;
+    added_at: string;
   };
 };
 
@@ -35,5 +49,5 @@ export type GetShelfResponse = Array<{
   author: string;
   cover_url: string | null;
   status: string;
-  added_at: Date;
+  added_at: string;
 }>;

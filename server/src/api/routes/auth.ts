@@ -3,8 +3,8 @@ import { Router } from 'express';
 import jwt from 'jsonwebtoken';
 import { z } from 'zod';
 
-import { db } from '../db.js';
-import { authMiddleware, type AuthRequest } from '../middleware/auth.js';
+import { db } from '../../db.js';
+import { authMiddleware, type AuthRequest } from '../../middleware/auth.js';
 
 const router = Router();
 

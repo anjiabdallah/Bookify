@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { useAuth } from '../context/useAuth';
+import { useAsync } from '../hooks/useAsync';
 import { requestServer } from '../lib/requestServer';
 
 import type { RegisterResponse } from '../../../server/src/api/types';
@@ -14,26 +15,21 @@ function RegisterPage() {
     username: '',
     password: '',
   });
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const register = useAsync<RegisterResponse>();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setError('');
 
-    try {
-      const data = await requestServer<RegisterResponse>('/api/auth/register', {
+    const data = await register.execute(() =>
+      requestServer<RegisterResponse>('/api/auth/register', {
         method: 'POST',
         body: JSON.stringify(form),
-      });
+      }),
+    );
 
+    if (data) {
       setAuth(data.user, data.token);
       window.location.href = '/';
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not connect to server');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -47,9 +43,9 @@ function RegisterPage() {
           </div>
           <h2 className="text-xl font-semibold text-center mb-6">Create your account</h2>
 
-          {error && (
+          {register.error && (
             <div className="alert alert-error mb-4">
-              <span>{error}</span>
+              <span>{register.error}</span>
             </div>
           )}
 
@@ -99,9 +95,9 @@ function RegisterPage() {
             <button
               type="submit"
               className="btn btn-primary mt-2"
-              disabled={loading}
+              disabled={register.loading}
             >
-              {loading ? <span className="loading loading-spinner loading-sm" /> : 'Create Account'}
+              {register.loading ? <span className="loading loading-spinner loading-sm" /> : 'Create Account'}
             </button>
           </form>
 

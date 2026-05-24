@@ -7,7 +7,7 @@ import { z } from 'zod';
 
 import BookCard from '../components/BookCard';
 import PageCard from '../components/PageCard';
-import StarRating from '../components/StarRating';
+import ShelfActionModal from '../components/ShelfActionModal';
 import { useAuth } from '../context/useAuth';
 import { useAsync } from '../hooks/useAsync';
 import { requestServer } from '../lib/requestServer';
@@ -195,67 +195,19 @@ function SearchPage() {
           {resultsContent}
         </PageCard>
 
-        <input type="checkbox" id="add-shelf-modal" className="modal-toggle" />
-        <div className="modal">
-          <div className="modal-box max-w-lg">
-            <h3 className="text-xl font-bold">Add to your shelf</h3>
-            {selectedBook && (
-              <>
-                <p className="mt-3 text-base-content/70">{selectedBook.title}</p>
-                <p className="text-sm text-base-content/50">{selectedBook.author}</p>
-                <div className="mt-5">
-                  <label className="label">
-                    <span className="label-text">Shelf status</span>
-                  </label>
-                  <select
-                    className="select select-bordered w-full"
-                    value={selectedShelf}
-                    onChange={event => setSelectedShelf(event.target.value as 'reading' | 'want_to_read' | 'read')}
-                  >
-                    <option value="reading">Currently Reading</option>
-                    <option value="want_to_read">Want to Read</option>
-                    <option value="read">Read</option>
-                  </select>
-                </div>
-
-                {selectedShelf === 'read' && (
-                  <div className="mt-5">
-                    <label className="label">
-                      <span className="label-text">Rate it now</span>
-                    </label>
-                    <StarRating value={selectedRating} onChange={setSelectedRating} />
-                    <p className="text-sm text-base-content/60 mt-2">Choose a star rating before you save this book as Read.</p>
-                  </div>
-                )}
-
-                {addShelfRunner.error && (
-                  <div className="alert alert-error mt-4">
-                    <span>{addShelfRunner.error}</span>
-                  </div>
-                )}
-                {addShelfRunner.data && (
-                  <div className="alert alert-success mt-4">
-                    <span>Book added to your shelf!</span>
-                  </div>
-                )}
-
-                <div className="mt-6 flex flex-col gap-3">
-                  <button
-                    type="button"
-                    className="btn btn-primary w-full"
-                    onClick={handleAddToShelf}
-                    disabled={addShelfRunner.loading}
-                  >
-                    {addShelfRunner.loading ? 'Adding...' : 'Add to Shelf'}
-                  </button>
-                  <label htmlFor="add-shelf-modal" className="btn btn-ghost w-full">
-                    Cancel
-                  </label>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
+        <ShelfActionModal
+          show={Boolean(selectedBook)}
+          book={selectedBook}
+          selectedShelf={selectedShelf}
+          selectedRating={selectedRating}
+          onShelfChange={value => setSelectedShelf(value)}
+          onRatingChange={setSelectedRating}
+          onConfirm={handleAddToShelf}
+          onClose={closeAddShelfModal}
+          error={addShelfRunner.error ?? undefined}
+          success={addShelfRunner.data ? 'Book added to your shelf!' : undefined}
+          loading={addShelfRunner.loading}
+        />
       </main>
     </div>
   );

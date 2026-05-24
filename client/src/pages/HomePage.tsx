@@ -2,6 +2,7 @@ import { BookOpen, Search, Star, Users, Plus, ChevronRight } from 'lucide-react'
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
+import PageSectionHeader from '../components/PageSectionHeader';
 import { useAuth } from '../context/useAuth';
 
 const trendingBooks = [
@@ -105,17 +106,17 @@ function HomePage() {
 
         <main className="container mx-auto px-6 py-16">
           <section className="mb-16">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <p className="text-sm uppercase tracking-[0.3em] text-primary">Trending This Week</p>
-                <h2 className="text-3xl font-bold">Readers are loving</h2>
-              </div>
-              <button className="btn btn-ghost btn-sm gap-2">
-                See All
-                {' '}
-                <ChevronRight size={18} />
-              </button>
-            </div>
+            <PageSectionHeader
+              label="Trending This Week"
+              heading="Readers are loving"
+              right={(
+                <button className="btn btn-ghost btn-sm gap-2">
+                  See All
+                  {' '}
+                  <ChevronRight size={18} />
+                </button>
+              )}
+            />
             <div className="flex gap-4 overflow-x-auto pb-2">
               {trendingBooks.map(book => (
                 <div key={book.title} className="card w-80 shrink-0 bg-base-200 shadow-sm">

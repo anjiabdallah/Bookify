@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import BackButton from '../components/BackButton';
+import PageSectionHeader from '../components/PageSectionHeader';
 import { useAuth } from '../context/useAuth';
 import { useAsync } from '../hooks/useAsync';
 import { requestServer } from '../lib/requestServer';
@@ -57,18 +58,19 @@ function BookDetailPage() {
   return (
     <div className="min-h-screen bg-base-100 text-base-content">
       <main className="container mx-auto px-6 py-10">
-        <div className="mb-6 flex items-center justify-between gap-4">
-          <BackButton to="/search" className="btn-ghost" />
-          <div>
-            <p className="text-sm uppercase tracking-[0.3em] text-primary">Book Details</p>
-            <h1 className="text-3xl font-bold">{book?.title ?? 'Loading...'}</h1>
-            {user && (
-              <p className="text-sm text-base-content/70">
-                Viewing as
+        <div className="mb-6">
+          <BackButton to="/search" className="btn-ghost mb-4" />
+          <PageSectionHeader
+            label="Book Details"
+            heading={book?.title ?? 'Loading...'}
+            right={user && (
+              <div className="text-sm text-base-content/50">
+                Logged in as
+                <br />
                 {user.username}
-              </p>
+              </div>
             )}
-          </div>
+          />
         </div>
 
         {bookQuery.loading && (

@@ -1,5 +1,5 @@
 import { BookOpen, Bookmark, CheckCircle, XCircle } from 'lucide-react';
-import { useEffect, useMemo } from 'react';
+import { type ReactNode, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../context/useAuth';
@@ -22,7 +22,7 @@ const emptyStateText: Record<ShelfStatus, [string, string]> = {
   dnf: ['Nothing abandoned yet.', 'Sometimes books just aren\'t for us.'],
 };
 
-const sectionIcons: Record<ShelfStatus, JSX.Element> = {
+const sectionIcons: Record<ShelfStatus, ReactNode> = {
   reading: <BookOpen size={18} className="text-primary/50" />,
   want_to_read: <Bookmark size={18} className="text-primary/50" />,
   read: <CheckCircle size={18} className="text-primary/50" />,

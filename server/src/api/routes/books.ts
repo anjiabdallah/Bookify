@@ -200,7 +200,86 @@ router.post('/shelf', authMiddleware, async (req: AuthRequest, res) => {
     }
   }
 
+  if (status === 'read' && finish_date) {
+    const existingFinish = await db
+      .selectFrom('user_book_finish_dates')
+      .where('user_book_id', '=', userBook.id!)
+      .where('finished_at', '=', finish_date)
+      .select('id')
+      .executeTakeFirst();
+
+    if (!existingFinish) {
+      await db
+        .insertInto('user_book_finish_dates')
+        .values({
+          user_book_id: userBook.id!,
+          finished_at: finish_date,
+        })
+        .execute();
+    }
+  }
+
   res.status(existing ? 200 : 201).json({ book, userBook });
+});
+
+router.get('/years', authMiddleware, async (req: AuthRequest, res) => {
+  const rows = await db
+    .selectFrom('user_book_finish_dates')
+    .innerJoin('user_books', 'user_books.id', 'user_book_finish_dates.user_book_id')
+    .innerJoin('books', 'books.id', 'user_books.book_id')
+    .where('user_books.user_id', '=', req.userId!)
+    .select([
+      'user_book_finish_dates.finished_at as finished_at',
+      'user_books.id as id',
+      'user_books.status as status',
+      'user_books.rating as rating',
+      'user_books.favorite as favorite',
+      'user_books.physical_copy as physical_copy',
+      'user_books.added_at as added_at',
+      'books.google_books_id as google_books_id',
+      'books.title as title',
+      'books.author as author',
+      'books.cover_url as cover_url',
+      'books.description as description',
+      'books.published_date as published_date',
+    ])
+    .orderBy('user_book_finish_dates.finished_at', 'desc')
+    .execute();
+
+  const grouped = rows.reduce<Record<string, Array<any>>>((acc, row) => {
+    const rowData = row as Record<string, any>;
+    const finishedAt = String(rowData.finished_at);
+    const year = new Date(finishedAt).getFullYear().toString();
+    const entry = {
+      id: row.id,
+      google_books_id: row.google_books_id,
+      title: row.title,
+      author: row.author,
+      cover_url: row.cover_url,
+      description: row.description,
+      published_date: row.published_date,
+      status: row.status,
+      rating: row.rating,
+      favorite: row.favorite,
+      physical_copy: row.physical_copy,
+      finished_at: finishedAt,
+      added_at: row.added_at instanceof Date ? row.added_at.toISOString() : row.added_at,
+    };
+
+    if (!acc[year]) {
+      acc[year] = [entry];
+    } else {
+      acc[year].push(entry);
+    }
+
+    return acc;
+  }, {});
+
+  const result = Object.entries(grouped)
+    .sort((a, b) => Number(b[0]) - Number(a[0]))
+    .map(([year, finishes]) => ({ year, finishes }));
+
+  res.json(result);
 });
 
 // Get user's shelf

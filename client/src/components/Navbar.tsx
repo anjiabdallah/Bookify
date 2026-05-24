@@ -24,7 +24,12 @@ function Navbar() {
       </div>
       <div className="flex-none flex items-center gap-4">
         <Link to="/search" className="btn btn-ghost btn-sm">Search</Link>
-        {user && <Link to="/my-books" className="btn btn-ghost btn-sm">My Books</Link>}
+        {user && (
+          <>
+            <Link to="/my-books" className="btn btn-ghost btn-sm">My Books</Link>
+            <Link to="/yearly" className="btn btn-ghost btn-sm">By Year</Link>
+          </>
+        )}
         {!user
           ? (
               <>

@@ -63,3 +63,22 @@ export type GetShelfResponse = Array<{
   physical_copy: boolean;
   added_at: string;
 }>;
+
+export type YearlyBooksResponse = Array<{
+  year: string;
+  finishes: Array<{
+    id: number;
+    google_books_id: string;
+    title: string;
+    author: string;
+    cover_url: string | null;
+    description: string | null;
+    published_date: string | null;
+    status: ShelfStatus;
+    rating: number | null;
+    favorite: boolean;
+    physical_copy: boolean;
+    finished_at: string;
+    added_at: string;
+  }>;
+}>;

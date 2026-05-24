@@ -35,10 +35,18 @@ export interface UserBooksTable {
   added_at?: Date;
 }
 
+export interface UserBookFinishDatesTable {
+  id?: number;
+  user_book_id: number;
+  finished_at: string;
+  created_at?: Date;
+}
+
 export interface Database {
   users: UsersTable;
   books: BooksTable;
   user_books: UserBooksTable;
+  user_book_finish_dates: UserBookFinishDatesTable;
 }
 
 const { Pool } = pg;

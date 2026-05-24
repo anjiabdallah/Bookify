@@ -2,6 +2,7 @@ import { BookOpen, Bookmark, CheckCircle, Star, XCircle } from 'lucide-react';
 import { type ReactNode, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
+import PageCard from '../components/PageCard';
 import { useAuth } from '../context/useAuth';
 import { useAsync } from '../hooks/useAsync';
 import { requestServer } from '../lib/requestServer';
@@ -137,7 +138,7 @@ function MyBooksPage() {
           </div>
         )}
 
-        <div className="grid gap-4 rounded-2xl border border-base-200 bg-base-100 p-6 shadow-sm md:grid-cols-4">
+        <PageCard variant="bordered" className="grid gap-4 md:grid-cols-4">
           <div className="flex flex-col items-center gap-3 border-r border-base-200 pr-4 last:border-r-0 last:pr-0">
             <BookOpen size={24} className="text-primary/50" />
             <div className="text-3xl font-bold">{stats.reading}</div>
@@ -158,7 +159,7 @@ function MyBooksPage() {
             <div className="text-3xl font-bold">{stats.dnf}</div>
             <div className="text-sm text-base-content/60">DNFed</div>
           </div>
-        </div>
+        </PageCard>
 
         <div className="mt-10 space-y-8">
           {shelfOrder.map(([status, label]) => {

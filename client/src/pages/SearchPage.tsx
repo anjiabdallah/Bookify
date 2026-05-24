@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
+import PageCard from '../components/PageCard';
 import { useAuth } from '../context/useAuth';
 import { useAsync } from '../hooks/useAsync';
 import { requestServer } from '../lib/requestServer';
@@ -163,8 +164,8 @@ function SearchPage() {
   return (
     <div className="min-h-screen bg-base-100 text-base-content">
       <main className="container mx-auto px-6 py-10">
-        <div className="rounded-3xl bg-base-200 p-8 shadow-sm">
-          <div className="relative overflow-hidden rounded-3xl bg-base-200 p-8 shadow-sm">
+        <PageCard>
+          <PageCard className="relative overflow-hidden">
             <div className="absolute right-6 top-6 text-primary/20 text-3xl">✦ ✦</div>
             <div className="mb-8 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
               <div>
@@ -195,7 +196,7 @@ function SearchPage() {
                 {isSubmitting ? 'Searching...' : 'Search'}
               </button>
             </form>
-          </div>
+          </PageCard>
 
           {searchRunner.error && (
             <div className="alert alert-error mt-6">
@@ -204,7 +205,7 @@ function SearchPage() {
           )}
 
           {resultsContent}
-        </div>
+        </PageCard>
 
         <input type="checkbox" id="add-shelf-modal" className="modal-toggle" />
         <div className="modal">

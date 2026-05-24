@@ -2,6 +2,7 @@ import { BookOpen, Search, Star, Users, Plus, ChevronRight } from 'lucide-react'
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
+import PageCard from '../components/PageCard';
 import PageSectionHeader from '../components/PageSectionHeader';
 import { useAuth } from '../context/useAuth';
 
@@ -157,7 +158,7 @@ function HomePage() {
             </div>
           </section>
 
-          <section className="rounded-3xl bg-base-200 p-8 shadow-sm">
+          <PageCard>
             <div className="grid gap-6 sm:grid-cols-4 text-center">
               <div>
                 <p className="text-3xl font-bold">2.5M+</p>
@@ -176,7 +177,7 @@ function HomePage() {
                 <p className="text-sm text-base-content/80">One page at a time.</p>
               </div>
             </div>
-          </section>
+          </PageCard>
         </main>
       </div>
     );

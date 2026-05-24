@@ -34,11 +34,11 @@ function BookCard({
 
         <div className="space-y-4">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-            <div>
-              <h2 className="text-xl font-semibold text-base-content">{title}</h2>
-              <p className="text-sm text-base-content/60">{author}</p>
+            <div className="min-w-0">
+              <h2 className="text-xl font-semibold text-base-content break-words">{title}</h2>
+              <p className="text-sm text-base-content/60 truncate">{author}</p>
             </div>
-            {topRight && <div>{topRight}</div>}
+            {topRight && <div className="min-w-0 flex-shrink-0">{topRight}</div>}
           </div>
           {children}
         </div>

@@ -1,12 +1,12 @@
 # Core Engineering Rules
-1. Reuse canonical schemas and types from server/src/db/tables.ts.
+1. Reuse canonical schemas and types from `server/src/db.ts`.
 2. Do not recreate table schemas manually in route files or forms if reusable schema composition works.
 3. Prefer schema composition (omit, pick, extend, partial) over duplicating validation logic.
 4. For protected client API calls, use requestServer(path, options).
 5. Do not hardcode user IDs. Use auth context on client and req.userId on server.
 6. Keep response and payload shapes consistent across client and server.
 7. Keep changes minimal and targeted; avoid unrelated refactors.
-8. For transactional DB logic, prefer executeTransaction from server/src/db/executeTransaction.ts instead of raw db.transaction().execute(...), especially because tests often pass controlled transactions.
+8. For transactional DB logic, use Kysely's built-in transaction support. (executeTransaction helper TBD)
 9. All migrations go in `server/src/migrations/` as numbered `.ts` files (e.g. `004_...ts`).
 10. All routes must be registered in `server/src/index.ts`.
 11. Use Kysely query builder for all DB queries — no raw SQL.

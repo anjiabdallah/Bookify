@@ -92,7 +92,7 @@ function BookDetailPage() {
 
         {book && !bookQuery.loading && !bookQuery.error && (
           <div className="grid gap-8 lg:grid-cols-[320px_1fr]">
-            <PageCard className="p-6 shadow-sm">
+            <PageCard>
               <div className="h-96 overflow-hidden rounded-3xl bg-base-100">
                 {book.cover_url
                   ? (
@@ -141,7 +141,7 @@ function BookDetailPage() {
               </div>
             </PageCard>
 
-            <PageCard>
+            <PageCard className="lg:self-start">
               <h2 className="text-2xl font-semibold mb-4">About this book</h2>
               <p className="text-base-content/80 whitespace-pre-line">
                 {stripHtml(book.description) ?? 'No description available for this title.'}

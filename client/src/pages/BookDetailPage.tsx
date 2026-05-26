@@ -34,13 +34,6 @@ function BookDetailPage() {
           <PageSectionHeader
             label="Book Details"
             heading={book?.title ?? 'Loading...'}
-            right={user && (
-              <div className="text-sm text-base-content/50">
-                Logged in as
-                <br />
-                {user.username}
-              </div>
-            )}
           />
         </div>
 

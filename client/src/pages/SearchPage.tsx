@@ -1,5 +1,4 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Search } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
@@ -8,6 +7,7 @@ import { z } from 'zod';
 import BookCard from '../components/BookCard';
 import PageCard from '../components/PageCard';
 import PageSectionHeader from '../components/PageSectionHeader';
+import SearchBar from '../components/SearchBar';
 import ShelfActionModal from '../components/ShelfActionModal';
 import { useAuth } from '../context/useAuth';
 import { useAsync } from '../hooks/useAsync';
@@ -190,21 +190,16 @@ function SearchPage() {
               )}
             />
 
-            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <div className="relative w-full">
-                <Search size={20} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-primary/50" />
-                <input
-                  type="text"
-                  placeholder="Search books by title, author, or keyword"
-                  className="input input-bordered w-full bg-base-100 rounded-2xl pl-12"
-                  {...register('query')}
-                />
-                {queryError && <span className="text-sm text-error mt-1 block">{queryError}</span>}
-              </div>
-              <button type="submit" className="btn btn-primary rounded-2xl px-8" disabled={isSubmitting}>
-                {isSubmitting ? 'Searching...' : 'Search'}
-              </button>
-            </form>
+            <SearchBar
+              inputProps={register('query')}
+              onSubmit={handleSubmit(onSubmit)}
+              placeholder="Search books by title, author, or keyword"
+              buttonLoading={isSubmitting}
+              error={queryError}
+              className="flex flex-col gap-3"
+              buttonClassName="rounded-2xl px-8"
+              inputClassName="rounded-2xl pl-12"
+            />
           </PageCard>
 
           {searchRunner.error && (

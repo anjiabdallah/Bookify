@@ -1,10 +1,11 @@
-import { BookOpen, Search, Users, Plus, ChevronRight } from 'lucide-react';
+import { BookOpen, Users, Plus, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import BookCard from '../components/BookCard';
 import PageCard from '../components/PageCard';
 import PageSectionHeader from '../components/PageSectionHeader';
+import SearchBar from '../components/SearchBar';
 import StarRating from '../components/StarRating';
 import { useAuth } from '../context/useAuth';
 
@@ -62,26 +63,14 @@ function HomePage() {
                   Join the Community
                 </Link>
               </div>
-              <div className="mt-10 grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
-                <div className="flex-1">
-                  <input
-                    type="text"
-                    placeholder="Search for your next favorite book"
-                    className="input input-bordered w-full bg-base-100"
-                    value={searchQuery}
-                    onChange={e => setSearchQuery(e.target.value)}
-                  />
-                </div>
-                <button
-                  type="button"
-                  className="btn btn-primary gap-2 self-end sm:self-auto"
-                  onClick={() => navigate(`/search?q=${encodeURIComponent(searchQuery)}`)}
-                >
-                  <Search size={18} />
-                  {' '}
-                  Search
-                </button>
-              </div>
+              <SearchBar
+                value={searchQuery}
+                onChange={setSearchQuery}
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+                }}
+              />
             </div>
             <div className="w-full max-w-xl rounded-3xl bg-base-100 p-8 shadow-xl">
               <div className="grid gap-6">

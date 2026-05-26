@@ -65,8 +65,8 @@ function HomePage() {
                   Explore Books
                 </Link>
               </div>
-              <div className="mt-10 flex flex-col sm:flex-row gap-3 items-stretch">
-                <div className="flex-1 input-group">
+              <div className="mt-10 grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
+                <div className="flex-1">
                   <input
                     type="text"
                     placeholder="Search for your next favorite book"
@@ -74,16 +74,16 @@ function HomePage() {
                     value={searchQuery}
                     onChange={e => setSearchQuery(e.target.value)}
                   />
-                  <button
-                    type="button"
-                    className="btn btn-primary gap-2"
-                    onClick={() => navigate(`/search?q=${encodeURIComponent(searchQuery)}`)}
-                  >
-                    <Search size={18} />
-                    {' '}
-                    Search
-                  </button>
                 </div>
+                <button
+                  type="button"
+                  className="btn btn-primary gap-2 self-end sm:self-auto"
+                  onClick={() => navigate(`/search?q=${encodeURIComponent(searchQuery)}`)}
+                >
+                  <Search size={18} />
+                  {' '}
+                  Search
+                </button>
               </div>
             </div>
             <div className="w-full max-w-xl rounded-3xl bg-base-100 p-8 shadow-xl">

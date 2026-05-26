@@ -79,6 +79,11 @@ function SearchPage() {
   };
 
   const handleAddToShelf = async () => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+
     if (!selectedBook) return;
 
     const body = JSON.stringify({
@@ -141,20 +146,24 @@ function SearchPage() {
                 <Link to={`/book/${result.google_books_id}`} className="btn btn-sm btn-primary rounded-xl">
                   View Details
                 </Link>
-                <label
-                  htmlFor="add-shelf-modal"
+                <button
+                  type="button"
                   className="btn btn-sm btn-outline btn-primary rounded-xl"
                   onClick={() => {
-                    setSelectedBook(result);
-                    setSelectedShelf('reading');
-                    setSelectedRating(0);
-                    setSelectedFinishDate('');
-                    setSelectedFavorite(false);
-                    setSelectedPhysicalCopy(false);
+                    if (user) {
+                      setSelectedBook(result);
+                      setSelectedShelf('reading');
+                      setSelectedRating(0);
+                      setSelectedFinishDate('');
+                      setSelectedFavorite(false);
+                      setSelectedPhysicalCopy(false);
+                    } else {
+                      navigate('/login');
+                    }
                   }}
                 >
                   + Add to Shelf
-                </label>
+                </button>
               </div>
             </BookCard>
           );
@@ -205,6 +214,7 @@ function SearchPage() {
           )}
 
           {resultsContent}
+
         </PageCard>
 
         <ShelfActionModal

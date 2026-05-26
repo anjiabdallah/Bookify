@@ -141,7 +141,6 @@ function ProfilePage() {
                 </p>
                 <h1 className="mt-4 text-4xl font-bold text-base-content">
                   Hi,
-                  <br />
                   {user.username}
                   <br />
                   <span className="text-primary">✦</span>

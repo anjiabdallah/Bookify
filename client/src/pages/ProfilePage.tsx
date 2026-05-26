@@ -1,51 +1,19 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  BookOpen,
-  BookMarked,
-  Cake,
-  CheckCircle2,
-  Heart,
-  Landmark,
-  LogOut,
-  Rocket,
-  Search,
-  Sparkles,
-  Wand2,
-  Zap,
-} from 'lucide-react';
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
 import PageCard from '../components/PageCard';
+import ProfileDisplayView from '../components/ProfileDisplayView';
+import ProfileEditForm from '../components/ProfileEditForm';
+import ProfileHeader from '../components/ProfileHeader';
 import { useAuth } from '../context/useAuth';
 import { useAsync } from '../hooks/useAsync';
 import { requestServer } from '../lib/requestServer';
 
 import type { ProfileResponse } from '../../../server/src/api/types';
-
-const categories = [
-  'Fantasy',
-  'Romance',
-  'Mystery',
-  'Science Fiction',
-  'Historical',
-  'Thriller',
-  'Young Adult',
-  'Nonfiction',
-];
-
-const categoryIcons: Record<string, ReactNode> = {
-  'Fantasy': <Wand2 size={20} />,
-  'Romance': <Heart size={20} />,
-  'Mystery': <Search size={20} />,
-  'Science Fiction': <Rocket size={20} />,
-  'Historical': <Landmark size={20} />,
-  'Thriller': <Zap size={20} />,
-  'Young Adult': <BookOpen size={20} />,
-  'Nonfiction': <BookMarked size={20} />,
-};
+import type { ProfileFormData } from '../lib/profile';
 
 const profileSchema = z.object({
   age: z
@@ -69,8 +37,6 @@ const profileSchema = z.object({
   bio: z.string().max(500).optional(),
   favoriteCategories: z.array(z.string()).optional(),
 });
-
-type ProfileFormData = z.infer<typeof profileSchema>;
 
 function ProfilePage() {
   const navigate = useNavigate();
@@ -185,44 +151,7 @@ function ProfilePage() {
     <div className="min-h-screen bg-base-100 text-base-content">
       <main className="container mx-auto px-6 py-10">
         <PageCard variant="bordered" className="p-8">
-          <div className="mb-10 grid gap-6 lg:grid-cols-[1fr_auto] lg:items-start">
-            <div className="flex items-center gap-5">
-              <div className="relative flex h-24 w-24 items-center justify-center rounded-3xl bg-primary/10 text-primary/40">
-                <div className="text-4xl">📚</div>
-                <div className="pointer-events-none absolute -top-2 left-2 text-2xl text-primary/20">
-                  ✦
-                </div>
-                <div className="pointer-events-none absolute bottom-2 right-2 text-2xl text-primary/20">
-                  ✦
-                </div>
-              </div>
-              <div>
-                <p className="text-sm uppercase tracking-[0.5em] text-primary">
-                  PROFILE
-                  <sup className="text-primary">+</sup>
-                </p>
-                <h1 className="mt-4 text-4xl font-bold text-base-content">
-                  Hi,
-                  {' '}
-                  {user.username}
-                  <span className="text-primary"> ✦</span>
-                </h1>
-                <p className="mt-3 max-w-xl text-base text-base-content/70">
-                  Add your age, favorite categories, and a short bio.
-                </p>
-              </div>
-            </div>
-            <div className="flex flex-col items-start gap-4 sm:items-end">
-              <div className="text-primary/20 text-4xl">✿</div>
-              <button
-                onClick={logout}
-                className="btn btn-ghost btn-sm text-primary gap-2"
-              >
-                <LogOut size={16} />
-                Logout
-              </button>
-            </div>
-          </div>
+          <ProfileHeader username={user.username} onLogout={logout} />
 
           {(profileLoader.error || profileSaver.error) && (
             <div className="alert alert-error mb-6">
@@ -238,178 +167,23 @@ function ProfilePage() {
 
           {isEditing
             ? (
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-                  <div className="grid gap-8 lg:grid-cols-[1fr_1fr]">
-                    <div className="relative">
-                      <label className="label">
-                        <span className="label-text font-medium">Age</span>
-                      </label>
-                      <input
-                        type="number"
-                        min="13"
-                        max="120"
-                        placeholder="Your age (13-120)"
-                        className="input input-bordered w-full bg-base-100 pr-12"
-                        {...register('age')}
-                      />
-                      <Cake
-                        size={20}
-                        className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-primary/40"
-                      />
-                      {ageError && (
-                        <span className="mt-2 block text-sm text-error">
-                          {ageError}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  <div>
-                    <p className="label-text mb-4 block text-sm font-medium">
-                      Favorite categories
-                    </p>
-                    <div className="grid grid-cols-3 gap-3">
-                      {categories.map((category) => {
-                        const selected = favoriteCategories.includes(category);
-                        return (
-                          <button
-                            type="button"
-                            key={category}
-                            className={`border rounded-xl px-4 py-3 flex items-center justify-between transition-colors ${
-                              selected
-                                ? 'bg-primary/10 border-primary text-primary'
-                                : 'bg-base-100 border-base-200 text-base-content'
-                            }`}
-                            onClick={() => {
-                              setValue(
-                                'favoriteCategories',
-                                selected
-                                  ? favoriteCategories.filter(
-                                      item => item !== category,
-                                    )
-                                  : [...favoriteCategories, category],
-                              );
-                            }}
-                          >
-                            <div className="flex items-center gap-3">
-                              <span>{categoryIcons[category]}</span>
-                              <span className="text-sm font-medium">
-                                {category}
-                              </span>
-                            </div>
-                            {selected
-                              ? (
-                                  <CheckCircle2 size={18} className="text-primary" />
-                                )
-                              : null}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  <div className="relative">
-                    <label className="label">
-                      <span className="label-text font-medium">About you</span>
-                    </label>
-                    <textarea
-                      placeholder="Tell other readers a little about your tastes..."
-                      className="textarea textarea-bordered w-full bg-base-100 pr-10"
-                      {...register('bio')}
-                      rows={5}
-                    />
-                    <div className="pointer-events-none absolute bottom-4 right-4 text-2xl text-primary/10">
-                      ✿
-                    </div>
-                    {bioError && (
-                      <span className="mt-2 block text-sm text-error">
-                        {bioError}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="flex flex-wrap items-center gap-4">
-                    <button
-                      type="submit"
-                      className="btn btn-primary inline-flex items-center gap-2"
-                      disabled={isSubmitting}
-                    >
-                      <Sparkles size={18} />
-                      {isSubmitting ? 'Saving...' : 'Save Profile'}
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-ghost"
-                      onClick={() => {
-                        resetFormValues(profileLoader.data);
-                        setIsEditing(false);
-                      }}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </form>
+                <ProfileEditForm
+                  register={register}
+                  handleSubmit={handleSubmit}
+                  setValue={setValue}
+                  favoriteCategories={favoriteCategories}
+                  ageError={ageError}
+                  bioError={bioError}
+                  isSubmitting={isSubmitting}
+                  onSubmit={onSubmit}
+                  onCancel={() => {
+                    resetFormValues(profileLoader.data);
+                    setIsEditing(false);
+                  }}
+                />
               )
             : (
-                <div className="space-y-8">
-                  <div className="flex flex-wrap items-center justify-between gap-4">
-                    <button
-                      type="button"
-                      className="btn btn-primary"
-                      onClick={() => setIsEditing(true)}
-                    >
-                      Edit Profile
-                    </button>
-                  </div>
-
-                  <div className="grid gap-8 lg:grid-cols-[1fr_1fr]">
-                    <div className="space-y-4 rounded-3xl border border-base-200 bg-base-100 p-6">
-                      <div>
-                        <div className="text-sm font-semibold text-base-content/70">
-                          Age
-                        </div>
-                        <div>
-                          {profile.age ? `${profile.age} years` : 'Not set'}
-                        </div>
-                      </div>
-                      <div>
-                        <div className="text-sm font-semibold text-base-content/70">
-                          Favorite categories
-                        </div>
-                        <div className="mt-2 flex flex-wrap gap-2">
-                          {profile.favoriteCategories
-                            && profile.favoriteCategories.length > 0
-                            ? (
-                                profile.favoriteCategories.map(category => (
-                                  <span
-                                    key={category}
-                                    className="rounded-full bg-primary/10 px-3 py-1 text-sm text-primary"
-                                  >
-                                    {category}
-                                  </span>
-                                ))
-                              )
-                            : (
-                                <span className="text-sm text-base-content/70">
-                                  No categories selected
-                                </span>
-                              )}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="space-y-4 rounded-3xl border border-base-200 bg-base-100 p-6">
-                      <div>
-                        <div className="text-sm font-semibold text-base-content/70">
-                          About you
-                        </div>
-                        <p className="mt-2 text-base text-base-content/80">
-                          {profile.bio ? profile.bio : 'No bio added yet.'}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <ProfileDisplayView profile={profile} onEdit={() => setIsEditing(true)} />
               )}
         </PageCard>
       </main>

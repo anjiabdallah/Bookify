@@ -1,6 +1,19 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { BookOpen, BookMarked, Cake, CheckCircle2, Heart, Landmark, LogOut, Rocket, Search, Sparkles, Wand2, Zap } from 'lucide-react';
-import { useEffect, useMemo, type ReactNode } from 'react';
+import {
+  BookOpen,
+  BookMarked,
+  Cake,
+  CheckCircle2,
+  Heart,
+  Landmark,
+  LogOut,
+  Rocket,
+  Search,
+  Sparkles,
+  Wand2,
+  Zap,
+} from 'lucide-react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
@@ -35,14 +48,24 @@ const categoryIcons: Record<string, ReactNode> = {
 };
 
 const profileSchema = z.object({
-  age: z.string().optional().refine((value) => {
-    if (value === undefined || value.trim() === '') {
-      return true;
-    }
+  age: z
+    .string()
+    .optional()
+    .refine(
+      (value) => {
+        if (value === undefined || value.trim() === '') {
+          return true;
+        }
 
-    const numberValue = Number(value);
-    return Number.isInteger(numberValue) && numberValue >= 13 && numberValue <= 120;
-  }, { message: 'Age must be a whole number between 13 and 120.' }),
+        const numberValue = Number(value);
+        return (
+          Number.isInteger(numberValue)
+          && numberValue >= 13
+          && numberValue <= 120
+        );
+      },
+      { message: 'Age must be a whole number between 13 and 120.' },
+    ),
   bio: z.string().max(500).optional(),
   favoriteCategories: z.array(z.string()).optional(),
 });
@@ -54,6 +77,7 @@ function ProfilePage() {
   const { user, token, setAuth, logout } = useAuth();
   const profileLoader = useAsync<ProfileResponse>();
   const profileSaver = useAsync<ProfileResponse>();
+  const [isEditing, setIsEditing] = useState(false);
 
   const {
     register,
@@ -70,23 +94,43 @@ function ProfilePage() {
     },
   });
 
-  const favoriteCategories = useWatch({
-    control,
-    name: 'favoriteCategories',
-    defaultValue: [],
-  }) ?? [];
+  const favoriteCategories
+    = useWatch({
+      control,
+      name: 'favoriteCategories',
+      defaultValue: [],
+    }) ?? [];
+
+  const profile = profileLoader.data ?? {
+    age: user?.age ?? null,
+    bio: user?.bio ?? null,
+    favoriteCategories: user?.favoriteCategories ?? [],
+  };
+
+  const resetFormValues = (data: ProfileResponse | null | undefined) => {
+    const source = data ?? profile;
+    setValue('age', source?.age ? String(source.age) : '');
+    setValue('bio', source?.bio ?? '');
+    setValue('favoriteCategories', source?.favoriteCategories ?? []);
+  };
 
   useEffect(() => {
     if (!token) return;
 
-    profileLoader.execute(() => requestServer<ProfileResponse>('/api/auth/profile')).then((data) => {
-      if (data) {
-        setValue('age', data.age ? String(data.age) : '');
-        setValue('bio', data.bio ?? '');
-        setValue('favoriteCategories', data.favoriteCategories ?? []);
-      }
-    });
-  }, [token, setValue]);
+    profileLoader
+      .execute(() => requestServer<ProfileResponse>('/api/auth/profile'))
+      .then((data) => {
+        if (data) {
+          resetFormValues(data);
+        }
+      });
+  }, [token]);
+
+  useEffect(() => {
+    if (profileLoader.data) {
+      resetFormValues(profileLoader.data);
+    }
+  }, [profileLoader.data]);
 
   const onSubmit = async (values: ProfileFormData) => {
     const payload = {
@@ -103,7 +147,16 @@ function ProfilePage() {
     );
 
     if (data && user && token) {
-      setAuth({ ...user, age: data.age, bio: data.bio ?? null, favoriteCategories: data.favoriteCategories ?? [] }, token);
+      setAuth(
+        {
+          ...user,
+          age: data.age,
+          bio: data.bio ?? null,
+          favoriteCategories: data.favoriteCategories ?? [],
+        },
+        token,
+      );
+      setIsEditing(false);
     }
   };
 
@@ -114,8 +167,13 @@ function ProfilePage() {
     return (
       <div className="min-h-screen bg-base-100 flex flex-col items-center justify-center p-4">
         <div className="card bg-base-200 shadow-md w-full max-w-md p-8 text-center">
-          <h2 className="text-2xl font-bold mb-4">You need to log in to access your profile.</h2>
-          <button onClick={() => navigate('/login')} className="btn btn-primary">
+          <h2 className="text-2xl font-bold mb-4">
+            You need to log in to access your profile.
+          </h2>
+          <button
+            onClick={() => navigate('/login')}
+            className="btn btn-primary"
+          >
             Go to Login
           </button>
         </div>
@@ -131,8 +189,12 @@ function ProfilePage() {
             <div className="flex items-center gap-5">
               <div className="relative flex h-24 w-24 items-center justify-center rounded-3xl bg-primary/10 text-primary/40">
                 <div className="text-4xl">📚</div>
-                <div className="pointer-events-none absolute -top-2 left-2 text-2xl text-primary/20">✦</div>
-                <div className="pointer-events-none absolute bottom-2 right-2 text-2xl text-primary/20">✦</div>
+                <div className="pointer-events-none absolute -top-2 left-2 text-2xl text-primary/20">
+                  ✦
+                </div>
+                <div className="pointer-events-none absolute bottom-2 right-2 text-2xl text-primary/20">
+                  ✦
+                </div>
               </div>
               <div>
                 <p className="text-sm uppercase tracking-[0.5em] text-primary">
@@ -141,6 +203,7 @@ function ProfilePage() {
                 </p>
                 <h1 className="mt-4 text-4xl font-bold text-base-content">
                   Hi,
+                  {' '}
                   {user.username}
                   <span className="text-primary"> ✦</span>
                 </h1>
@@ -151,7 +214,10 @@ function ProfilePage() {
             </div>
             <div className="flex flex-col items-start gap-4 sm:items-end">
               <div className="text-primary/20 text-4xl">✿</div>
-              <button onClick={logout} className="btn btn-ghost btn-sm text-primary gap-2">
+              <button
+                onClick={logout}
+                className="btn btn-ghost btn-sm text-primary gap-2"
+              >
                 <LogOut size={16} />
                 Logout
               </button>
@@ -170,78 +236,181 @@ function ProfilePage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-            <div className="grid gap-8 lg:grid-cols-[1fr_1fr]">
-              <div className="relative">
-                <label className="label">
-                  <span className="label-text font-medium">Age</span>
-                </label>
-                <input
-                  type="number"
-                  min="13"
-                  max="120"
-                  placeholder="Your age (13-120)"
-                  className="input input-bordered w-full bg-base-100 pr-12"
-                  {...register('age')}
-                />
-                <Cake size={20} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-primary/40" />
-                {ageError && <span className="mt-2 block text-sm text-error">{ageError}</span>}
-              </div>
-            </div>
+          {isEditing
+            ? (
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+                  <div className="grid gap-8 lg:grid-cols-[1fr_1fr]">
+                    <div className="relative">
+                      <label className="label">
+                        <span className="label-text font-medium">Age</span>
+                      </label>
+                      <input
+                        type="number"
+                        min="13"
+                        max="120"
+                        placeholder="Your age (13-120)"
+                        className="input input-bordered w-full bg-base-100 pr-12"
+                        {...register('age')}
+                      />
+                      <Cake
+                        size={20}
+                        className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-primary/40"
+                      />
+                      {ageError && (
+                        <span className="mt-2 block text-sm text-error">
+                          {ageError}
+                        </span>
+                      )}
+                    </div>
+                  </div>
 
-            <div>
-              <p className="label-text mb-4 block text-sm font-medium">Favorite categories</p>
-              <div className="grid grid-cols-3 gap-3">
-                {categories.map((category) => {
-                  const selected = favoriteCategories.includes(category);
-                  return (
+                  <div>
+                    <p className="label-text mb-4 block text-sm font-medium">
+                      Favorite categories
+                    </p>
+                    <div className="grid grid-cols-3 gap-3">
+                      {categories.map((category) => {
+                        const selected = favoriteCategories.includes(category);
+                        return (
+                          <button
+                            type="button"
+                            key={category}
+                            className={`border rounded-xl px-4 py-3 flex items-center justify-between transition-colors ${
+                              selected
+                                ? 'bg-primary/10 border-primary text-primary'
+                                : 'bg-base-100 border-base-200 text-base-content'
+                            }`}
+                            onClick={() => {
+                              setValue(
+                                'favoriteCategories',
+                                selected
+                                  ? favoriteCategories.filter(
+                                      item => item !== category,
+                                    )
+                                  : [...favoriteCategories, category],
+                              );
+                            }}
+                          >
+                            <div className="flex items-center gap-3">
+                              <span>{categoryIcons[category]}</span>
+                              <span className="text-sm font-medium">
+                                {category}
+                              </span>
+                            </div>
+                            {selected
+                              ? (
+                                  <CheckCircle2 size={18} className="text-primary" />
+                                )
+                              : null}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <div className="relative">
+                    <label className="label">
+                      <span className="label-text font-medium">About you</span>
+                    </label>
+                    <textarea
+                      placeholder="Tell other readers a little about your tastes..."
+                      className="textarea textarea-bordered w-full bg-base-100 pr-10"
+                      {...register('bio')}
+                      rows={5}
+                    />
+                    <div className="pointer-events-none absolute bottom-4 right-4 text-2xl text-primary/10">
+                      ✿
+                    </div>
+                    {bioError && (
+                      <span className="mt-2 block text-sm text-error">
+                        {bioError}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-4">
+                    <button
+                      type="submit"
+                      className="btn btn-primary inline-flex items-center gap-2"
+                      disabled={isSubmitting}
+                    >
+                      <Sparkles size={18} />
+                      {isSubmitting ? 'Saving...' : 'Save Profile'}
+                    </button>
                     <button
                       type="button"
-                      key={category}
-                      className={`border rounded-xl px-4 py-3 flex items-center justify-between transition-colors ${
-                        selected
-                          ? 'bg-primary/10 border-primary text-primary'
-                          : 'bg-base-100 border-base-200 text-base-content'
-                      }`}
+                      className="btn btn-ghost"
                       onClick={() => {
-                        setValue(
-                          'favoriteCategories',
-                          selected
-                            ? favoriteCategories.filter(item => item !== category)
-                            : [...favoriteCategories, category],
-                        );
+                        resetFormValues(profileLoader.data);
+                        setIsEditing(false);
                       }}
                     >
-                      <div className="flex items-center gap-3">
-                        <span>{categoryIcons[category]}</span>
-                        <span className="text-sm font-medium">{category}</span>
-                      </div>
-                      {selected ? <CheckCircle2 size={18} className="text-primary" /> : null}
+                      Cancel
                     </button>
-                  );
-                })}
-              </div>
-            </div>
+                  </div>
+                </form>
+              )
+            : (
+                <div className="space-y-8">
+                  <div className="flex flex-wrap items-center justify-between gap-4">
+                    <button
+                      type="button"
+                      className="btn btn-primary"
+                      onClick={() => setIsEditing(true)}
+                    >
+                      Edit Profile
+                    </button>
+                  </div>
 
-            <div className="relative">
-              <label className="label">
-                <span className="label-text font-medium">About you</span>
-              </label>
-              <textarea
-                placeholder="Tell other readers a little about your tastes..."
-                className="textarea textarea-bordered w-full bg-base-100 pr-10"
-                {...register('bio')}
-                rows={5}
-              />
-              <div className="pointer-events-none absolute bottom-4 right-4 text-2xl text-primary/10">✿</div>
-              {bioError && <span className="mt-2 block text-sm text-error">{bioError}</span>}
-            </div>
+                  <div className="grid gap-8 lg:grid-cols-[1fr_1fr]">
+                    <div className="space-y-4 rounded-3xl border border-base-200 bg-base-100 p-6">
+                      <div>
+                        <div className="text-sm font-semibold text-base-content/70">
+                          Age
+                        </div>
+                        <div>
+                          {profile.age ? `${profile.age} years` : 'Not set'}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-sm font-semibold text-base-content/70">
+                          Favorite categories
+                        </div>
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          {profile.favoriteCategories
+                            && profile.favoriteCategories.length > 0
+                            ? (
+                                profile.favoriteCategories.map(category => (
+                                  <span
+                                    key={category}
+                                    className="rounded-full bg-primary/10 px-3 py-1 text-sm text-primary"
+                                  >
+                                    {category}
+                                  </span>
+                                ))
+                              )
+                            : (
+                                <span className="text-sm text-base-content/70">
+                                  No categories selected
+                                </span>
+                              )}
+                        </div>
+                      </div>
+                    </div>
 
-            <button type="submit" className="btn btn-primary inline-flex items-center gap-2" disabled={isSubmitting}>
-              <Sparkles size={18} />
-              {isSubmitting ? 'Saving...' : 'Save Profile'}
-            </button>
-          </form>
+                    <div className="space-y-4 rounded-3xl border border-base-200 bg-base-100 p-6">
+                      <div>
+                        <div className="text-sm font-semibold text-base-content/70">
+                          About you
+                        </div>
+                        <p className="mt-2 text-base text-base-content/80">
+                          {profile.bio ? profile.bio : 'No bio added yet.'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
         </PageCard>
       </main>
     </div>

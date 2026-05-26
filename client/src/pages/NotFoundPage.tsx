@@ -1,5 +1,3 @@
-import { BookOpen } from 'lucide-react';
-
 import BackButton from '../components/BackButton';
 
 function NotFoundPage() {
@@ -18,8 +16,7 @@ function NotFoundPage() {
             <p>Let's get you back to a better chapter.</p>
           </div>
           <BackButton to="/" className="btn-primary mt-10 inline-flex rounded-full px-8 py-3 text-base">
-            <BookOpen size={18} />
-            Back to Home
+            Go home
           </BackButton>
         </div>
       </main>

@@ -7,6 +7,7 @@ export interface User {
   age?: number | null;
   bio?: string | null;
   favoriteCategories?: string[];
+  profileImageUrl?: string | null;
 }
 
 export interface AuthContextType {

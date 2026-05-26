@@ -1,6 +1,6 @@
-import { stripHtml } from '../lib/stripHtml';
+import { stripHtml } from '../../lib/stripHtml';
 
-import type { BookDetailResponse } from '../../../server/src/api/types';
+import type { BookDetailResponse } from '../../../../server/src/api/types';
 
 type BookDescriptionSectionProps = {
   description: BookDetailResponse['description'];

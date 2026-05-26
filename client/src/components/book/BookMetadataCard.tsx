@@ -1,6 +1,6 @@
-import PageCard from './PageCard';
+import PageCard from '../PageCard';
 
-import type { BookDetailResponse } from '../../../server/src/api/types';
+import type { BookDetailResponse } from '../../../../server/src/api/types';
 
 type BookMetadataCardProps = {
   book: BookDetailResponse;

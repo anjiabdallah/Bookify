@@ -2,17 +2,28 @@ import { LogOut } from 'lucide-react';
 
 type ProfileHeaderProps = {
   username: string;
+  avatarUrl?: string | null;
   onLogout: () => void;
 };
 
-function ProfileHeader({ username, onLogout }: ProfileHeaderProps) {
+function ProfileHeader({ username, avatarUrl, onLogout }: ProfileHeaderProps) {
   return (
     <div className="mb-10 grid gap-6 lg:grid-cols-[1fr_auto] lg:items-start">
       <div className="flex items-center gap-5">
-        <div className="relative flex h-24 w-24 items-center justify-center rounded-3xl bg-primary/10 text-primary/40">
-          <div className="text-4xl">📚</div>
-          <div className="pointer-events-none absolute -top-2 left-2 text-2xl text-primary/20">✦</div>
-          <div className="pointer-events-none absolute bottom-2 right-2 text-2xl text-primary/20">✦</div>
+        <div className="relative flex h-24 w-24 items-center justify-center overflow-hidden rounded-3xl bg-primary/10 text-primary/40">
+          {avatarUrl ? (
+            <img
+              src={avatarUrl}
+              alt={`${username}'s avatar`}
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <>
+              <div className="text-4xl">📚</div>
+              <div className="pointer-events-none absolute -top-2 left-2 text-2xl text-primary/20">✦</div>
+              <div className="pointer-events-none absolute bottom-2 right-2 text-2xl text-primary/20">✦</div>
+            </>
+          )}
         </div>
         <div>
           <p className="text-sm uppercase tracking-[0.5em] text-primary">

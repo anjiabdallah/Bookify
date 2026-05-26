@@ -15,4 +15,5 @@ export type ProfileResponse = {
   age: number | null;
   bio?: string;
   favoriteCategories?: string[];
+  profileImageUrl?: string;
 };

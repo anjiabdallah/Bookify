@@ -1,6 +1,6 @@
-import PageCard from './PageCard';
+import PageCard from '../PageCard';
 
-import type { ProfileResponse } from '../../../server/src/api/types';
+import type { ProfileResponse } from '../../../../server/src/api/types';
 
 type ProfileDisplayProfile = {
   age: number | null;

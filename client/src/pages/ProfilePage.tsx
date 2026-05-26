@@ -33,6 +33,7 @@ function ProfilePage() {
       age: undefined,
       bio: undefined,
       favoriteCategories: [],
+      profileImageUrl: undefined,
     },
   });
 
@@ -47,6 +48,7 @@ function ProfilePage() {
     age: user?.age ?? null,
     bio: user?.bio ?? null,
     favoriteCategories: user?.favoriteCategories ?? [],
+    profileImageUrl: user?.profileImageUrl ?? undefined,
   };
 
   const resetFormValues = (data: ProfileResponse | null | undefined) => {
@@ -54,6 +56,7 @@ function ProfilePage() {
     setValue('age', source?.age ? String(source.age) : '');
     setValue('bio', source?.bio ?? '');
     setValue('favoriteCategories', source?.favoriteCategories ?? []);
+    setValue('profileImageUrl', source?.profileImageUrl ?? '');
   };
 
   useEffect(() => {
@@ -79,6 +82,7 @@ function ProfilePage() {
       age: values.age ? Number(values.age) : null,
       bio: values.bio ?? null,
       favorite_categories: values.favoriteCategories ?? [],
+      profile_image_url: values.profileImageUrl?.trim() ? values.profileImageUrl.trim() : null,
     };
 
     const data = await profileSaver.execute(() =>
@@ -95,6 +99,7 @@ function ProfilePage() {
           age: data.age,
           bio: data.bio ?? null,
           favoriteCategories: data.favoriteCategories ?? [],
+          profileImageUrl: data.profileImageUrl ?? null,
         },
         token,
       );
@@ -104,6 +109,7 @@ function ProfilePage() {
 
   const ageError = useMemo(() => errors.age?.message, [errors.age]);
   const bioError = useMemo(() => errors.bio?.message, [errors.bio]);
+  const profileImageUrlError = useMemo(() => errors.profileImageUrl?.message, [errors.profileImageUrl]);
 
   if (!user) {
     return (
@@ -127,7 +133,11 @@ function ProfilePage() {
     <div className="min-h-screen bg-base-100 text-base-content">
       <main className="container mx-auto px-6 py-10">
         <PageCard variant="bordered" className="p-8">
-          <ProfileHeader username={user.username} onLogout={logout} />
+          <ProfileHeader
+            username={user.username}
+            avatarUrl={profile.profileImageUrl}
+            onLogout={logout}
+          />
 
           {(profileLoader.error || profileSaver.error) && (
             <div className="alert alert-error mb-6">
@@ -150,6 +160,7 @@ function ProfilePage() {
                   favoriteCategories={favoriteCategories}
                   ageError={ageError}
                   bioError={bioError}
+                  profileImageUrlError={profileImageUrlError}
                   isSubmitting={isSubmitting}
                   onSubmit={onSubmit}
                   onCancel={() => {

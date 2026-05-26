@@ -1,8 +1,8 @@
 import { Cake, CheckCircle2, Sparkles } from 'lucide-react';
 
-import { categories, categoryIcons } from '../lib/profile.tsx';
+import { categories, categoryIcons } from '../../lib/profile.tsx';
 
-import type { ProfileFormData } from '../lib/profile.tsx';
+import type { ProfileFormData } from '../../lib/profile.tsx';
 import type { UseFormHandleSubmit, UseFormRegister, UseFormSetValue } from 'react-hook-form';
 
 type ProfileEditFormProps = {
@@ -12,6 +12,7 @@ type ProfileEditFormProps = {
   favoriteCategories: string[];
   ageError?: string;
   bioError?: string;
+  profileImageUrlError?: string;
   isSubmitting: boolean;
   onSubmit: (values: ProfileFormData) => Promise<void>;
   onCancel: () => void;
@@ -24,6 +25,7 @@ function ProfileEditForm({
   favoriteCategories,
   ageError,
   bioError,
+  profileImageUrlError,
   isSubmitting,
   onSubmit,
   onCancel,
@@ -53,7 +55,27 @@ function ProfileEditForm({
         </div>
       </div>
 
-      <div>
+      <div className="space-y-4">
+        <div className="relative">
+          <label className="label">
+            <span className="label-text font-medium">Profile image URL</span>
+          </label>
+          <input
+            type="url"
+            placeholder="https://example.com/avatar.jpg"
+            className="input input-bordered w-full bg-base-100"
+            {...register('profileImageUrl')}
+          />
+          <span className="mt-2 block text-sm text-base-content/60">
+            Leave blank to keep the default avatar.
+          </span>
+          {profileImageUrlError && (
+            <span className="mt-2 block text-sm text-error">
+              {profileImageUrlError}
+            </span>
+          )}
+        </div>
+
         <p className="label-text mb-4 block text-sm font-medium">
           Favorite categories
         </p>

@@ -9,6 +9,7 @@ export interface UsersTable {
   age?: number | null;
   bio?: string | null;
   favorite_categories?: string | null;
+  profile_image_url?: string | null;
   created_at?: Date;
 }
 

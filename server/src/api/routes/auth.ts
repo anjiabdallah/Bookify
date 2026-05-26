@@ -18,6 +18,7 @@ const profileSchema = z.object({
   age: z.number().int().min(6).max(100).nullable().optional(),
   bio: z.string().max(500).nullable().optional(),
   favorite_categories: z.array(z.string().min(1)).nullable().optional(),
+  profile_image_url: z.string().url().nullable().optional(),
 });
 
 const loginSchema = z.object({
@@ -99,7 +100,7 @@ router.get('/profile', authMiddleware, async (req: AuthRequest, res) => {
   const user = await db
     .selectFrom('users')
     .where('id', '=', req.userId as number)
-    .select(['id', 'email', 'username', 'age', 'bio', 'favorite_categories'])
+    .select(['id', 'email', 'username', 'age', 'bio', 'favorite_categories', 'profile_image_url'])
     .executeTakeFirst();
 
   if (!user) {
@@ -116,6 +117,7 @@ router.get('/profile', authMiddleware, async (req: AuthRequest, res) => {
     favoriteCategories: user.favorite_categories
       ? user.favorite_categories.split(',').map(category => category.trim()).filter(Boolean)
       : undefined,
+    profileImageUrl: user.profile_image_url ?? undefined,
   });
 });
 
@@ -126,7 +128,12 @@ router.put('/profile', authMiddleware, async (req: AuthRequest, res) => {
     return;
   }
 
-  const { age = null, bio = null, favorite_categories = [] } = result.data;
+  const {
+    age = null,
+    bio = null,
+    favorite_categories = [],
+    profile_image_url = null,
+  } = result.data;
   const categoriesString = favorite_categories && favorite_categories.length > 0 ? favorite_categories.join(', ') : null;
 
   const updatedUser = await db
@@ -135,9 +142,10 @@ router.put('/profile', authMiddleware, async (req: AuthRequest, res) => {
       age,
       bio,
       favorite_categories: categoriesString,
+      profile_image_url,
     })
     .where('id', '=', req.userId as number)
-    .returning(['id', 'email', 'username', 'age', 'bio', 'favorite_categories'])
+    .returning(['id', 'email', 'username', 'age', 'bio', 'favorite_categories', 'profile_image_url'])
     .executeTakeFirst();
 
   if (!updatedUser) {
@@ -154,6 +162,7 @@ router.put('/profile', authMiddleware, async (req: AuthRequest, res) => {
     favoriteCategories: updatedUser.favorite_categories
       ? updatedUser.favorite_categories.split(',').map(category => category.trim()).filter(Boolean)
       : undefined,
+    profileImageUrl: updatedUser.profile_image_url ?? undefined,
   });
 });
 

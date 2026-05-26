@@ -1,11 +1,11 @@
 import { useState } from 'react';
 
-import StarRating from './StarRating';
-import { useAsync } from '../hooks/useAsync';
-import { requestServer } from '../lib/requestServer';
-import { stripHtml } from '../lib/stripHtml';
+import { useAsync } from '../../hooks/useAsync';
+import { requestServer } from '../../lib/requestServer';
+import { stripHtml } from '../../lib/stripHtml';
+import StarRating from '../StarRating';
 
-import type { AddToShelfResponse, BookDetailResponse, ShelfStatus } from '../../../server/src/api/types';
+import type { AddToShelfResponse, BookDetailResponse, ShelfStatus } from '../../../../server/src/api/types';
 
 const shelfOptions: Array<[ShelfStatus, string]> = [
   ['reading', 'Currently reading'],

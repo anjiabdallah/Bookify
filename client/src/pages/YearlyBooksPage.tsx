@@ -76,18 +76,22 @@ function YearlyBooksPage() {
         )}
 
         <div className="space-y-10">
-          {yearlyQuery.data?.map((group) => (
+          {yearlyQuery.data?.map(group => (
             <section key={group.year} className="rounded-3xl border border-base-200 bg-base-100 p-6">
               <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <div className="text-2xl font-semibold">{group.year}</div>
-                  <div className="text-sm text-base-content/60">{group.finishes.length} finished entries</div>
+                  <div className="text-sm text-base-content/60">
+                    {group.finishes.length}
+                    {' '}
+                    finished entries
+                  </div>
                 </div>
                 <div className="badge badge-outline badge-lg">Year view</div>
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">
-                {group.finishes.map((finish) => (
+                {group.finishes.map(finish => (
                   <ShelfBookCard
                     key={`${group.year}-${finish.id}`}
                     book={finish}

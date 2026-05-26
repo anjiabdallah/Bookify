@@ -6,6 +6,19 @@ type BookMetadataCardProps = {
   book: BookDetailResponse;
 };
 
+const formatPublishedDate = (dateString: string | null | undefined) => {
+  if (!dateString) {
+    return 'Unknown';
+  }
+
+  const isoDateMatch = dateString.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (isoDateMatch) {
+    return `${isoDateMatch[3]}/${isoDateMatch[2]}/${isoDateMatch[1]}`;
+  }
+
+  return dateString;
+};
+
 function BookMetadataCard({ book }: BookMetadataCardProps) {
   return (
     <PageCard>
@@ -22,7 +35,7 @@ function BookMetadataCard({ book }: BookMetadataCardProps) {
 
         <div>
           <div className="font-semibold">Published</div>
-          <div>{book.published_date ?? 'Unknown'}</div>
+          <div>{formatPublishedDate(book.published_date)}</div>
         </div>
 
         <div>

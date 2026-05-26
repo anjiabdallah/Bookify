@@ -73,8 +73,10 @@ function MyBooksPage() {
       want_to_read: shelves.want_to_read.length,
       read: shelves.read.length,
       dnf: shelves.dnf.length,
+      favorites: favoriteBooks.length,
+      physical_copy: physicalCopyBooks.length,
     }),
-    [shelves],
+    [shelves, favoriteBooks.length, physicalCopyBooks.length],
   );
 
   const handleRate = async (book: GetShelfResponse[number], rating: number) => {
@@ -164,10 +166,20 @@ function MyBooksPage() {
             <div className="text-3xl font-bold">{stats.read}</div>
             <div className="text-sm text-base-content/60">Read</div>
           </div>
-          <div className="flex flex-col items-center gap-3">
+          <div className="flex flex-col items-center gap-3 border-r border-base-200 pr-4 last:border-r-0 last:pr-0">
             <XCircle size={24} className="text-primary/50" />
             <div className="text-3xl font-bold">{stats.dnf}</div>
             <div className="text-sm text-base-content/60">DNFed</div>
+          </div>
+          <div className="flex flex-col items-center gap-3 border-r border-base-200 pr-4 last:border-r-0 last:pr-0">
+            <span className="text-primary/50 text-3xl">❤️</span>
+            <div className="text-3xl font-bold">{stats.favorites}</div>
+            <div className="text-sm text-base-content/60">Favorites</div>
+          </div>
+          <div className="flex flex-col items-center gap-3">
+            <span className="text-primary/50 text-3xl">📦</span>
+            <div className="text-3xl font-bold">{stats.physical_copy}</div>
+            <div className="text-sm text-base-content/60">Physical copies</div>
           </div>
         </PageCard>
 

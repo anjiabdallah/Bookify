@@ -1,3 +1,7 @@
+type ServerErrorBody = {
+  error?: unknown;
+};
+
 export async function requestServer<T>(
   path: string,
   options?: RequestInit,
@@ -14,11 +18,11 @@ export async function requestServer<T>(
   });
 
   if (!res.ok) {
-    const errorBody = await res.json().catch(() => ({ error: 'Something went wrong' }));
-    const errorValue = (errorBody as any).error;
+    const errorBody = await res.json().catch<ServerErrorBody>(() => ({ error: 'Something went wrong' }));
+    const errorValue = errorBody.error;
     const message = typeof errorValue === 'string'
       ? errorValue
-      : errorValue?.message
+      : errorValue && typeof errorValue === 'object' && 'message' in errorValue && typeof errorValue.message === 'string'
         ? errorValue.message
         : Array.isArray(errorValue)
           ? errorValue.join(', ')

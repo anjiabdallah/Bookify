@@ -61,9 +61,6 @@ function HomePage() {
                 <Link to="/register" className="btn btn-primary btn-lg">
                   Join the Community
                 </Link>
-                <Link to="/login" className="btn btn-ghost btn-outline btn-lg">
-                  Explore Books
-                </Link>
               </div>
               <div className="mt-10 grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
                 <div className="flex-1">

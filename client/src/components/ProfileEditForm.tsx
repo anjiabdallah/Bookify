@@ -1,7 +1,7 @@
 import { Cake, CheckCircle2, Sparkles } from 'lucide-react';
 import type { UseFormHandleSubmit, UseFormRegister, UseFormSetValue } from 'react-hook-form';
-import type { ProfileFormData } from '../lib/profile';
-import { categories, categoryIcons } from '../lib/profile';
+import type { ProfileFormData } from '../lib/profile.tsx';
+import { categories, categoryIcons } from '../lib/profile.tsx';
 
 type ProfileEditFormProps = {
   register: UseFormRegister<ProfileFormData>;

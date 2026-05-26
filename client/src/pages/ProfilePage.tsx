@@ -2,7 +2,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useMemo, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import { z } from 'zod';
 
 import PageCard from '../components/PageCard';
 import ProfileDisplayView from '../components/ProfileDisplayView';
@@ -10,33 +9,10 @@ import ProfileEditForm from '../components/ProfileEditForm';
 import ProfileHeader from '../components/ProfileHeader';
 import { useAuth } from '../context/useAuth';
 import { useAsync } from '../hooks/useAsync';
+import { profileFormSchema, type ProfileFormData } from '../lib/profile.tsx';
 import { requestServer } from '../lib/requestServer';
 
 import type { ProfileResponse } from '../../../server/src/api/types';
-import type { ProfileFormData } from '../lib/profile';
-
-const profileSchema = z.object({
-  age: z
-    .string()
-    .optional()
-    .refine(
-      (value) => {
-        if (value === undefined || value.trim() === '') {
-          return true;
-        }
-
-        const numberValue = Number(value);
-        return (
-          Number.isInteger(numberValue)
-          && numberValue >= 13
-          && numberValue <= 120
-        );
-      },
-      { message: 'Age must be a whole number between 13 and 120.' },
-    ),
-  bio: z.string().max(500).optional(),
-  favoriteCategories: z.array(z.string()).optional(),
-});
 
 function ProfilePage() {
   const navigate = useNavigate();
@@ -52,7 +28,7 @@ function ProfilePage() {
     control,
     formState: { errors, isSubmitting },
   } = useForm<ProfileFormData>({
-    resolver: zodResolver(profileSchema),
+    resolver: zodResolver(profileFormSchema),
     defaultValues: {
       age: undefined,
       bio: undefined,

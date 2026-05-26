@@ -142,8 +142,7 @@ function ProfilePage() {
                 <h1 className="mt-4 text-4xl font-bold text-base-content">
                   Hi,
                   {user.username}
-                  <br />
-                  <span className="text-primary">✦</span>
+                  <span className="text-primary"> ✦</span>
                 </h1>
                 <p className="mt-3 max-w-xl text-base text-base-content/70">
                   Add your age, favorite categories, and a short bio.

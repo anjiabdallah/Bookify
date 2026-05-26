@@ -1,7 +1,9 @@
 import { Cake, CheckCircle2, Sparkles } from 'lucide-react';
-import type { UseFormHandleSubmit, UseFormRegister, UseFormSetValue } from 'react-hook-form';
-import type { ProfileFormData } from '../lib/profile.tsx';
+
 import { categories, categoryIcons } from '../lib/profile.tsx';
+
+import type { ProfileFormData } from '../lib/profile.tsx';
+import type { UseFormHandleSubmit, UseFormRegister, UseFormSetValue } from 'react-hook-form';
 
 type ProfileEditFormProps = {
   register: UseFormRegister<ProfileFormData>;
@@ -71,7 +73,7 @@ function ProfileEditForm({
                   setValue(
                     'favoriteCategories',
                     selected
-                      ? favoriteCategories.filter((item) => item !== category)
+                      ? favoriteCategories.filter(item => item !== category)
                       : [...favoriteCategories, category],
                   );
                 }}
@@ -80,9 +82,11 @@ function ProfileEditForm({
                   <span>{categoryIcons[category]}</span>
                   <span className="text-sm font-medium">{category}</span>
                 </div>
-                {selected ? (
-                  <CheckCircle2 size={18} className="text-primary" />
-                ) : null}
+                {selected
+                  ? (
+                      <CheckCircle2 size={18} className="text-primary" />
+                    )
+                  : null}
               </button>
             );
           })}

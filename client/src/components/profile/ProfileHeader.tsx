@@ -20,7 +20,9 @@ function ProfileHeader({ username, onLogout }: ProfileHeaderProps) {
             <sup className="text-primary">+</sup>
           </p>
           <h1 className="mt-4 text-4xl font-bold text-base-content">
-            Hi, {username}
+            Hi,
+            {' '}
+            {username}
             <span className="text-primary"> ✦</span>
           </h1>
           <p className="mt-3 max-w-xl text-base text-base-content/70">

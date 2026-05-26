@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
-import AddToShelfForm from '../components/AddToShelfForm';
 import BackButton from '../components/BackButton';
-import BookCoverCard from '../components/BookCoverCard';
-import BookDescriptionSection from '../components/BookDescriptionSection';
-import BookMetadataCard from '../components/BookMetadataCard';
+import AddToShelfForm from '../components/book/AddToShelfForm';
+import BookCoverCard from '../components/book/BookCoverCard';
+import BookDescriptionSection from '../components/book/BookDescriptionSection';
+import BookMetadataCard from '../components/book/BookMetadataCard';
 import PageCard from '../components/PageCard';
 import PageSectionHeader from '../components/PageSectionHeader';
 import { useAuth } from '../context/useAuth';

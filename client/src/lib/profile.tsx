@@ -1,5 +1,3 @@
-import type { ReactNode } from 'react';
-import { z } from 'zod';
 import {
   BookOpen,
   BookMarked,
@@ -10,6 +8,9 @@ import {
   Wand2,
   Zap,
 } from 'lucide-react';
+import { z } from 'zod';
+
+import type { ReactNode } from 'react';
 
 export const categories = [
   'Fantasy',
@@ -23,14 +24,14 @@ export const categories = [
 ] as const;
 
 export const categoryIcons: Record<string, ReactNode> = {
-  Fantasy: <Wand2 size={20} />,
-  Romance: <Heart size={20} />,
-  Mystery: <Search size={20} />,
+  'Fantasy': <Wand2 size={20} />,
+  'Romance': <Heart size={20} />,
+  'Mystery': <Search size={20} />,
   'Science Fiction': <Rocket size={20} />,
-  Historical: <Landmark size={20} />,
-  Thriller: <Zap size={20} />,
+  'Historical': <Landmark size={20} />,
+  'Thriller': <Zap size={20} />,
   'Young Adult': <BookOpen size={20} />,
-  Nonfiction: <BookMarked size={20} />,
+  'Nonfiction': <BookMarked size={20} />,
 };
 
 const profileCoreSchema = z.object({

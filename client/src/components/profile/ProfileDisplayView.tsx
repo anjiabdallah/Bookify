@@ -1,3 +1,5 @@
+import PageCard from './PageCard';
+
 import type { ProfileResponse } from '../../../server/src/api/types';
 
 type ProfileDisplayProfile = {
@@ -25,7 +27,7 @@ function ProfileDisplayView({ profile, onEdit }: ProfileDisplayViewProps) {
       </div>
 
       <div className="grid gap-8 lg:grid-cols-[1fr_1fr]">
-        <div className="space-y-4 rounded-3xl border border-base-200 bg-base-100 p-6">
+        <PageCard variant="bordered" className="space-y-4 shadow-none">
           <div>
             <div className="text-sm font-semibold text-base-content/70">Age</div>
             <div>{profile.age ? `${profile.age} years` : 'Not set'}</div>
@@ -34,27 +36,29 @@ function ProfileDisplayView({ profile, onEdit }: ProfileDisplayViewProps) {
           <div>
             <div className="text-sm font-semibold text-base-content/70">Favorite categories</div>
             <div className="mt-2 flex flex-wrap gap-2">
-              {profile.favoriteCategories && profile.favoriteCategories.length > 0 ? (
-                profile.favoriteCategories.map((category) => (
-                  <span key={category} className="rounded-full bg-primary/10 px-3 py-1 text-sm text-primary">
-                    {category}
-                  </span>
-                ))
-              ) : (
-                <span className="text-sm text-base-content/70">No categories selected</span>
-              )}
+              {profile.favoriteCategories && profile.favoriteCategories.length > 0
+                ? (
+                    profile.favoriteCategories.map(category => (
+                      <span key={category} className="rounded-full bg-primary/10 px-3 py-1 text-sm text-primary">
+                        {category}
+                      </span>
+                    ))
+                  )
+                : (
+                    <span className="text-sm text-base-content/70">No categories selected</span>
+                  )}
             </div>
           </div>
-        </div>
+        </PageCard>
 
-        <div className="space-y-4 rounded-3xl border border-base-200 bg-base-100 p-6">
+        <PageCard variant="bordered" className="space-y-4 shadow-none">
           <div>
             <div className="text-sm font-semibold text-base-content/70">About you</div>
             <p className="mt-2 text-base text-base-content/80">
               {profile.bio ? profile.bio : 'No bio added yet.'}
             </p>
           </div>
-        </div>
+        </PageCard>
       </div>
     </div>
   );

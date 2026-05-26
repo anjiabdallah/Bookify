@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
+import PageCard from '../components/PageCard';
 import PageSectionHeader from '../components/PageSectionHeader';
 import ShelfBookCard from '../components/ShelfBookCard';
 import { useAuth } from '../context/useAuth';
@@ -59,25 +60,25 @@ function YearlyBooksPage() {
         )}
 
         {yearlyQuery.loading && (
-          <div className="rounded-3xl border border-base-200 bg-base-100 p-8 text-center text-base-content/70">
+          <PageCard variant="bordered" className="shadow-none text-center text-base-content/70 p-8">
             Loading your yearly history...
-          </div>
+          </PageCard>
         )}
 
         {!yearlyQuery.loading && yearlyQuery.data?.length === 0 && (
-          <div className="rounded-3xl border border-dashed border-base-300 bg-base-100 p-10 text-center">
+          <PageCard variant="bordered" className="border-dashed border-base-300 bg-base-100 p-10 text-center shadow-none">
             <div className="text-5xl text-primary/30">📅</div>
             <p className="mt-4 text-xl font-semibold">No finished book history yet.</p>
             <p className="mt-2 text-base text-base-content/70">Finish a book and its date will appear here by year.</p>
             <Link to="/search" className="btn btn-primary btn-sm mt-6">
               Add a finished book
             </Link>
-          </div>
+          </PageCard>
         )}
 
         <div className="space-y-10">
           {yearlyQuery.data?.map(group => (
-            <section key={group.year} className="rounded-3xl border border-base-200 bg-base-100 p-6">
+            <PageCard key={group.year} variant="bordered" className="shadow-none p-6">
               <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <div className="text-2xl font-semibold">{group.year}</div>
@@ -99,7 +100,7 @@ function YearlyBooksPage() {
                   />
                 ))}
               </div>
-            </section>
+            </PageCard>
           ))}
         </div>
       </main>

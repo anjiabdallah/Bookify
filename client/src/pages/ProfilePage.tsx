@@ -4,9 +4,9 @@ import { useForm, useWatch } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
 import PageCard from '../components/PageCard';
-import ProfileDisplayView from '../components/ProfileDisplayView';
-import ProfileEditForm from '../components/ProfileEditForm';
-import ProfileHeader from '../components/ProfileHeader';
+import ProfileDisplayView from '../components/profile/ProfileDisplayView';
+import ProfileEditForm from '../components/profile/ProfileEditForm';
+import ProfileHeader from '../components/profile/ProfileHeader';
 import { useAuth } from '../context/useAuth';
 import { useAsync } from '../hooks/useAsync';
 import { profileFormSchema, type ProfileFormData } from '../lib/profile.tsx';

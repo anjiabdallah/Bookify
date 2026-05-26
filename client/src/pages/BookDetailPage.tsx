@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 
 import AddToShelfForm from '../components/AddToShelfForm';
 import BackButton from '../components/BackButton';
+import BookCoverCard from '../components/BookCoverCard';
 import BookDescriptionSection from '../components/BookDescriptionSection';
 import BookMetadataCard from '../components/BookMetadataCard';
 import PageCard from '../components/PageCard';
@@ -55,7 +56,10 @@ function BookDetailPage() {
 
         {book && !bookQuery.loading && !bookQuery.error && (
           <div className="grid gap-8 lg:grid-cols-[320px_1fr]">
-            <BookMetadataCard book={book} />
+            <div className="flex flex-col gap-8">
+              <BookCoverCard book={book} />
+              <BookMetadataCard book={book} />
+            </div>
 
             <PageCard className="lg:self-start">
               <BookDescriptionSection description={book.description} />

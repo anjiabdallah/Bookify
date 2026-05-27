@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useAsync } from '../../hooks/useAsync';
 import { requestServer } from '../../lib/requestServer';
@@ -16,18 +16,42 @@ const shelfOptions: Array<[ShelfStatus, string]> = [
 
 type AddToShelfFormProps = {
   book: BookDetailResponse;
+  initialStatus?: ShelfStatus;
+  initialRating?: number;
+  initialFinishDate?: string;
+  initialFavorite?: boolean;
+  initialPhysicalCopy?: boolean;
+  submitLabel?: string;
+  onSuccess?: (response: AddToShelfResponse) => void;
 };
 
-function AddToShelfForm({ book }: AddToShelfFormProps) {
-  const [selectedShelf, setSelectedShelf] = useState<ShelfStatus>('want_to_read');
-  const [selectedRating, setSelectedRating] = useState<number>(0);
-  const [selectedFinishDate, setSelectedFinishDate] = useState<string>('');
-  const [selectedFavorite, setSelectedFavorite] = useState<boolean>(false);
-  const [selectedPhysicalCopy, setSelectedPhysicalCopy] = useState<boolean>(false);
+function AddToShelfForm({
+  book,
+  initialStatus = 'want_to_read',
+  initialRating = 0,
+  initialFinishDate = '',
+  initialFavorite = false,
+  initialPhysicalCopy = false,
+  submitLabel = 'Save to shelf',
+  onSuccess,
+}: AddToShelfFormProps) {
+  const [selectedShelf, setSelectedShelf] = useState<ShelfStatus>(initialStatus);
+  const [selectedRating, setSelectedRating] = useState<number>(initialRating);
+  const [selectedFinishDate, setSelectedFinishDate] = useState<string>(initialFinishDate);
+  const [selectedFavorite, setSelectedFavorite] = useState<boolean>(initialFavorite);
+  const [selectedPhysicalCopy, setSelectedPhysicalCopy] = useState<boolean>(initialPhysicalCopy);
   const shelfSaver = useAsync<AddToShelfResponse>();
 
+  useEffect(() => {
+    setSelectedShelf(initialStatus);
+    setSelectedRating(initialRating);
+    setSelectedFinishDate(initialFinishDate);
+    setSelectedFavorite(initialFavorite);
+    setSelectedPhysicalCopy(initialPhysicalCopy);
+  }, [initialStatus, initialRating, initialFinishDate, initialFavorite, initialPhysicalCopy]);
+
   const handleAddToShelf = async () => {
-    await shelfSaver.execute(() =>
+    const result = await shelfSaver.execute(() =>
       requestServer<AddToShelfResponse>('/api/books/shelf', {
         method: 'POST',
         body: JSON.stringify({
@@ -45,6 +69,10 @@ function AddToShelfForm({ book }: AddToShelfFormProps) {
         }),
       }),
     );
+
+    if (result && onSuccess) {
+      await onSuccess(result);
+    }
   };
 
   return (
@@ -129,7 +157,7 @@ function AddToShelfForm({ book }: AddToShelfFormProps) {
         disabled={shelfSaver.loading}
         className="btn btn-primary w-full"
       >
-        {shelfSaver.loading ? 'Saving…' : 'Save to shelf'}
+        {shelfSaver.loading ? 'Saving…' : submitLabel}
       </button>
 
       {shelfSaver.error && (

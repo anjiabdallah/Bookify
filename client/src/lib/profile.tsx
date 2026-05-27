@@ -55,20 +55,6 @@ export const profileFormSchema = profileCoreSchema.extend({
     },
     { message: 'Age must be a whole number between 13 and 120.' },
   ),
-  profileImageUrl: z.string().optional().refine(
-    (value) => {
-      if (value === undefined || value.trim() === '') {
-        return true;
-      }
-      try {
-        new URL(value);
-        return true;
-      } catch {
-        return false;
-      }
-    },
-    { message: 'Please enter a valid image URL.' },
-  ),
 });
 
 export type ProfileFormData = z.infer<typeof profileFormSchema>;

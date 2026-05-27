@@ -19,7 +19,11 @@ function ProfilePage() {
   const { user, token, setAuth, logout } = useAuth();
   const profileLoader = useAsync<ProfileResponse>();
   const profileSaver = useAsync<ProfileResponse>();
+  const [savedProfile, setSavedProfile] = useState<ProfileResponse | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [selectedAvatarFile, setSelectedAvatarFile] = useState<File | null>(null);
+  const [selectedAvatarPreviewUrl, setSelectedAvatarPreviewUrl] = useState<string | null>(null);
+  const [avatarError, setAvatarError] = useState<string | null>(null);
 
   const {
     register,
@@ -33,7 +37,6 @@ function ProfilePage() {
       age: undefined,
       bio: undefined,
       favoriteCategories: [],
-      profileImageUrl: undefined,
     },
   });
 
@@ -44,7 +47,7 @@ function ProfilePage() {
       defaultValue: [],
     }) ?? [];
 
-  const profile = profileLoader.data ?? {
+  const profile = savedProfile ?? profileLoader.data ?? {
     age: user?.age ?? null,
     bio: user?.bio ?? null,
     favoriteCategories: user?.favoriteCategories ?? [],
@@ -56,7 +59,9 @@ function ProfilePage() {
     setValue('age', source?.age ? String(source.age) : '');
     setValue('bio', source?.bio ?? '');
     setValue('favoriteCategories', source?.favoriteCategories ?? []);
-    setValue('profileImageUrl', source?.profileImageUrl ?? '');
+    setSelectedAvatarFile(null);
+    setSelectedAvatarPreviewUrl(null);
+    setAvatarError(null);
   };
 
   useEffect(() => {
@@ -74,23 +79,72 @@ function ProfilePage() {
   useEffect(() => {
     if (profileLoader.data) {
       resetFormValues(profileLoader.data);
+      setSavedProfile(profileLoader.data);
     }
   }, [profileLoader.data]);
+
+  useEffect(() => {
+    if (!selectedAvatarFile) {
+      setSelectedAvatarPreviewUrl(null);
+      return;
+    }
+
+    const url = URL.createObjectURL(selectedAvatarFile);
+    setSelectedAvatarPreviewUrl(url);
+
+    return () => {
+      URL.revokeObjectURL(url);
+    };
+  }, [selectedAvatarFile]);
+
+  const handleAvatarSelect = (file: File | null) => {
+    if (!file) {
+      setSelectedAvatarFile(null);
+      setAvatarError(null);
+      return;
+    }
+
+    if (!file.type.startsWith('image/')) {
+      setAvatarError('Please select a valid image file.');
+      setSelectedAvatarFile(null);
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setAvatarError('Image must be 5 MB or smaller.');
+      setSelectedAvatarFile(null);
+      return;
+    }
+
+    setAvatarError(null);
+    setSelectedAvatarFile(file);
+  };
 
   const onSubmit = async (values: ProfileFormData) => {
     const payload = {
       age: values.age ? Number(values.age) : null,
       bio: values.bio ?? null,
       favorite_categories: values.favoriteCategories ?? [],
-      profile_image_url: values.profileImageUrl?.trim() ? values.profileImageUrl.trim() : null,
     };
 
-    const data = await profileSaver.execute(() =>
+    let data = await profileSaver.execute(() =>
       requestServer<ProfileResponse>('/api/auth/profile', {
         method: 'PUT',
         body: JSON.stringify(payload),
       }),
     );
+
+    if (selectedAvatarFile) {
+      const formData = new FormData();
+      formData.append('profileImage', selectedAvatarFile);
+
+      data = await profileSaver.execute(() =>
+        requestServer<ProfileResponse>('/api/auth/profile/avatar', {
+          method: 'POST',
+          body: formData,
+        }),
+      );
+    }
 
     if (data && user && token) {
       setAuth(
@@ -103,13 +157,15 @@ function ProfilePage() {
         },
         token,
       );
+      setSavedProfile(data);
+      setSelectedAvatarFile(null);
+      setSelectedAvatarPreviewUrl(null);
       setIsEditing(false);
     }
   };
 
   const ageError = useMemo(() => errors.age?.message, [errors.age]);
   const bioError = useMemo(() => errors.bio?.message, [errors.bio]);
-  const profileImageUrlError = useMemo(() => errors.profileImageUrl?.message, [errors.profileImageUrl]);
 
   if (!user) {
     return (
@@ -160,8 +216,11 @@ function ProfilePage() {
                   favoriteCategories={favoriteCategories}
                   ageError={ageError}
                   bioError={bioError}
-                  profileImageUrlError={profileImageUrlError}
+                  avatarError={avatarError ?? undefined}
                   isSubmitting={isSubmitting}
+                  currentAvatarUrl={profile.profileImageUrl}
+                  selectedAvatarPreviewUrl={selectedAvatarPreviewUrl}
+                  onAvatarSelect={handleAvatarSelect}
                   onSubmit={onSubmit}
                   onCancel={() => {
                     resetFormValues(profileLoader.data);

@@ -14,6 +14,7 @@ export function useAsync<T>() {
       return result;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong');
+      setData(null);
       return null;
     } finally {
       setLoading(false);

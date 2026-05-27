@@ -12,7 +12,10 @@ type ProfileEditFormProps = {
   favoriteCategories: string[];
   ageError?: string;
   bioError?: string;
-  profileImageUrlError?: string;
+  avatarError?: string;
+  currentAvatarUrl?: string | null;
+  selectedAvatarPreviewUrl?: string | null;
+  onAvatarSelect: (file: File | null) => void;
   isSubmitting: boolean;
   onSubmit: (values: ProfileFormData) => Promise<void>;
   onCancel: () => void;
@@ -25,7 +28,10 @@ function ProfileEditForm({
   favoriteCategories,
   ageError,
   bioError,
-  profileImageUrlError,
+  avatarError,
+  currentAvatarUrl,
+  selectedAvatarPreviewUrl,
+  onAvatarSelect,
   isSubmitting,
   onSubmit,
   onCancel,
@@ -58,21 +64,33 @@ function ProfileEditForm({
       <div className="space-y-4">
         <div className="relative">
           <label className="label">
-            <span className="label-text font-medium">Profile image URL</span>
+            <span className="label-text font-medium">Profile photo</span>
           </label>
           <input
-            type="url"
-            placeholder="https://example.com/avatar.jpg"
-            className="input input-bordered w-full bg-base-100"
-            {...register('profileImageUrl')}
+            type="file"
+            accept="image/*"
+            className="file-input file-input-bordered w-full bg-base-100"
+            onChange={(event) => {
+              const file = event.target.files?.[0] ?? null;
+              onAvatarSelect(file);
+            }}
           />
           <span className="mt-2 block text-sm text-base-content/60">
-            Leave blank to keep the default avatar.
+            Upload a photo file instead of entering a URL.
           </span>
-          {profileImageUrlError && (
+          {avatarError && (
             <span className="mt-2 block text-sm text-error">
-              {profileImageUrlError}
+              {avatarError}
             </span>
+          )}
+          {(selectedAvatarPreviewUrl || currentAvatarUrl) && (
+            <div className="mt-4 overflow-hidden rounded-3xl border border-base-200">
+              <img
+                src={selectedAvatarPreviewUrl ?? currentAvatarUrl ?? undefined}
+                alt="Profile preview"
+                className="h-40 w-full object-cover"
+              />
+            </div>
           )}
         </div>
 

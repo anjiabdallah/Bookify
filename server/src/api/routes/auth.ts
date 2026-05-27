@@ -1,12 +1,47 @@
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
 import bcrypt from 'bcrypt';
 import { Router } from 'express';
 import jwt from 'jsonwebtoken';
+import multer, { type FileFilterCallback } from 'multer';
 import { z } from 'zod';
 
 import { db } from '../../db.js';
 import { authMiddleware, type AuthRequest } from '../../middleware/auth.js';
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const router = Router();
+
+const uploadDir = path.resolve(__dirname, '../../../uploads');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+const storage = multer.diskStorage({
+  destination: (_req, _file, cb) => {
+    cb(null, uploadDir);
+  },
+  filename: (_req, file, cb) => {
+    const safeExt = path.extname(file.originalname).toLowerCase() || '.jpg';
+    cb(null, `profile-${Date.now()}${safeExt}`);
+  },
+});
+
+const upload = multer({
+  storage,
+  fileFilter: (_req, file, cb: FileFilterCallback) => {
+    const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif'];
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (allowedExtensions.includes(ext)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only JPG, PNG, and GIF profile images are allowed'));
+    }
+  },
+  limits: { fileSize: 5 * 1024 * 1024 },
+});
 
 const registerSchema = z.object({
   email: z.string().email(),
@@ -108,6 +143,12 @@ router.get('/profile', authMiddleware, async (req: AuthRequest, res) => {
     return;
   }
 
+  const buildImageUrl = (value: string | null | undefined) => {
+    if (!value) return undefined;
+    if (value.startsWith('http')) return value;
+    return `${req.protocol}://${req.get('host')}${value}`;
+  };
+
   res.json({
     id: user.id,
     email: user.email,
@@ -117,7 +158,7 @@ router.get('/profile', authMiddleware, async (req: AuthRequest, res) => {
     favoriteCategories: user.favorite_categories
       ? user.favorite_categories.split(',').map(category => category.trim()).filter(Boolean)
       : undefined,
-    profileImageUrl: user.profile_image_url ?? undefined,
+    profileImageUrl: buildImageUrl(user.profile_image_url),
   });
 });
 
@@ -153,6 +194,12 @@ router.put('/profile', authMiddleware, async (req: AuthRequest, res) => {
     return;
   }
 
+  const buildImageUrl = (value: string | null | undefined) => {
+    if (!value) return undefined;
+    if (value.startsWith('http')) return value;
+    return `${req.protocol}://${req.get('host')}${value}`;
+  };
+
   res.json({
     id: updatedUser.id,
     email: updatedUser.email,
@@ -162,7 +209,42 @@ router.put('/profile', authMiddleware, async (req: AuthRequest, res) => {
     favoriteCategories: updatedUser.favorite_categories
       ? updatedUser.favorite_categories.split(',').map(category => category.trim()).filter(Boolean)
       : undefined,
-    profileImageUrl: updatedUser.profile_image_url ?? undefined,
+    profileImageUrl: buildImageUrl(updatedUser.profile_image_url),
+  });
+});
+
+router.post('/profile/avatar', authMiddleware, upload.single('profileImage'), async (req: AuthRequest & { file?: Express.Multer.File }, res) => {
+  if (!req.file) {
+    res.status(400).json({ error: 'Profile image file is required' });
+    return;
+  }
+
+  const profileImagePath = `/uploads/${req.file.filename}`;
+
+  const updatedUser = await db
+    .updateTable('users')
+    .set({ profile_image_url: profileImagePath })
+    .where('id', '=', req.userId as number)
+    .returning(['id', 'email', 'username', 'age', 'bio', 'favorite_categories', 'profile_image_url'])
+    .executeTakeFirst();
+
+  if (!updatedUser) {
+    res.status(404).json({ error: 'User not found' });
+    return;
+  }
+
+  const imageUrl = `${req.protocol}://${req.get('host')}${profileImagePath}`;
+
+  res.json({
+    id: updatedUser.id,
+    email: updatedUser.email,
+    username: updatedUser.username,
+    age: updatedUser.age ?? null,
+    bio: updatedUser.bio ?? undefined,
+    favoriteCategories: updatedUser.favorite_categories
+      ? updatedUser.favorite_categories.split(',').map(category => category.trim()).filter(Boolean)
+      : undefined,
+    profileImageUrl: imageUrl,
   });
 });
 

@@ -31,7 +31,12 @@ export async function requestServer<T>(
     });
   } catch (error) {
     if (error instanceof DOMException && error.name === 'AbortError') {
-      throw new Error('Request timed out. Please try again.');
+      const timeoutError = new Error('Request timed out. Please try again.');
+      (timeoutError as Error & { cause?: unknown }).cause = error;
+      throw timeoutError;
+    }
+    if (error instanceof Error) {
+      (error as Error & { cause?: unknown }).cause = error;
     }
     throw error;
   } finally {
@@ -43,9 +48,11 @@ export async function requestServer<T>(
   if (!res.ok) {
     const contentType = res.headers.get('content-type') ?? '';
     let errorMessage = 'Something went wrong';
+    let cause: unknown;
 
     if (contentType.includes('application/json')) {
       const errorBody = await res.json().catch<ServerErrorBody>(() => ({ error: errorMessage }));
+      cause = errorBody;
       const errorValue = errorBody.error;
       if (typeof errorValue === 'string') {
         errorMessage = errorValue;
@@ -58,12 +65,15 @@ export async function requestServer<T>(
       }
     } else {
       const text = await res.text().catch(() => 'Something went wrong');
+      cause = text;
       if (text) {
         errorMessage = text;
       }
     }
 
-    throw new Error(errorMessage || 'Something went wrong');
+    const error = new Error(errorMessage || 'Something went wrong', { cause });
+    (error as Error & { cause?: unknown }).cause = cause;
+    throw error;
   }
 
   return res.json() as Promise<T>;

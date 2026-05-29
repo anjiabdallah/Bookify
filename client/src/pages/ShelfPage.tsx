@@ -1,7 +1,7 @@
-import { BookOpen, Bookmark, CheckCircle, Heart, Package, XCircle } from 'lucide-react';
-import { type ReactNode, useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
+import BackButton from '../components/BackButton';
 import PageCard from '../components/PageCard';
 import PageSectionHeader from '../components/PageSectionHeader';
 import ShelfBookCard from '../components/ShelfBookCard';
@@ -21,15 +21,6 @@ const shelfLabels: Record<ShelfPageKey, string> = {
   dnf: 'DNFed',
   favorites: 'Favorites',
   physical_copy: 'Physical copies',
-};
-
-const sectionIcons: Record<ShelfPageKey, ReactNode> = {
-  reading: <BookOpen size={18} className="text-primary/50" />,
-  want_to_read: <Bookmark size={18} className="text-primary/50" />,
-  read: <CheckCircle size={18} className="text-primary/50" />,
-  dnf: <XCircle size={18} className="text-primary/50" />,
-  favorites: <Heart size={18} className="text-primary/50" />,
-  physical_copy: <Package size={18} className="text-primary/50" />,
 };
 
 const emptyStateText: Record<ShelfPageKey, [string, string]> = {
@@ -55,8 +46,10 @@ function ShelfPage() {
   }, [shelfQuery.error, toast]);
 
   useEffect(() => {
+    if (!user) return;
+
     shelfQuery.execute(() => requestServer<GetShelfResponse>('/api/books/shelf'));
-  }, [shelfQuery]);
+  }, [user?.id]);
 
   const shelfKey = status as ShelfPageKey;
   const shelfLabel = shelfLabels[shelfKey];
@@ -80,6 +73,10 @@ function ShelfPage() {
   }, [shelfQuery.data, shelfKey, shelfLabel]);
 
   const [emptyTitle, emptySubtitle] = emptyStateText[shelfKey];
+  const isLoading = shelfQuery.loading;
+  const bookCountDisplay = isLoading
+    ? <span className="loading loading-spinner loading-xs inline-flex" />
+    : books.length;
 
   if (!user) {
     return (
@@ -103,9 +100,7 @@ function ShelfPage() {
               <h1 className="text-3xl font-bold">Shelf not found</h1>
               <p className="mt-4 text-base-content/70">The shelf you requested does not exist.</p>
               <div className="mt-6">
-                <Link to="/my-books" className="btn btn-primary">
-                  Back to My Books
-                </Link>
+                <BackButton className="btn-primary" />
               </div>
             </div>
           </PageCard>
@@ -117,36 +112,25 @@ function ShelfPage() {
   return (
     <div className="min-h-screen bg-base-100 text-base-content">
       <main className="container mx-auto px-6 py-10">
-        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <PageSectionHeader
-              label="Shelf"
-              heading={`Books in ${shelfLabel}`}
-            />
-            <p className="mt-2 text-base text-base-content/70">
-              View all books currently assigned to this shelf.
-            </p>
-          </div>
-          <Link to="/my-books" className="btn btn-ghost btn-sm">
-            Back to My Books
-          </Link>
+        <div className="mb-6">
+          <BackButton className="btn-ghost mb-4" />
+          <PageSectionHeader
+            label="Shelf"
+            heading={(
+              <span className="inline-flex items-center gap-2">
+                <span>{shelfLabel}</span>
+                <span className="text-base-content/70">
+                  (
+                  {bookCountDisplay}
+                  )
+                </span>
+              </span>
+            )}
+          />
+          <p className="mt-2 text-base text-base-content/70">
+            View all books you added to this shelf.
+          </p>
         </div>
-
-        <PageCard variant="bordered" className="mb-10">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-3">
-              <span>{sectionIcons[shelfKey]}</span>
-              <div>
-                <div className="text-sm text-base-content/60">Shelf</div>
-                <div className="text-2xl font-bold">{shelfLabel}</div>
-              </div>
-            </div>
-            <div className="rounded-3xl bg-base-200 px-4 py-3 text-center">
-              <div className="text-sm text-base-content/60">Books</div>
-              <div className="text-3xl font-bold">{books.length}</div>
-            </div>
-          </div>
-        </PageCard>
 
         {books.length === 0
           ? (

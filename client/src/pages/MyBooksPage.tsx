@@ -65,6 +65,8 @@ function MyBooksPage() {
     [shelves, favoriteBooks.length, physicalCopyBooks.length],
   );
 
+  const isLoading = shelfQuery.loading;
+
   if (!user) {
     return (
       <div className="min-h-screen bg-base-100 flex flex-col items-center justify-center p-4">
@@ -88,7 +90,7 @@ function MyBooksPage() {
               heading="Organize your shelves"
             />
             <p className="mt-4 max-w-2xl text-base text-base-content/70">
-              View your current reads, to-read list, finished books, and DNFed titles.
+              View your current reads, to-read list, finished books, DNFed titles, and more.
             </p>
           </div>
         </div>
@@ -101,28 +103,28 @@ function MyBooksPage() {
             <div className="grid grid-cols-2 divide-x divide-y divide-base-200">
               <div className="flex flex-col items-center gap-3 p-4">
                 <BookOpen size={28} className="text-primary/50" />
-                <div className="text-3xl font-bold">{stats.reading}</div>
+                <div className="text-3xl font-bold">{isLoading ? <span className="loading loading-spinner loading-md" /> : stats.reading}</div>
                 <Link to="/my-books/reading" className="text-sm font-semibold text-primary hover:underline">
                   Currently Reading
                 </Link>
               </div>
               <div className="flex flex-col items-center gap-3 p-4">
                 <Bookmark size={28} className="text-primary/50" />
-                <div className="text-3xl font-bold">{stats.want_to_read}</div>
+                <div className="text-3xl font-bold">{isLoading ? <span className="loading loading-spinner loading-md" /> : stats.want_to_read}</div>
                 <Link to="/my-books/want_to_read" className="text-sm font-semibold text-primary hover:underline">
                   To Read
                 </Link>
               </div>
               <div className="flex flex-col items-center gap-3 p-4">
                 <CheckCircle size={28} className="text-primary/50" />
-                <div className="text-3xl font-bold">{stats.read}</div>
+                <div className="text-3xl font-bold">{isLoading ? <span className="loading loading-spinner loading-md" /> : stats.read}</div>
                 <Link to="/my-books/read" className="text-sm font-semibold text-primary hover:underline">
                   Read
                 </Link>
               </div>
               <div className="flex flex-col items-center gap-3 p-4">
                 <XCircle size={28} className="text-primary/50" />
-                <div className="text-3xl font-bold">{stats.dnf}</div>
+                <div className="text-3xl font-bold">{isLoading ? <span className="loading loading-spinner loading-md" /> : stats.dnf}</div>
                 <Link to="/my-books/dnf" className="text-sm font-semibold text-primary hover:underline">
                   DNFed
                 </Link>
@@ -137,14 +139,14 @@ function MyBooksPage() {
             <div className="grid grid-cols-2 divide-x divide-base-200">
               <div className="flex flex-col items-center gap-3 p-4">
                 <Heart size={28} className="text-primary/50" />
-                <div className="text-3xl font-bold">{stats.favorites}</div>
+                <div className="text-3xl font-bold">{isLoading ? <span className="loading loading-spinner loading-md" /> : stats.favorites}</div>
                 <Link to="/my-books/favorites" className="text-sm font-semibold text-primary hover:underline">
                   Favorites
                 </Link>
               </div>
               <div className="flex flex-col items-center gap-3 p-4">
                 <Package size={28} className="text-primary/50" />
-                <div className="text-3xl font-bold">{stats.physical_copy}</div>
+                <div className="text-3xl font-bold">{isLoading ? <span className="loading loading-spinner loading-md" /> : stats.physical_copy}</div>
                 <Link to="/my-books/physical_copy" className="text-sm font-semibold text-primary hover:underline">
                   Physical copies
                 </Link>

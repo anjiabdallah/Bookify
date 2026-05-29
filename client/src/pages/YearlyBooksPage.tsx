@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-import PageCard from '../components/PageCard';
-import PageSectionHeader from '../components/PageSectionHeader';
-import ShelfBookCard from '../components/ShelfBookCard';
+import PageCard from '../components/ui/PageCard';
+import PageSectionHeader from '../components/ui/PageSectionHeader';
+import ShelfBookCard from '../components/book/ShelfBookCard';
 import { useAuth } from '../context/useAuth';
 import { useAsync } from '../hooks/useAsync';
 import { requestServer } from '../lib/requestServer';

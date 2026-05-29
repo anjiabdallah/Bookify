@@ -1,6 +1,6 @@
-import BookCard from './book/BookCard';
-import DateDisplay from './ui/DateDisplay';
-import StarRating from './ui/StarRating';
+import BookCard from './BookCard';
+import DateDisplay from './DateDisplay';
+import StarRating from './StarRating';
 
 import type { GetShelfResponse, ShelfStatus } from '../../../server/src/api/types';
 

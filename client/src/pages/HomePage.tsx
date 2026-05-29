@@ -2,11 +2,11 @@ import { BookOpen, Users, Plus, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-import BookCard from '../components/BookCard';
-import PageCard from '../components/PageCard';
-import PageSectionHeader from '../components/PageSectionHeader';
-import SearchBar from '../components/SearchBar';
-import StarRating from '../components/StarRating';
+import BookCard from '../components/book/BookCard';
+import PageCard from '../components/ui/PageCard';
+import PageSectionHeader from '../components/ui/PageSectionHeader';
+import SearchBar from '../components/ui/SearchBar';
+import StarRating from '../components/ui/StarRating';
 import { useAuth } from '../context/useAuth';
 
 const trendingBooks = [

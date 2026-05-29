@@ -1,6 +1,6 @@
-import DateDisplay from '../DateDisplay';
-import PageSectionHeader from '../PageSectionHeader';
-import StarRating from '../StarRating';
+import DateDisplay from '../ui/DateDisplay';
+import PageSectionHeader from '../ui/PageSectionHeader';
+import StarRating from '../ui/StarRating';
 
 import type { GetShelfResponse } from '../../../../server/src/api/types';
 

@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
 import AuthPageShell from '../components/AuthPageShell';
-import FormField from '../components/FormField';
+import FormField from '../components/ui/FormField';
 import { useAuth } from '../context/authContext';
 import { useAsync } from '../hooks/useAsync';
 import { requestServer } from '../lib/requestServer';

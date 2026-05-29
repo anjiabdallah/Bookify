@@ -1,14 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
-import BackButton from '../components/BackButton';
 import AddToShelfForm from '../components/book/AddToShelfForm';
 import BookCoverCard from '../components/book/BookCoverCard';
 import BookDescriptionSection from '../components/book/BookDescriptionSection';
 import BookMetadataCard from '../components/book/BookMetadataCard';
 import BookShelfInfoDisplay from '../components/book/BookShelfInfoDisplay';
-import PageCard from '../components/PageCard';
-import PageSectionHeader from '../components/PageSectionHeader';
+import BackButton from '../components/ui/BackButton';
+import PageCard from '../components/ui/PageCard';
+import PageSectionHeader from '../components/ui/PageSectionHeader';
 import { useAuth } from '../context/useAuth';
 import { useAsync } from '../hooks/useAsync';
 import { requestServer } from '../lib/requestServer';

@@ -3,10 +3,10 @@ import { useEffect, useMemo, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
-import PageCard from '../components/PageCard';
 import ProfileDisplayView from '../components/profile/ProfileDisplayView';
 import ProfileEditForm from '../components/profile/ProfileEditForm';
 import ProfileHeader from '../components/profile/ProfileHeader';
+import PageCard from '../components/ui/PageCard';
 import { useAuth } from '../context/useAuth';
 import { useToast } from '../context/useToast';
 import { useAsync } from '../hooks/useAsync';

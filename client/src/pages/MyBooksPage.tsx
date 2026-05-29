@@ -2,9 +2,9 @@ import { BookOpen, Bookmark, CheckCircle, Heart, Package, XCircle } from 'lucide
 import { useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-import PageCard from '../components/PageCard';
-import PageSectionHeader from '../components/PageSectionHeader';
-import ShelfStatCard from '../components/ShelfStatCard';
+import PageCard from '../components/ui/PageCard';
+import PageSectionHeader from '../components/ui/PageSectionHeader';
+import ShelfStatCard from '../components/ui/ShelfStatCard';
 import { useAuth } from '../context/useAuth';
 import { useToast } from '../context/useToast';
 import { useAsync } from '../hooks/useAsync';

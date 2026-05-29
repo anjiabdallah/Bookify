@@ -1,10 +1,10 @@
 import { useEffect, useMemo } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
-import BackButton from '../components/BackButton';
-import PageCard from '../components/PageCard';
-import PageSectionHeader from '../components/PageSectionHeader';
-import ShelfBookCard from '../components/ShelfBookCard';
+import ShelfBookCard from '../components/book/ShelfBookCard';
+import BackButton from '../components/ui/BackButton';
+import PageCard from '../components/ui/PageCard';
+import PageSectionHeader from '../components/ui/PageSectionHeader';
 import { useAuth } from '../context/useAuth';
 import { useToast } from '../context/useToast';
 import { useAsync } from '../hooks/useAsync';

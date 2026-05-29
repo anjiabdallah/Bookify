@@ -4,11 +4,11 @@ import { useForm } from 'react-hook-form';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
-import BookCard from '../components/BookCard';
-import PageCard from '../components/PageCard';
-import PageSectionHeader from '../components/PageSectionHeader';
-import SearchBar from '../components/SearchBar';
-import ShelfActionModal from '../components/ShelfActionModal';
+import BookCard from '../components/book/BookCard';
+import ShelfActionModal from '../components/book/ShelfActionModal';
+import PageCard from '../components/ui/PageCard';
+import PageSectionHeader from '../components/ui/PageSectionHeader';
+import SearchBar from '../components/ui/SearchBar';
 import { useAuth } from '../context/useAuth';
 import { useToast } from '../context/useToast';
 import { useAsync } from '../hooks/useAsync';

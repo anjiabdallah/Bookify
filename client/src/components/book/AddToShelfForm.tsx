@@ -4,7 +4,7 @@ import { useToast } from '../../context/useToast';
 import { useAsync } from '../../hooks/useAsync';
 import { requestServer } from '../../lib/requestServer';
 import { stripHtml } from '../../lib/stripHtml';
-import StarRating from '../StarRating';
+import StarRating from '../ui/StarRating';
 
 import type { AddToShelfResponse, BookDetailResponse, ShelfStatus } from '../../../../server/src/api/types';
 

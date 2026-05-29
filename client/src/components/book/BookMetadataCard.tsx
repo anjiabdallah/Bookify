@@ -1,5 +1,5 @@
-import DateDisplay from '../DateDisplay';
-import PageCard from '../PageCard';
+import DateDisplay from '../ui/DateDisplay';
+import PageCard from '../ui/PageCard';
 
 import type { BookDetailResponse } from '../../../../server/src/api/types';
 

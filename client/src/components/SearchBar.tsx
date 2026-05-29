@@ -42,7 +42,7 @@ function SearchBar({
   }
 
   return (
-    <form onSubmit={onSubmit} className={`mt-10 grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end ${className}`.trim()}>
+    <form onSubmit={onSubmit} className={`mt-10 grid gap-3 sm:grid-cols-[1fr_auto] sm:items-start ${className}`.trim()}>
       <div className="flex-1">
         <input
           type="text"

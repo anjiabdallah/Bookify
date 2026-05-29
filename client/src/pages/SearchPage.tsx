@@ -194,13 +194,6 @@ function SearchPage() {
             <PageSectionHeader
               label="Book Search"
               heading="Find your next favorite read."
-              right={user && (
-                <div className="text-sm text-base-content/50">
-                  Logged in as
-                  <br />
-                  {user.username}
-                </div>
-              )}
             />
 
             <SearchBar

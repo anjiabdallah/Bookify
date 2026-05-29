@@ -76,7 +76,7 @@ function ProfileEditForm({
             }}
           />
           <span className="mt-2 block text-sm text-base-content/60">
-            Upload a photo file instead of entering a URL.
+            Upload a profile picture
           </span>
           {avatarError && (
             <span className="mt-2 block text-sm text-error">

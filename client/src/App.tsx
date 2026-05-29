@@ -12,6 +12,7 @@ import {
   MyBooksPage,
   YearlyBooksPage,
   BookDetailPage,
+  ShelfPage,
 } from './pages';
 import NotFoundPage from './pages/NotFoundPage';
 
@@ -27,6 +28,7 @@ function App() {
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/my-books" element={<MyBooksPage />} />
+            <Route path="/my-books/:status" element={<ShelfPage />} />
             <Route path="/yearly" element={<YearlyBooksPage />} />
             <Route path="/search" element={<SearchPage />} />
             <Route path="/book/:id" element={<BookDetailPage />} />

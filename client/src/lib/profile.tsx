@@ -15,11 +15,11 @@ export const profileFormSchema = profileCoreSchema.extend({
       const numberValue = Number(value);
       return (
         Number.isInteger(numberValue)
-        && numberValue >= 13
+        && numberValue >= 6
         && numberValue <= 120
       );
     },
-    { message: 'Age must be a whole number between 13 and 120.' },
+    { message: 'Age must be a whole number between 6 and 120.' },
   ),
 });
 

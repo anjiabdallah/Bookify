@@ -45,9 +45,9 @@ function ProfileEditForm({
           </label>
           <input
             type="number"
-            min="13"
+            min="6"
             max="120"
-            placeholder="Your age (13-120)"
+            placeholder="Your age"
             className="input input-bordered w-full bg-base-100 pr-12"
             {...register('age')}
           />

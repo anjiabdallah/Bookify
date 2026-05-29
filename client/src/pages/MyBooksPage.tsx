@@ -1,37 +1,15 @@
-import { BookOpen, Bookmark, CheckCircle, XCircle } from 'lucide-react';
-import { type ReactNode, useEffect, useMemo } from 'react';
+import { BookOpen, Bookmark, CheckCircle, Heart, Package, XCircle } from 'lucide-react';
+import { useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import PageCard from '../components/PageCard';
 import PageSectionHeader from '../components/PageSectionHeader';
-import ShelfBookCard from '../components/ShelfBookCard';
 import { useAuth } from '../context/useAuth';
 import { useToast } from '../context/useToast';
 import { useAsync } from '../hooks/useAsync';
 import { requestServer } from '../lib/requestServer';
 
 import type { AddToShelfResponse, GetShelfResponse, ShelfStatus } from '../../../server/src/api/types';
-
-const shelfOrder: Array<[ShelfStatus, string]> = [
-  ['reading', 'Currently Reading'],
-  ['want_to_read', 'To Read'],
-  ['read', 'Read'],
-  ['dnf', 'DNFed'],
-];
-
-const emptyStateText: Record<ShelfStatus, [string, string]> = {
-  reading: ['No stories are open right now.', 'Start a new adventure!'],
-  want_to_read: ['Your magical TBR awaits.', 'Add some books to read later!'],
-  read: ['No finished books yet.', 'Time to complete your first!'],
-  dnf: ['Nothing abandoned yet.', 'Sometimes books just aren\'t for us.'],
-};
-
-const sectionIcons: Record<ShelfStatus, ReactNode> = {
-  reading: <BookOpen size={18} className="text-primary/50" />,
-  want_to_read: <Bookmark size={18} className="text-primary/50" />,
-  read: <CheckCircle size={18} className="text-primary/50" />,
-  dnf: <XCircle size={18} className="text-primary/50" />,
-};
 
 function MyBooksPage() {
   const navigate = useNavigate();
@@ -87,32 +65,6 @@ function MyBooksPage() {
     [shelves, favoriteBooks.length, physicalCopyBooks.length],
   );
 
-  const handleRate = async (book: GetShelfResponse[number], rating: number) => {
-    if (book.status !== 'read') return;
-
-    const result = await ratingSaver.execute(() =>
-      requestServer<AddToShelfResponse>('/api/books/shelf', {
-        method: 'POST',
-        body: JSON.stringify({
-          google_books_id: book.google_books_id,
-          title: book.title,
-          author: book.author,
-          cover_url: book.cover_url,
-          description: book.description,
-          published_date: book.published_date,
-          status: 'read',
-          rating,
-        }),
-      }),
-    );
-
-    if (result) {
-      shelfQuery.execute(() => requestServer<GetShelfResponse>('/api/books/shelf'));
-      toast.showToast('Book rating saved.');
-      ratingSaver.reset();
-    }
-  };
-
   if (!user) {
     return (
       <div className="min-h-screen bg-base-100 flex flex-col items-center justify-center p-4">
@@ -141,133 +93,68 @@ function MyBooksPage() {
           </div>
         </div>
 
-        <PageCard variant="bordered" className="grid gap-4 md:grid-cols-4">
-          <div className="flex flex-col items-center gap-3 border-r border-base-200 pr-4 last:border-r-0 last:pr-0">
-            <BookOpen size={24} className="text-primary/50" />
-            <div className="text-3xl font-bold">{stats.reading}</div>
-            <div className="text-sm text-base-content/60">Currently Reading</div>
-          </div>
-          <div className="flex flex-col items-center gap-3 border-r border-base-200 pr-4 last:border-r-0 last:pr-0">
-            <Bookmark size={24} className="text-primary/50" />
-            <div className="text-3xl font-bold">{stats.want_to_read}</div>
-            <div className="text-sm text-base-content/60">To Read</div>
-          </div>
-          <div className="flex flex-col items-center gap-3 border-r border-base-200 pr-4 last:border-r-0 last:pr-0">
-            <CheckCircle size={24} className="text-primary/50" />
-            <div className="text-3xl font-bold">{stats.read}</div>
-            <div className="text-sm text-base-content/60">Read</div>
-          </div>
-          <div className="flex flex-col items-center gap-3 border-r border-base-200 pr-4 last:border-r-0 last:pr-0">
-            <XCircle size={24} className="text-primary/50" />
-            <div className="text-3xl font-bold">{stats.dnf}</div>
-            <div className="text-sm text-base-content/60">DNFed</div>
-          </div>
-          <div className="flex flex-col items-center gap-3 border-r border-base-200 pr-4 last:border-r-0 last:pr-0">
-            <span className="text-primary/50 text-3xl">❤️</span>
-            <div className="text-3xl font-bold">{stats.favorites}</div>
-            <div className="text-sm text-base-content/60">Favorites</div>
-          </div>
-          <div className="flex flex-col items-center gap-3">
-            <span className="text-primary/50 text-3xl">📦</span>
-            <div className="text-3xl font-bold">{stats.physical_copy}</div>
-            <div className="text-sm text-base-content/60">Physical copies</div>
-          </div>
-        </PageCard>
-
-        <div className="mt-10 space-y-8">
-          {favoriteBooks.length > 0 && (
-            <section className="mb-10">
-              <div className="mb-6 flex items-center justify-between">
-                <h2 className="text-2xl font-semibold">Favorites</h2>
-                <span className="badge badge-primary badge-outline">{favoriteBooks.length}</span>
+        <div className="grid gap-4 lg:grid-cols-2">
+          <PageCard variant="bordered" className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold">Exclusive Shelves</h3>
+            </div>
+            <div className="grid grid-cols-2 divide-x divide-y divide-base-200">
+              <div className="flex flex-col items-center gap-3 p-4">
+                <BookOpen size={28} className="text-primary/50" />
+                <div className="text-3xl font-bold">{stats.reading}</div>
+                <Link to="/my-books/reading" className="text-sm font-semibold text-primary hover:underline">
+                  Currently Reading
+                </Link>
               </div>
-              <div className="grid gap-4 md:grid-cols-2">
-                {favoriteBooks.map(book => (
-                  <ShelfBookCard
-                    key={`fav-${book.id}`}
-                    book={book}
-                    status={book.status}
-                  />
-                ))}
+              <div className="flex flex-col items-center gap-3 p-4">
+                <Bookmark size={28} className="text-primary/50" />
+                <div className="text-3xl font-bold">{stats.want_to_read}</div>
+                <Link to="/my-books/want_to_read" className="text-sm font-semibold text-primary hover:underline">
+                  To Read
+                </Link>
               </div>
-            </section>
-          )}
-
-          {physicalCopyBooks.length > 0 && (
-            <section className="mb-10">
-              <div className="mb-6 flex items-center justify-between">
-                <h2 className="text-2xl font-semibold">Physical copies</h2>
-                <span className="badge badge-primary badge-outline">{physicalCopyBooks.length}</span>
+              <div className="flex flex-col items-center gap-3 p-4">
+                <CheckCircle size={28} className="text-primary/50" />
+                <div className="text-3xl font-bold">{stats.read}</div>
+                <Link to="/my-books/read" className="text-sm font-semibold text-primary hover:underline">
+                  Read
+                </Link>
               </div>
-              <div className="grid gap-4 md:grid-cols-2">
-                {physicalCopyBooks.map(book => (
-                  <ShelfBookCard
-                    key={`phys-${book.id}`}
-                    book={book}
-                    status={book.status}
-                  />
-                ))}
+              <div className="flex flex-col items-center gap-3 p-4">
+                <XCircle size={28} className="text-primary/50" />
+                <div className="text-3xl font-bold">{stats.dnf}</div>
+                <Link to="/my-books/dnf" className="text-sm font-semibold text-primary hover:underline">
+                  DNFed
+                </Link>
               </div>
-            </section>
-          )}
+            </div>
+          </PageCard>
 
-          {shelfOrder.map(([status, label]) => {
-            const books = shelves[status];
-            const [emptyTitle, emptySubtitle] = emptyStateText[status];
-
-            return (
-              <section key={status}>
-                <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="flex items-center gap-3">
-                    <span>{sectionIcons[status]}</span>
-                    <h2 className="text-2xl font-semibold">
-                      {label}
-                      {' '}
-                      (
-                      {books.length}
-                      )
-                    </h2>
-                  </div>
-                  <Link to="/search" className="btn btn-primary btn-sm rounded-full">
-                    + Add a book
-                  </Link>
-                </div>
-
-                <div className="rounded-2xl border border-dashed border-base-300 bg-base-100 p-8">
-                  {books.length === 0
-                    ? (
-                        <div className="flex flex-col items-center justify-center gap-4 text-center">
-                          <div className="text-5xl text-primary/30">{status === 'reading' ? '📖' : status === 'want_to_read' ? '🌿' : status === 'read' ? '✨' : '🪄'}</div>
-                          <div className="space-y-1 text-base text-base-content/70">
-                            <p>{emptyTitle}</p>
-                            <p>{emptySubtitle}</p>
-                          </div>
-                          <Link to="/search" className="btn btn-ghost btn-sm">
-                            Browse Books
-                          </Link>
-                        </div>
-                      )
-                    : (
-                        <div className="grid gap-4 md:grid-cols-2">
-                          {books.map(book => (
-                            <ShelfBookCard
-                              key={book.id}
-                              book={book}
-                              status={status}
-                              onRate={value => handleRate(book, value)}
-                            />
-                          ))}
-                        </div>
-                      )}
-                </div>
-              </section>
-            );
-          })}
+          <PageCard variant="bordered" className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold">Additional Tags</h3>
+            </div>
+            <div className="grid grid-cols-2 divide-x divide-base-200">
+              <div className="flex flex-col items-center gap-3 p-4">
+                <Heart size={28} className="text-primary/50" />
+                <div className="text-3xl font-bold">{stats.favorites}</div>
+                <Link to="/my-books/favorites" className="text-sm font-semibold text-primary hover:underline">
+                  Favorites
+                </Link>
+              </div>
+              <div className="flex flex-col items-center gap-3 p-4">
+                <Package size={28} className="text-primary/50" />
+                <div className="text-3xl font-bold">{stats.physical_copy}</div>
+                <Link to="/my-books/physical_copy" className="text-sm font-semibold text-primary hover:underline">
+                  Physical copies
+                </Link>
+              </div>
+            </div>
+          </PageCard>
         </div>
 
-        <div className="mt-12 rounded-3xl bg-base-200 p-8 text-base-content shadow-sm">
-          <div className="grid gap-6 lg:grid-cols-[1fr_2fr_1fr] lg:items-center">
-            <div className="rounded-3xl bg-primary/10 p-6 text-center text-primary/70">✦</div>
+        <div className="mt-10 rounded-3xl bg-base-200 p-8 text-base-content shadow-sm">
+          <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
             <div>
               <h2 className="text-2xl font-bold">Looking for your next adventure?</h2>
               <p className="mt-3 text-base text-base-content/70">Discover new books that match your mood.</p>

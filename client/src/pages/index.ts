@@ -4,6 +4,7 @@ export { default as ProfilePage } from './ProfilePage';
 export { default as RegisterPage } from './RegisterPage';
 export { default as SearchPage } from './SearchPage';
 export { default as MyBooksPage } from './MyBooksPage';
+export { default as ShelfPage } from './ShelfPage';
 export { default as YearlyBooksPage } from './YearlyBooksPage';
 export { default as BookDetailPage } from './BookDetailPage';
 export { default as NotFoundPage } from './NotFoundPage';

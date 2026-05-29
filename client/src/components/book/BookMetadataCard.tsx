@@ -22,8 +22,8 @@ function BookMetadataCard({ book }: BookMetadataCardProps) {
         </div>
 
         <div>
-          <div className="font-semibold">Published</div>
-          <DateDisplay value={book.published_date} emptyLabel="Unknown" />
+          <div className="font-semibold">Publication Date</div>
+          <DateDisplay value={book.published_date} emptyLabel="Unknown" yearOnly />
         </div>
 
         <div>

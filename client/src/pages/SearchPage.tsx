@@ -204,7 +204,7 @@ function SearchPage() {
               error={queryError}
               className="flex flex-col gap-3"
               buttonClassName="rounded-2xl px-8"
-              inputClassName="rounded-2xl pl-12"
+              inputClassName="rounded-2xl pl-6"
             />
           </PageCard>
 

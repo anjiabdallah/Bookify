@@ -12,11 +12,41 @@ import { requestServer } from '../lib/requestServer';
 
 import type { RegisterResponse } from '../../../server/src/api/types';
 
-const registerSchema = z.object({
-  email: z.string().email({ message: 'Enter a valid email address' }),
-  username: z.string().min(3, { message: 'Username must be at least 3 characters' }),
-  password: z.string().min(6, { message: 'Password must be at least 6 characters' }),
-});
+const passwordRequirement = z
+  .string()
+  .min(8, { message: 'Password must be at least 8 characters' })
+  .refine(value => /[A-Z]/.test(value), {
+    message: 'Password must include at least one uppercase letter',
+  })
+  .refine(value => /[a-z]/.test(value), {
+    message: 'Password must include at least one lowercase letter',
+  })
+  .refine(value => /\d/.test(value), {
+    message: 'Password must include at least one number',
+  })
+  .refine(value => /[\W_]/.test(value), {
+    message: 'Password must include at least one special character',
+  });
+
+const registerSchema = z
+  .object({
+    email: z.string().email({ message: 'Enter a valid email address' }),
+    username: z
+      .string()
+      .min(4, { message: 'Username must be at least 4 characters' })
+      .max(20, { message: 'Username must be at most 20 characters' }),
+    password: passwordRequirement,
+    confirmPassword: z.string(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.password !== data.confirmPassword) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Passwords do not match',
+        path: ['confirmPassword'],
+      });
+    }
+  });
 
 type RegisterFormData = z.infer<typeof registerSchema>;
 
@@ -28,10 +58,12 @@ function RegisterPage() {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
-    mode: 'onBlur',
+    mode: 'onSubmit',
+    reValidateMode: 'onSubmit',
   });
 
   const onSubmit = async (values: RegisterFormData) => {
@@ -42,6 +74,17 @@ function RegisterPage() {
       }),
     );
 
+    if (!data && registerRequest.error) {
+      const message = registerRequest.error;
+      if (message.includes('Email')) {
+        setError('email', { type: 'server', message });
+      } else if (message.includes('Username')) {
+        setError('username', { type: 'server', message });
+      } else if (message.includes('Password')) {
+        setError('password', { type: 'server', message });
+      }
+    }
+
     if (data) {
       setAuth(data.user, data.token);
       navigate('/');
@@ -51,11 +94,19 @@ function RegisterPage() {
   const emailError = useMemo(() => errors.email?.message, [errors.email]);
   const usernameError = useMemo(() => errors.username?.message, [errors.username]);
   const passwordError = useMemo(() => errors.password?.message, [errors.password]);
+  const confirmPasswordError = useMemo(
+    () => errors.confirmPassword?.message,
+    [errors.confirmPassword],
+  );
+
+  const registerFieldErrorMapped = ['Email', 'Username', 'Password'].some(keyword =>
+    registerRequest.error?.includes(keyword),
+  );
 
   return (
     <AuthPageShell
       subtitle="Create your account"
-      error={registerRequest.error}
+      error={registerFieldErrorMapped ? undefined : registerRequest.error}
       footerText="Already have an account?"
       footerLinkText="Login"
       footerLinkTo="/login"
@@ -86,6 +137,15 @@ function RegisterPage() {
           placeholder="••••••••"
           {...register('password')}
           error={passwordError}
+        />
+
+        <FormField
+          id="confirmPassword"
+          label="Confirm Password"
+          type="password"
+          placeholder="••••••••"
+          {...register('confirmPassword')}
+          error={confirmPasswordError}
         />
 
         <button type="submit" className="btn btn-primary w-full mt-2" disabled={isSubmitting}>

@@ -7,14 +7,13 @@ import { z } from 'zod';
 import AuthPageShell from '../components/AuthPageShell';
 import FormField from '../components/ui/FormField';
 import { useAuth } from '../context/authContext';
-import { useAsync } from '../hooks/useAsync';
 import { requestServer } from '../lib/requestServer';
 
 import type { LoginResponse } from '../../../server/src/api/types';
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Enter a valid email address' }),
-  password: z.string().min(6, { message: 'Password must be at least 6 characters' }),
+  password: z.string().min(1, { message: 'Enter your password' }),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
@@ -22,28 +21,29 @@ type LoginFormData = z.infer<typeof loginSchema>;
 function LoginPage() {
   const navigate = useNavigate();
   const { setAuth } = useAuth();
-  const login = useAsync<LoginResponse>();
 
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
-    mode: 'onBlur',
+    mode: 'onSubmit',
+    reValidateMode: 'onSubmit',
   });
 
   const onSubmit = async (values: LoginFormData) => {
-    const data = await login.execute(() =>
-      requestServer<LoginResponse>('/api/auth/login', {
+    try {
+      const data = await requestServer<LoginResponse>('/api/auth/login', {
         method: 'POST',
         body: JSON.stringify(values),
-      }),
-    );
-
-    if (data) {
+      });
       setAuth(data.user, data.token);
       navigate('/');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Invalid credentials';
+      setError('password', { type: 'server', message });
     }
   };
 
@@ -53,7 +53,6 @@ function LoginPage() {
   return (
     <AuthPageShell
       subtitle="Welcome back!"
-      error={login.error}
       footerText="Don't have an account?"
       footerLinkText="Register"
       footerLinkTo="/register"

@@ -43,10 +43,32 @@ const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 },
 });
 
+const passwordRequirement = z
+  .string()
+  .min(8, { message: 'Password must be at least 8 characters' })
+  .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/, {
+    message: 'Password must contain uppercase, lowercase, number, and special character',
+  });
+
+const formatZodError = (error: z.ZodError) => {
+  const flattened = error.flatten();
+  const fieldMessages = Object.values(flattened.fieldErrors).flat();
+  if (flattened.formErrors.length > 0) {
+    return flattened.formErrors.join(', ');
+  }
+  if (fieldMessages.length > 0) {
+    return fieldMessages.join(', ');
+  }
+  return 'Invalid input';
+};
+
 const registerSchema = z.object({
   email: z.string().email(),
-  username: z.string().min(3).max(100),
-  password: z.string().min(6),
+  username: z
+    .string()
+    .min(4, { message: 'Username must be at least 4 characters' })
+    .max(20, { message: 'Username must be at most 20 characters' }),
+  password: passwordRequirement,
 });
 
 const profileSchema = z.object({
@@ -58,14 +80,14 @@ const profileSchema = z.object({
 
 const loginSchema = z.object({
   email: z.string().email(),
-  password: z.string(),
+  password: z.string().min(1, { message: 'Enter your password' }),
 });
 
 // Register
 router.post('/register', async (req, res) => {
   const result = registerSchema.safeParse(req.body);
   if (!result.success) {
-    res.status(400).json({ error: result.error.flatten() });
+    res.status(400).json({ error: formatZodError(result.error) });
     return;
   }
 
@@ -101,7 +123,7 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
   const result = loginSchema.safeParse(req.body);
   if (!result.success) {
-    res.status(400).json({ error: result.error.flatten() });
+    res.status(400).json({ error: formatZodError(result.error) });
     return;
   }
 
@@ -165,7 +187,7 @@ router.get('/profile', authMiddleware, async (req: AuthRequest, res) => {
 router.put('/profile', authMiddleware, async (req: AuthRequest, res) => {
   const result = profileSchema.safeParse(req.body);
   if (!result.success) {
-    res.status(400).json({ error: result.error.flatten() });
+    res.status(400).json({ error: formatZodError(result.error) });
     return;
   }
 

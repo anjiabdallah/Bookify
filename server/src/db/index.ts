@@ -6,6 +6,9 @@ export interface UsersTable {
   email: string;
   username: string;
   password_hash: string;
+  first_name?: string | null;
+  last_name?: string | null;
+  gender?: string | null;
   age?: number | null;
   bio?: string | null;
   favorite_categories?: string | null;

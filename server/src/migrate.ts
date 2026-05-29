@@ -10,7 +10,7 @@ import { db } from './db/index.js';
 class CustomMigrationProvider implements MigrationProvider {
   async getMigrations(): Promise<Record<string, Migration>> {
     const migrations: Record<string, Migration> = {};
-    const migrationFolder = path.join(import.meta.dirname, 'migrations');
+    const migrationFolder = path.join(import.meta.dirname, 'db', 'migrations');
     const files = await fs.readdir(migrationFolder);
 
     for (const file of files) {

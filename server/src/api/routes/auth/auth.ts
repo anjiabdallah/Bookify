@@ -63,12 +63,32 @@ const formatZodError = (error: z.ZodError) => {
 };
 
 const registerSchema = z.object({
+  firstName: z
+    .string()
+    .min(2, { message: 'First name must be at least 2 characters' })
+    .max(50, { message: 'First name must be at most 50 characters' }),
+  lastName: z
+    .string()
+    .min(2, { message: 'Last name must be at least 2 characters' })
+    .max(50, { message: 'Last name must be at most 50 characters' }),
   email: z.string().email(),
   username: z
     .string()
     .min(4, { message: 'Username must be at least 4 characters' })
     .max(20, { message: 'Username must be at most 20 characters' }),
+  gender: z.enum(['female', 'male', 'other', 'prefer_not_to_say'] as const, {
+    error: 'Select your gender',
+  }),
   password: passwordRequirement,
+  confirmPassword: z.string(),
+}).superRefine((data, ctx) => {
+  if (data.password !== data.confirmPassword) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Passwords do not match',
+      path: ['confirmPassword'],
+    });
+  }
 });
 
 const profileSchema = z.object({
@@ -91,7 +111,7 @@ router.post('/register', async (req, res) => {
     return;
   }
 
-  const { email, username, password } = result.data;
+  const { firstName, lastName, email, username, password, gender } = result.data;
 
   const existing = await db
     .selectFrom('users')
@@ -108,7 +128,14 @@ router.post('/register', async (req, res) => {
 
   const user = await db
     .insertInto('users')
-    .values({ email, username, password_hash })
+    .values({
+      first_name: firstName,
+      last_name: lastName,
+      email,
+      username,
+      password_hash,
+      gender,
+    })
     .returning(['id', 'email', 'username'])
     .executeTakeFirstOrThrow();
 

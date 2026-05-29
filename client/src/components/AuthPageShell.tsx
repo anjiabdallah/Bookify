@@ -21,7 +21,7 @@ function AuthPageShell({
 }: AuthPageShellProps) {
   return (
     <div className="min-h-screen bg-base-100 flex items-center justify-center p-4">
-      <div className="card bg-base-200 shadow-md w-full max-w-[400px] mx-auto">
+      <div className="card bg-base-200 shadow-md w-full max-w-[520px] mx-auto">
         <div className="card-body">
           <div className="flex items-center gap-2 justify-center mb-4">
             <BookOpen size={32} className="text-primary" />

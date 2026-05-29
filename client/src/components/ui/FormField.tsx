@@ -17,7 +17,9 @@ function FormField({ id, label, error, className = '', ...inputProps }: FormFiel
         className={`input input-bordered w-full ${className}`.trim()}
         {...inputProps}
       />
-      {error ? <span className="text-sm text-error mt-1">{error}</span> : null}
+      <div className="min-h-1">
+        {error ? <span className="text-sm text-error block">{error}</span> : null}
+      </div>
     </div>
   );
 }

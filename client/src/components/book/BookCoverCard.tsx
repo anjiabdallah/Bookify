@@ -1,4 +1,4 @@
-import PageCard from '../PageCard';
+import PageCard from '../ui/PageCard';
 
 import type { BookDetailResponse } from '../../../../server/src/api/types';
 

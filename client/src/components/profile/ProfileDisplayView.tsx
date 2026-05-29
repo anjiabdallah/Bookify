@@ -1,4 +1,4 @@
-import PageCard from '../PageCard';
+import PageCard from '../ui/PageCard';
 
 import type { ProfileResponse } from '../../../../server/src/api/types';
 

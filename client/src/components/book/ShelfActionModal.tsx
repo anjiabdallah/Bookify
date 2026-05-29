@@ -1,8 +1,8 @@
 import { useCallback } from 'react';
 
-import StarRating from './StarRating';
+import StarRating from '../ui/StarRating';
 
-import type { ShelfModalBook } from '../types/shelfModal.ts';
+import type { ShelfModalBook } from '../../types/shelfModal.ts';
 import type { ReactNode } from 'react';
 
 type ShelfActionModalProps = {

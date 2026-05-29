@@ -35,7 +35,7 @@ function BookShelfInfoDisplay({ entry, onEdit }: BookShelfInfoDisplayProps) {
           <div>
             <h2 className="text-2xl font-semibold">Your shelf info</h2>
             <p className="text-sm text-base-content/70 mt-1">
-              This book is already on your shelf. Review your saved details or edit them anytime.
+              Edit the status of the book
             </p>
           </div>
           <button type="button" className="btn btn-primary btn-sm" onClick={onEdit}>

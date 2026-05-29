@@ -153,9 +153,6 @@ function SearchPage() {
               coverUrl={result.cover_url}
               title={result.title}
               author={result.author}
-              topRight={(
-                <div className="badge badge-outline">{result.published_date ?? 'Unknown'}</div>
-              )}
             >
               <p className="text-sm text-base-content/70 line-clamp-3">{result.description ?? 'No description available.'}</p>
               <div className="flex flex-wrap gap-2">

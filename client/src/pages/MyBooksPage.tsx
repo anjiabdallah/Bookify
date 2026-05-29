@@ -134,13 +134,6 @@ function MyBooksPage() {
             <PageSectionHeader
               label="My Books"
               heading="Organize your shelves"
-              right={(
-                <div className="relative flex h-full w-full max-w-xs flex-col items-center justify-center rounded-[2rem] border border-primary/10 bg-primary/10 p-8 text-primary/80 shadow-lg shadow-primary/10">
-                  <div className="text-6xl">📚</div>
-                  <div className="mt-3 flex items-center gap-2 text-primary/30 text-2xl">✦</div>
-                  <div className="mt-4 text-center text-sm text-base-content/70">A gentle stack of stories waiting for you.</div>
-                </div>
-              )}
             />
             <p className="mt-4 max-w-2xl text-base text-base-content/70">
               View your current reads, to-read list, finished books, and DNFed titles.

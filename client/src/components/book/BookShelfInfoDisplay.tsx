@@ -1,4 +1,5 @@
 import DateDisplay from '../DateDisplay';
+import PageSectionHeader from '../PageSectionHeader';
 import StarRating from '../StarRating';
 
 import type { GetShelfResponse } from '../../../../server/src/api/types';
@@ -29,19 +30,17 @@ function BookShelfInfoDisplay({ entry, onEdit }: BookShelfInfoDisplayProps) {
   const hasRating = Number.isFinite(ratingValue) && ratingValue > 0;
 
   return (
-    <section className="mt-8 border-t border-base-200 pt-6">
-      <div className="flex flex-col gap-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <h2 className="text-2xl font-semibold">Your shelf info</h2>
-            <p className="text-sm text-base-content/70 mt-1">
-              Edit the status of the book
-            </p>
-          </div>
+    <section className="border-t border-base-200 pt-4">
+      <PageSectionHeader
+        heading="Shelf Info"
+        right={(
           <button type="button" className="btn btn-primary btn-sm" onClick={onEdit}>
             Edit
           </button>
-        </div>
+        )}
+        className="mb-4"
+      />
+      <div className="flex flex-col gap-6">
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">

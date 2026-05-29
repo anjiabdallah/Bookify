@@ -1,3 +1,4 @@
+import FieldGroup from '../ui/FieldGroup';
 import StarRating from '../ui/StarRating';
 
 import type { ShelfStatus } from '../../../../server/src/api/types';
@@ -51,10 +52,7 @@ function ShelfFormFields({
         </>
       )}
 
-      <div className="space-y-2">
-        <label className="label">
-          <span className="label-text">Shelf status</span>
-        </label>
+      <FieldGroup label="Shelf status">
         <select
           className="select select-bordered w-full"
           value={selectedShelf}
@@ -66,7 +64,7 @@ function ShelfFormFields({
             </option>
           ))}
         </select>
-      </div>
+      </FieldGroup>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="cursor-pointer rounded-2xl border border-base-200 p-4 flex items-center justify-start gap-3">
@@ -92,24 +90,18 @@ function ShelfFormFields({
 
       {selectedShelf === 'read' && (
         <>
-          <div className="space-y-2">
-            <label className="label">
-              <span className="label-text">Rating (optional)</span>
-            </label>
+          <FieldGroup label="Rating (optional)">
             <StarRating value={selectedRating} onChange={onRatingChange} />
-          </div>
+          </FieldGroup>
 
-          <div className="space-y-2">
-            <label className="label">
-              <span className="label-text">Finish date (optional)</span>
-            </label>
+          <FieldGroup label="Finish date (optional)">
             <input
               type="date"
               className="input input-bordered w-full"
               value={selectedFinishDate}
               onChange={event => onFinishDateChange(event.target.value)}
             />
-          </div>
+          </FieldGroup>
         </>
       )}
     </div>

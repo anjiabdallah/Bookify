@@ -1,6 +1,7 @@
 import { Cake, CheckCircle2, Sparkles } from 'lucide-react';
 
 import { categories, categoryIcons } from '../../lib/profileConstants.ts';
+import FieldGroup from '../ui/FieldGroup';
 
 import type { ProfileFormData } from '../../lib/profile.tsx';
 import type { UseFormHandleSubmit, UseFormRegister, UseFormSetValue } from 'react-hook-form';
@@ -39,33 +40,26 @@ function ProfileEditForm({
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
       <div className="grid gap-8 lg:grid-cols-[1fr_1fr]">
-        <div className="relative">
-          <label className="label">
-            <span className="label-text font-medium">Age</span>
-          </label>
-          <input
-            type="number"
-            min="6"
-            max="120"
-            placeholder="Your age"
-            className="input input-bordered w-full bg-base-100 pr-12"
-            {...register('age')}
-          />
-          <Cake
-            size={20}
-            className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-primary/40"
-          />
-          {ageError && (
-            <span className="mt-2 block text-sm text-error">{ageError}</span>
-          )}
-        </div>
+        <FieldGroup label="Age" error={ageError}>
+          <div className="relative">
+            <input
+              type="number"
+              min="6"
+              max="120"
+              placeholder="Your age"
+              className="input input-bordered w-full bg-base-100 pr-12"
+              {...register('age')}
+            />
+            <Cake
+              size={20}
+              className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-primary/40"
+            />
+          </div>
+        </FieldGroup>
       </div>
 
       <div className="space-y-4">
-        <div className="relative">
-          <label className="label">
-            <span className="label-text font-medium">Profile photo</span>
-          </label>
+        <FieldGroup label="Profile photo" hint="Upload a profile picture" error={avatarError}>
           <input
             type="file"
             accept="image/*"
@@ -75,24 +69,16 @@ function ProfileEditForm({
               onAvatarSelect(file);
             }}
           />
-          <span className="mt-2 block text-sm text-base-content/60">
-            Upload a profile picture
-          </span>
-          {avatarError && (
-            <span className="mt-2 block text-sm text-error">
-              {avatarError}
-            </span>
-          )}
-          {(selectedAvatarPreviewUrl || currentAvatarUrl) && (
-            <div className="mt-4 overflow-hidden rounded-3xl border border-base-200">
-              <img
-                src={selectedAvatarPreviewUrl ?? currentAvatarUrl ?? undefined}
-                alt="Profile preview"
-                className="h-40 w-full object-cover"
-              />
-            </div>
-          )}
-        </div>
+        </FieldGroup>
+        {(selectedAvatarPreviewUrl || currentAvatarUrl) && (
+          <div className="mt-4 overflow-hidden rounded-3xl border border-base-200">
+            <img
+              src={selectedAvatarPreviewUrl ?? currentAvatarUrl ?? undefined}
+              alt="Profile preview"
+              className="h-40 w-full object-cover"
+            />
+          </div>
+        )}
 
         <p className="label-text mb-4 block text-sm font-medium">
           Favorite categories
@@ -138,23 +124,19 @@ function ProfileEditForm({
         </div>
       </div>
 
-      <div className="relative">
-        <label className="label">
-          <span className="label-text font-medium">About you</span>
-        </label>
-        <textarea
-          placeholder="Tell other readers a little about your tastes..."
-          className="textarea textarea-bordered w-full bg-base-100 pr-10"
-          {...register('bio')}
-          rows={5}
-        />
-        <div className="pointer-events-none absolute bottom-4 right-4 text-2xl text-primary/10">
-          ✿
+      <FieldGroup label="About you" error={bioError}>
+        <div className="relative">
+          <textarea
+            placeholder="Tell other readers a little about your tastes..."
+            className="textarea textarea-bordered w-full bg-base-100 pr-10"
+            {...register('bio')}
+            rows={5}
+          />
+          <div className="pointer-events-none absolute bottom-4 right-4 text-2xl text-primary/10">
+            ✿
+          </div>
         </div>
-        {bioError && (
-          <span className="mt-2 block text-sm text-error">{bioError}</span>
-        )}
-      </div>
+      </FieldGroup>
 
       <div className="flex flex-wrap items-center gap-4">
         <button

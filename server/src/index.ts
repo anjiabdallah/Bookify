@@ -6,8 +6,8 @@ import { fileURLToPath } from 'url';
 import cors from 'cors';
 import express from 'express';
 
-import authRouter from './api/routes/auth.js';
-import booksRouter from './api/routes/books.js';
+import authRouter from './api/routes/auth/auth.js';
+import booksRouter from './api/routes/books/books.js';
 import { authMiddleware, type AuthRequest } from './middleware/auth.js';
 
 import type { Response } from 'express';

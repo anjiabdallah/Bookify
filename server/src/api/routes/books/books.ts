@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import { z } from 'zod';
 
-import { db } from '../../db.js';
-import { authMiddleware, type AuthRequest } from '../../middleware/auth.js';
+import { db } from '../../../db/index.js';
+import { authMiddleware, type AuthRequest } from '../../../middleware/auth.js';
 
 const router = Router();
 
@@ -66,13 +66,14 @@ const addBookSchema = z.object({
 // Search Google Books
 router.get('/search', async (req, res) => {
   const query = req.query.q as string;
-  if (!query) {
-    res.status(400).json({ error: 'Query is required' });
-    return;
-  }
+  const type = req.query.type as string ?? 'all';
+
+  let googleQuery = query;
+  if (type === 'author') googleQuery = `inauthor:${query}`;
+  else if (type === 'title') googleQuery = `intitle:${query}`;
 
   const response = await fetch(
-    `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=20&key=${process.env.GOOGLE_BOOKS_API_KEY}`,
+    `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(googleQuery)}&maxResults=20&orderBy=relevance&key=${process.env.GOOGLE_BOOKS_API_KEY}`,
   );
   const data = await response.json() as GoogleBooksResponse;
 

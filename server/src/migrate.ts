@@ -5,7 +5,7 @@ import { pathToFileURL } from 'url';
 
 import { type Migration, type MigrationProvider, Migrator } from 'kysely/migration';
 
-import { db } from './db.js';
+import { db } from './db/index.js';
 
 class CustomMigrationProvider implements MigrationProvider {
   async getMigrations(): Promise<Record<string, Migration>> {

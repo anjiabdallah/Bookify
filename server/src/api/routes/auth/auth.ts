@@ -8,13 +8,13 @@ import jwt from 'jsonwebtoken';
 import multer, { type FileFilterCallback } from 'multer';
 import { z } from 'zod';
 
-import { db } from '../../db.js';
-import { authMiddleware, type AuthRequest } from '../../middleware/auth.js';
+import { db } from '../../../db/index.js';
+import { authMiddleware, type AuthRequest } from '../../../middleware/auth.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const router = Router();
 
-const uploadDir = path.resolve(__dirname, '../../../uploads');
+const uploadDir = path.resolve(__dirname, '../../../../uploads');
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }

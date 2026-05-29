@@ -16,13 +16,14 @@ function Navbar() {
 
   return (
     <div className="navbar bg-base-200 px-6 shadow-sm">
-      <div className="flex-1">
+      <div className="flex-none">
         <Link to="/" className="flex items-center gap-2 text-xl font-bold text-primary">
           <BookOpen size={24} />
           Bookify
         </Link>
       </div>
-      <div className="flex-none flex items-center gap-4">
+
+      <div className="flex-1 flex items-center justify-center gap-4">
         <Link to="/search" className="btn btn-ghost btn-sm">Search</Link>
         {user && (
           <>
@@ -37,12 +38,27 @@ function Navbar() {
                 <Link to="/register" className="btn btn-primary btn-sm">Register</Link>
               </>
             )
-          : (
-              <>
-                <Link to="/profile" className="btn btn-ghost btn-sm">Profile</Link>
-                <button onClick={logout} className="btn btn-ghost btn-sm">Logout</button>
-              </>
-            )}
+          : null}
+      </div>
+
+      <div className="flex-none flex items-center gap-4">
+        {user
+          ? (
+              <div className="dropdown dropdown-end">
+                <label tabIndex={0} className="btn btn-ghost btn-sm gap-2">
+                  {user.username}
+                </label>
+                <ul tabIndex={0} className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-40">
+                  <li>
+                    <Link to="/profile">Profile</Link>
+                  </li>
+                  <li>
+                    <button type="button" onClick={logout}>Logout</button>
+                  </li>
+                </ul>
+              </div>
+            )
+          : null}
         <button onClick={toggleTheme} className="btn btn-ghost btn-circle btn-sm">
           {isDark ? <Sun size={18} /> : <Moon size={18} />}
         </button>

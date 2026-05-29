@@ -1,8 +1,8 @@
 import BookCard from './BookCard';
-import DateDisplay from './DateDisplay';
-import StarRating from './StarRating';
+import DateDisplay from '../ui/DateDisplay';
+import StarRating from '../ui/StarRating';
 
-import type { GetShelfResponse, ShelfStatus } from '../../../server/src/api/types';
+import type { GetShelfResponse, ShelfStatus } from '../../../../server/src/api/types';
 
 type ShelfBookCardProps = {
   book: GetShelfResponse[number];

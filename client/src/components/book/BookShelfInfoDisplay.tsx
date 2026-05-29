@@ -44,7 +44,7 @@ function BookShelfInfoDisplay({ entry, onEdit }: BookShelfInfoDisplayProps) {
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <div className="font-semibold">Shelf status</div>
+            <div className="font-semibold">Shelf</div>
             <span className={statusClass[entry.status]}>{statusLabel[entry.status]}</span>
           </div>
 

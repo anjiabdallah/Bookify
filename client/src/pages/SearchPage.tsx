@@ -14,7 +14,7 @@ import { useToast } from '../context/useToast';
 import { useAsync } from '../hooks/useAsync';
 import { requestServer } from '../lib/requestServer';
 
-import type { AddToShelfResponse, SearchBooksResponse } from '../../../server/src/api/types';
+import type { AddToShelfResponse, SearchBooksResponse, ShelfStatus } from '../../../server/src/api/types';
 
 const searchSchema = z.object({
   query: z.string().trim().min(1, { message: 'Please enter a search term.' }),
@@ -32,7 +32,7 @@ function SearchPage() {
 
   const [results, setResults] = useState<SearchBooksResponse>([]);
   const [selectedBook, setSelectedBook] = useState<SearchBooksResponse[number] | null>(null);
-  const [selectedShelf, setSelectedShelf] = useState<'reading' | 'want_to_read' | 'read'>('reading');
+  const [selectedShelf, setSelectedShelf] = useState<ShelfStatus>('reading');
   const [selectedRating, setSelectedRating] = useState<number>(0);
   const [selectedFinishDate, setSelectedFinishDate] = useState<string>('');
   const [selectedFavorite, setSelectedFavorite] = useState<boolean>(false);

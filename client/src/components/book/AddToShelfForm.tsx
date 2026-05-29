@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 
+import ShelfFormFields from './ShelfFormFields';
 import { useToast } from '../../context/useToast';
 import { useAsync } from '../../hooks/useAsync';
 import { requestServer } from '../../lib/requestServer';
 import { stripHtml } from '../../lib/stripHtml';
-import StarRating from '../ui/StarRating';
 
 import type { AddToShelfResponse, BookDetailResponse, ShelfStatus } from '../../../../server/src/api/types';
 
@@ -89,79 +89,25 @@ function AddToShelfForm({
 
   return (
     <div className="mt-8 space-y-4">
-      <div>
-        <label className="label">
-          <span className="label-text">Add to shelf</span>
-        </label>
-        <select
-          value={selectedShelf}
-          onChange={(event) => {
-            const nextShelf = event.target.value as ShelfStatus;
-            setSelectedShelf(nextShelf);
-            if (nextShelf !== 'read') {
-              setSelectedFinishDate('');
-            }
-          }}
-          className="select select-bordered w-full"
-        >
-          {shelfOptions.map(([value, label]) => (
-            <option key={value} value={value}>
-              {label}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="grid gap-4 sm:grid-cols-2">
-        <label className="cursor-pointer rounded-2xl border border-base-200 p-4 flex items-center justify-start gap-3">
-          <input
-            type="checkbox"
-            className="checkbox checkbox-primary"
-            checked={selectedFavorite}
-            onChange={event => setSelectedFavorite(event.target.checked)}
-          />
-          <span className="text-base font-medium">Favorites</span>
-        </label>
-
-        <label className="cursor-pointer rounded-2xl border border-base-200 p-4 flex items-center justify-start gap-3">
-          <input
-            type="checkbox"
-            className="checkbox checkbox-primary"
-            checked={selectedPhysicalCopy}
-            onChange={event => setSelectedPhysicalCopy(event.target.checked)}
-          />
-          <span className="text-base font-medium">Physical copy</span>
-        </label>
-      </div>
-
-      {selectedShelf === 'read' && (
-        <>
-          <div>
-            <label className="label">
-              <span className="label-text">Rate it now</span>
-            </label>
-            <StarRating value={selectedRating} onChange={setSelectedRating} />
-            <p className="text-sm text-base-content/60 mt-2">
-              Optional: choose a star rating when you save this book as Read.
-            </p>
-          </div>
-
-          <div className="mt-5">
-            <label className="label">
-              <span className="label-text">Finish date</span>
-            </label>
-            <input
-              type="date"
-              className="input input-bordered w-full"
-              value={selectedFinishDate}
-              onChange={event => setSelectedFinishDate(event.target.value)}
-            />
-            <p className="text-sm text-base-content/60 mt-2">
-              Optionally set when you finished this book.
-            </p>
-          </div>
-        </>
-      )}
+      <ShelfFormFields
+        book={{ title: book.title, author: book.authors[0] ?? 'Unknown' }}
+        selectedShelf={selectedShelf}
+        selectedRating={selectedRating}
+        selectedFinishDate={selectedFinishDate}
+        selectedFavorite={selectedFavorite}
+        selectedPhysicalCopy={selectedPhysicalCopy}
+        onShelfChange={(nextShelf) => {
+          setSelectedShelf(nextShelf);
+          if (nextShelf !== 'read') {
+            setSelectedFinishDate('');
+          }
+        }}
+        onRatingChange={setSelectedRating}
+        onFinishDateChange={setSelectedFinishDate}
+        onFavoriteChange={setSelectedFavorite}
+        onPhysicalCopyChange={setSelectedPhysicalCopy}
+        statusOptions={shelfOptions}
+      />
 
       <button
         type="button"
@@ -171,7 +117,6 @@ function AddToShelfForm({
       >
         {shelfSaver.loading ? 'Saving…' : submitLabel}
       </button>
-
     </div>
   );
 }

@@ -1,19 +1,20 @@
 import { useCallback } from 'react';
 
-import StarRating from '../ui/StarRating';
+import ShelfFormFields from './ShelfFormFields';
 
+import type { ShelfStatus } from '../../../../server/src/api/types';
 import type { ShelfModalBook } from '../../types/shelfModal.ts';
 import type { ReactNode } from 'react';
 
 type ShelfActionModalProps = {
   show: boolean;
   book: ShelfModalBook | null;
-  selectedShelf: 'reading' | 'want_to_read' | 'read';
+  selectedShelf: ShelfStatus;
   selectedRating: number;
   selectedFinishDate: string;
   selectedFavorite: boolean;
   selectedPhysicalCopy: boolean;
-  onShelfChange: (value: 'reading' | 'want_to_read' | 'read') => void;
+  onShelfChange: (value: ShelfStatus) => void;
   onRatingChange: (value: number) => void;
   onFinishDateChange: (value: string) => void;
   onFavoriteChange: (value: boolean) => void;
@@ -63,70 +64,19 @@ function ShelfActionModal({
         {book
           ? (
               <>
-                <p className="mt-3 text-base-content/70">{book.title}</p>
-                <p className="text-sm text-base-content/50">{book.author}</p>
-
-                <div className="mt-5">
-                  <label className="label">
-                    <span className="label-text">Shelf status</span>
-                  </label>
-                  <select
-                    className="select select-bordered w-full"
-                    value={selectedShelf}
-                    onChange={event => onShelfChange(event.target.value as 'reading' | 'want_to_read' | 'read')}
-                  >
-                    <option value="reading">Currently Reading</option>
-                    <option value="want_to_read">Want to Read</option>
-                    <option value="read">Read</option>
-                  </select>
-                </div>
-
-                <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                  <label className="cursor-pointer rounded-2xl border border-base-200 p-4 flex items-center justify-start gap-3">
-                    <input
-                      type="checkbox"
-                      className="checkbox checkbox-primary"
-                      checked={selectedFavorite}
-                      onChange={event => onFavoriteChange(event.target.checked)}
-                    />
-                    <span className="text-base font-medium">Favorites</span>
-                  </label>
-
-                  <label className="cursor-pointer rounded-2xl border border-base-200 p-4 flex items-center justify-start gap-3">
-                    <input
-                      type="checkbox"
-                      className="checkbox checkbox-primary"
-                      checked={selectedPhysicalCopy}
-                      onChange={event => onPhysicalCopyChange(event.target.checked)}
-                    />
-                    <span className="text-base font-medium">Physical copy</span>
-                  </label>
-                </div>
-
-                {selectedShelf === 'read' && (
-                  <>
-                    <div className="mt-5">
-                      <label className="label">
-                        <span className="label-text">Rate it now</span>
-                      </label>
-                      <StarRating value={selectedRating} onChange={onRatingChange} />
-                      <p className="text-sm text-base-content/60 mt-2">Choose a star rating before you save this book as Read.</p>
-                    </div>
-
-                    <div className="mt-5">
-                      <label className="label">
-                        <span className="label-text">Finish date</span>
-                      </label>
-                      <input
-                        type="date"
-                        className="input input-bordered w-full"
-                        value={selectedFinishDate}
-                        onChange={event => onFinishDateChange(event.target.value)}
-                      />
-                      <p className="text-sm text-base-content/60 mt-2">Optionally set when you finished this book.</p>
-                    </div>
-                  </>
-                )}
+                <ShelfFormFields
+                  book={{ title: book.title, author: book.author }}
+                  selectedShelf={selectedShelf}
+                  selectedRating={selectedRating}
+                  selectedFinishDate={selectedFinishDate}
+                  selectedFavorite={selectedFavorite}
+                  selectedPhysicalCopy={selectedPhysicalCopy}
+                  onShelfChange={onShelfChange}
+                  onRatingChange={onRatingChange}
+                  onFinishDateChange={onFinishDateChange}
+                  onFavoriteChange={onFavoriteChange}
+                  onPhysicalCopyChange={onPhysicalCopyChange}
+                />
 
                 <div className="mt-6 flex flex-col gap-3">
                   <button

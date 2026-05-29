@@ -1,4 +1,5 @@
 import { type ReactNode } from 'react';
+import { Link } from 'react-router-dom';
 
 type BookCardProps = {
   coverUrl?: string | null;
@@ -39,9 +40,9 @@ function BookCard({
             <div className="min-w-0">
               {titleLink
                 ? (
-                    <a href={titleLink} className="text-xl font-semibold text-base-content break-words hover:underline">
+                    <Link to={titleLink} className="text-xl font-semibold text-base-content break-words hover:underline">
                       {title}
-                    </a>
+                    </Link>
                   )
                 : (
                     <h2 className="text-xl font-semibold text-base-content break-words">{title}</h2>

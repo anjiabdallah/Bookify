@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
 import BookCard from '../components/book/BookCard';
@@ -152,32 +152,10 @@ function SearchPage() {
               key={result.google_books_id}
               coverUrl={result.cover_url}
               title={result.title}
+              titleLink={`/book/${result.google_books_id}`}
               author={result.author}
             >
               <p className="text-sm text-base-content/70 line-clamp-3">{result.description ?? 'No description available.'}</p>
-              <div className="flex flex-wrap gap-2">
-                <Link to={`/book/${result.google_books_id}`} className="btn btn-sm btn-primary rounded-xl">
-                  View Details
-                </Link>
-                <button
-                  type="button"
-                  className="btn btn-sm btn-outline btn-primary rounded-xl"
-                  onClick={() => {
-                    if (user) {
-                      setSelectedBook(result);
-                      setSelectedShelf('reading');
-                      setSelectedRating(0);
-                      setSelectedFinishDate('');
-                      setSelectedFavorite(false);
-                      setSelectedPhysicalCopy(false);
-                    } else {
-                      navigate('/login');
-                    }
-                  }}
-                >
-                  + Add to Shelf
-                </button>
-              </div>
             </BookCard>
           );
         })}

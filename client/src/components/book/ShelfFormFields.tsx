@@ -51,7 +51,7 @@ function ShelfFormFields({
         </>
       )}
 
-      <div>
+      <div className="space-y-2">
         <label className="label">
           <span className="label-text">Shelf status</span>
         </label>
@@ -92,14 +92,14 @@ function ShelfFormFields({
 
       {selectedShelf === 'read' && (
         <>
-          <div>
+          <div className="space-y-2">
             <label className="label">
               <span className="label-text">Rating (optional)</span>
             </label>
             <StarRating value={selectedRating} onChange={onRatingChange} />
           </div>
 
-          <div className="mt-5">
+          <div className="space-y-2">
             <label className="label">
               <span className="label-text">Finish date (optional)</span>
             </label>

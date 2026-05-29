@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 import DateDisplay from '../ui/DateDisplay';
 import PageSectionHeader from '../ui/PageSectionHeader';
 import StarRating from '../ui/StarRating';
@@ -16,18 +18,10 @@ const statusLabel: Record<NonNullable<GetShelfResponse[number]['status']>, strin
   dnf: 'DNFed',
 };
 
-const statusClass: Record<NonNullable<GetShelfResponse[number]['status']>, string> = {
-  reading: 'badge badge-primary gap-2',
-  want_to_read: 'badge badge-ghost gap-2',
-  read: 'badge badge-success gap-2',
-  dnf: 'badge badge-error gap-2',
-};
-
 function BookShelfInfoDisplay({ entry, onEdit }: BookShelfInfoDisplayProps) {
   const ratingValue = typeof entry.rating === 'number'
     ? entry.rating
     : Number(entry.rating);
-  const hasRating = Number.isFinite(ratingValue) && ratingValue > 0;
 
   return (
     <section className="border-t border-base-200 pt-4">
@@ -45,40 +39,37 @@ function BookShelfInfoDisplay({ entry, onEdit }: BookShelfInfoDisplayProps) {
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <div className="font-semibold">Shelf</div>
-            <span className={statusClass[entry.status]}>{statusLabel[entry.status]}</span>
+            <Link
+              to={`/my-books/${entry.status}`}
+              className="text-base-content hover:underline"
+            >
+              {statusLabel[entry.status]}
+            </Link>
+            {entry.status === 'read' && (
+              <div className="mt-3 space-y-2">
+                <div className="font-semibold">Rating</div>
+                <div className="flex items-center gap-3">
+                  <StarRating value={Number.isFinite(ratingValue) ? ratingValue : 0} />
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="space-y-2">
-            <div className="font-semibold">Added</div>
+            <div className="font-semibold">Added On</div>
             <DateDisplay value={entry.added_at} />
+            {entry.status === 'read' && (
+              <div className="mt-3 space-y-1">
+                <div className="font-semibold">Finished On</div>
+                <div>{entry.finish_date ? <DateDisplay value={entry.finish_date} /> : 'Not set'}</div>
+              </div>
+            )}
           </div>
         </div>
-
-        {entry.status === 'read'
-          ? (
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <div className="font-semibold">Rating</div>
-                  <div className="flex items-center gap-3">
-                    <StarRating value={Number.isFinite(ratingValue) ? ratingValue : 0} />
-                    <span className="text-sm text-base-content/70">
-                      {hasRating ? `${ratingValue.toFixed(2)} / 5` : 'Not rated yet'}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <div className="font-semibold">Finished</div>
-                  <div>{entry.finish_date ? <DateDisplay value={entry.finish_date} /> : 'Not set'}</div>
-                </div>
-              </div>
-            )
-          : null}
 
         <div className="flex flex-wrap gap-2 text-sm text-base-content/70">
           {entry.favorite && <span className="badge badge-primary badge-sm">Favorite</span>}
           {entry.physical_copy && <span className="badge badge-accent badge-sm">Physical copy</span>}
-          {entry.status !== 'read' && <span className={statusClass[entry.status]}>{statusLabel[entry.status]}</span>}
         </div>
       </div>
     </section>

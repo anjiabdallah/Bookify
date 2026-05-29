@@ -1,6 +1,6 @@
 import { Cake, CheckCircle2, Sparkles } from 'lucide-react';
 
-import { categories, categoryIcons } from '../../lib/profile.tsx';
+import { categories, categoryIcons } from '../../lib/profileConstants.ts';
 
 import type { ProfileFormData } from '../../lib/profile.tsx';
 import type { UseFormHandleSubmit, UseFormRegister, UseFormSetValue } from 'react-hook-form';
@@ -119,7 +119,12 @@ function ProfileEditForm({
                 }}
               >
                 <div className="flex items-center gap-3">
-                  <span>{categoryIcons[category]}</span>
+                  <span>
+                    {(() => {
+                      const Icon = categoryIcons[category];
+                      return Icon ? <Icon size={20} /> : null;
+                    })()}
+                  </span>
                   <span className="text-sm font-medium">{category}</span>
                 </div>
                 {selected

@@ -6,6 +6,7 @@ import PageCard from '../components/PageCard';
 import PageSectionHeader from '../components/PageSectionHeader';
 import ShelfBookCard from '../components/ShelfBookCard';
 import { useAuth } from '../context/useAuth';
+import { useToast } from '../context/useToast';
 import { useAsync } from '../hooks/useAsync';
 import { requestServer } from '../lib/requestServer';
 
@@ -35,8 +36,15 @@ const sectionIcons: Record<ShelfStatus, ReactNode> = {
 function MyBooksPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const toast = useToast();
   const shelfQuery = useAsync<GetShelfResponse>();
   const ratingSaver = useAsync<AddToShelfResponse>();
+
+  useEffect(() => {
+    if (ratingSaver.error) {
+      toast.showToast(ratingSaver.error, 'error');
+    }
+  }, [ratingSaver.error, toast]);
 
   useEffect(() => {
     shelfQuery.execute(() => requestServer<GetShelfResponse>('/api/books/shelf'));
@@ -100,6 +108,8 @@ function MyBooksPage() {
 
     if (result) {
       shelfQuery.execute(() => requestServer<GetShelfResponse>('/api/books/shelf'));
+      toast.showToast('Book rating saved.');
+      ratingSaver.reset();
     }
   };
 
@@ -137,18 +147,6 @@ function MyBooksPage() {
             </p>
           </div>
         </div>
-
-        {ratingSaver.error && (
-          <div className="alert alert-error mb-6">
-            <span>{ratingSaver.error}</span>
-          </div>
-        )}
-
-        {ratingSaver.data && (
-          <div className="alert alert-success mb-6">
-            <span>Book rating saved.</span>
-          </div>
-        )}
 
         <PageCard variant="bordered" className="grid gap-4 md:grid-cols-4">
           <div className="flex flex-col items-center gap-3 border-r border-base-200 pr-4 last:border-r-0 last:pr-0">

@@ -21,5 +21,11 @@ export function useAsync<T>() {
     }
   };
 
-  return { loading, error, data, execute };
+  const reset = () => {
+    setLoading(false);
+    setError(null);
+    setData(null);
+  };
+
+  return { loading, error, data, execute, reset };
 }

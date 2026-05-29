@@ -10,6 +10,7 @@ import PageSectionHeader from '../components/PageSectionHeader';
 import SearchBar from '../components/SearchBar';
 import ShelfActionModal from '../components/ShelfActionModal';
 import { useAuth } from '../context/useAuth';
+import { useToast } from '../context/useToast';
 import { useAsync } from '../hooks/useAsync';
 import { requestServer } from '../lib/requestServer';
 
@@ -23,6 +24,7 @@ type SearchFormData = z.infer<typeof searchSchema>;
 
 function SearchPage() {
   const { user } = useAuth();
+  const toast = useToast();
   const location = useLocation();
   const navigate = useNavigate();
   const params = new URLSearchParams(location.search);
@@ -37,6 +39,18 @@ function SearchPage() {
   const [selectedPhysicalCopy, setSelectedPhysicalCopy] = useState<boolean>(false);
   const searchRunner = useAsync<SearchBooksResponse>();
   const addShelfRunner = useAsync<AddToShelfResponse>();
+
+  useEffect(() => {
+    if (searchRunner.error) {
+      toast.showToast(searchRunner.error, 'error');
+    }
+  }, [searchRunner.error, toast]);
+
+  useEffect(() => {
+    if (addShelfRunner.error) {
+      toast.showToast(addShelfRunner.error, 'error');
+    }
+  }, [addShelfRunner.error, toast]);
 
   const {
     register,
@@ -109,6 +123,8 @@ function SearchPage() {
 
     if (!addShelfRunner.error) {
       closeAddShelfModal();
+      toast.showToast('Book added to your shelf!');
+      addShelfRunner.reset();
     }
   };
 
@@ -202,12 +218,6 @@ function SearchPage() {
             />
           </PageCard>
 
-          {searchRunner.error && (
-            <div className="alert alert-error mt-6">
-              <span>{searchRunner.error}</span>
-            </div>
-          )}
-
           {resultsContent}
 
         </PageCard>
@@ -232,8 +242,6 @@ function SearchPage() {
           onPhysicalCopyChange={setSelectedPhysicalCopy}
           onConfirm={handleAddToShelf}
           onClose={closeAddShelfModal}
-          error={addShelfRunner.error ?? undefined}
-          success={addShelfRunner.data ? 'Book added to your shelf!' : undefined}
           loading={addShelfRunner.loading}
         />
       </main>

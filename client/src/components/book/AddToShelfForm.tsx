@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 
+import { useToast } from '../../context/useToast';
 import { useAsync } from '../../hooks/useAsync';
 import { requestServer } from '../../lib/requestServer';
 import { stripHtml } from '../../lib/stripHtml';
@@ -41,6 +42,13 @@ function AddToShelfForm({
   const [selectedFavorite, setSelectedFavorite] = useState<boolean>(initialFavorite);
   const [selectedPhysicalCopy, setSelectedPhysicalCopy] = useState<boolean>(initialPhysicalCopy);
   const shelfSaver = useAsync<AddToShelfResponse>();
+  const toast = useToast();
+
+  useEffect(() => {
+    if (shelfSaver.error) {
+      toast.showToast(shelfSaver.error, 'error');
+    }
+  }, [shelfSaver.error, toast]);
 
   useEffect(() => {
     setSelectedShelf(initialStatus);
@@ -70,8 +78,12 @@ function AddToShelfForm({
       }),
     );
 
-    if (result && onSuccess) {
-      await onSuccess(result);
+    if (result) {
+      if (onSuccess) {
+        await onSuccess(result);
+      }
+      toast.showToast('Book saved to your shelf.');
+      shelfSaver.reset();
     }
   };
 
@@ -160,17 +172,6 @@ function AddToShelfForm({
         {shelfSaver.loading ? 'Saving…' : submitLabel}
       </button>
 
-      {shelfSaver.error && (
-        <div className="alert alert-error">
-          <span>{shelfSaver.error}</span>
-        </div>
-      )}
-
-      {shelfSaver.data && (
-        <div className="alert alert-success">
-          <span>Book saved to your shelf.</span>
-        </div>
-      )}
     </div>
   );
 }

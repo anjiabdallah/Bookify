@@ -8,6 +8,7 @@ import ProfileDisplayView from '../components/profile/ProfileDisplayView';
 import ProfileEditForm from '../components/profile/ProfileEditForm';
 import ProfileHeader from '../components/profile/ProfileHeader';
 import { useAuth } from '../context/useAuth';
+import { useToast } from '../context/useToast';
 import { useAsync } from '../hooks/useAsync';
 import { profileFormSchema, type ProfileFormData } from '../lib/profile.tsx';
 import { requestServer } from '../lib/requestServer';
@@ -24,6 +25,20 @@ function ProfilePage() {
   const [selectedAvatarFile, setSelectedAvatarFile] = useState<File | null>(null);
   const [selectedAvatarPreviewUrl, setSelectedAvatarPreviewUrl] = useState<string | null>(null);
   const [avatarError, setAvatarError] = useState<string | null>(null);
+
+  const toast = useToast();
+
+  useEffect(() => {
+    if (profileLoader.error) {
+      toast.showToast(profileLoader.error, 'error');
+    }
+  }, [profileLoader.error, toast]);
+
+  useEffect(() => {
+    if (profileSaver.error) {
+      toast.showToast(profileSaver.error, 'error');
+    }
+  }, [profileSaver.error, toast]);
 
   const {
     register,
@@ -161,6 +176,8 @@ function ProfilePage() {
       setSelectedAvatarFile(null);
       setSelectedAvatarPreviewUrl(null);
       setIsEditing(false);
+      toast.showToast('Profile saved successfully.');
+      profileSaver.reset();
     }
   };
 
@@ -194,18 +211,6 @@ function ProfilePage() {
             avatarUrl={profile.profileImageUrl}
             onLogout={logout}
           />
-
-          {(profileLoader.error || profileSaver.error) && (
-            <div className="alert alert-error mb-6">
-              <span>{profileSaver.error ?? profileLoader.error}</span>
-            </div>
-          )}
-
-          {profileSaver.data && (
-            <div className="alert alert-success mb-6">
-              <span>Profile saved successfully.</span>
-            </div>
-          )}
 
           {isEditing
             ? (

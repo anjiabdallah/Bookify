@@ -2,16 +2,8 @@ import { useCallback } from 'react';
 
 import StarRating from './StarRating';
 
+import type { ShelfModalBook } from '../types/shelfModal.ts';
 import type { ReactNode } from 'react';
-
-export type ShelfModalBook = {
-  google_books_id: string;
-  title: string;
-  author: string;
-  cover_url?: string | null;
-  description?: string | null;
-  published_date?: string | null;
-};
 
 type ShelfActionModalProps = {
   show: boolean;
@@ -28,8 +20,6 @@ type ShelfActionModalProps = {
   onPhysicalCopyChange: (value: boolean) => void;
   onConfirm: () => void;
   onClose: () => void;
-  error?: string;
-  success?: string;
   loading?: boolean;
   className?: string;
   children?: ReactNode;
@@ -50,8 +40,6 @@ function ShelfActionModal({
   onPhysicalCopyChange,
   onConfirm,
   onClose,
-  error,
-  success,
   loading,
   className = '',
 }: ShelfActionModalProps) {
@@ -138,17 +126,6 @@ function ShelfActionModal({
                       <p className="text-sm text-base-content/60 mt-2">Optionally set when you finished this book.</p>
                     </div>
                   </>
-                )}
-
-                {error && (
-                  <div className="alert alert-error mt-4">
-                    <span>{error}</span>
-                  </div>
-                )}
-                {success && (
-                  <div className="alert alert-success mt-4">
-                    <span>{success}</span>
-                  </div>
                 )}
 
                 <div className="mt-6 flex flex-col gap-3">

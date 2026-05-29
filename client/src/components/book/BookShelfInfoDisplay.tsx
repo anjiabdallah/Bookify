@@ -66,24 +66,26 @@ function BookShelfInfoDisplay({ entry, onEdit }: BookShelfInfoDisplayProps) {
           </div>
         </div>
 
-        {entry.status === 'read' ? (
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <div className="font-semibold">Rating</div>
-              <div className="flex items-center gap-3">
-                <StarRating value={entry.rating ?? 0} />
-                <span className="text-sm text-base-content/70">
-                  {entry.rating ? `${entry.rating.toFixed(2)} / 5` : 'Not rated yet'}
-                </span>
-              </div>
-            </div>
+        {entry.status === 'read'
+          ? (
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <div className="font-semibold">Rating</div>
+                  <div className="flex items-center gap-3">
+                    <StarRating value={entry.rating ?? 0} />
+                    <span className="text-sm text-base-content/70">
+                      {entry.rating ? `${entry.rating.toFixed(2)} / 5` : 'Not rated yet'}
+                    </span>
+                  </div>
+                </div>
 
-            <div className="space-y-2">
-              <div className="font-semibold">Finished</div>
-              <div>{entry.finish_date ? formatDate(entry.finish_date) : 'Not set'}</div>
-            </div>
-          </div>
-        ) : null}
+                <div className="space-y-2">
+                  <div className="font-semibold">Finished</div>
+                  <div>{entry.finish_date ? formatDate(entry.finish_date) : 'Not set'}</div>
+                </div>
+              </div>
+            )
+          : null}
 
         <div className="flex flex-wrap gap-2 text-sm text-base-content/70">
           {entry.favorite && <span className="badge badge-primary badge-sm">Favorite</span>}

@@ -1,5 +1,5 @@
-import StarRating from '../StarRating';
 import DateDisplay from '../DateDisplay';
+import StarRating from '../StarRating';
 
 import type { GetShelfResponse } from '../../../../server/src/api/types';
 
@@ -22,8 +22,12 @@ const statusClass: Record<NonNullable<GetShelfResponse[number]['status']>, strin
   dnf: 'badge badge-error gap-2',
 };
 
-
 function BookShelfInfoDisplay({ entry, onEdit }: BookShelfInfoDisplayProps) {
+  const ratingValue = typeof entry.rating === 'number'
+    ? entry.rating
+    : Number(entry.rating);
+  const hasRating = Number.isFinite(ratingValue) && ratingValue > 0;
+
   return (
     <section className="mt-8 border-t border-base-200 pt-6">
       <div className="flex flex-col gap-6">
@@ -57,9 +61,9 @@ function BookShelfInfoDisplay({ entry, onEdit }: BookShelfInfoDisplayProps) {
                 <div className="space-y-2">
                   <div className="font-semibold">Rating</div>
                   <div className="flex items-center gap-3">
-                    <StarRating value={entry.rating ?? 0} />
+                    <StarRating value={Number.isFinite(ratingValue) ? ratingValue : 0} />
                     <span className="text-sm text-base-content/70">
-                      {entry.rating ? `${entry.rating.toFixed(2)} / 5` : 'Not rated yet'}
+                      {hasRating ? `${ratingValue.toFixed(2)} / 5` : 'Not rated yet'}
                     </span>
                   </div>
                 </div>

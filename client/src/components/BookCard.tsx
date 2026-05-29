@@ -3,6 +3,7 @@ import { type ReactNode } from 'react';
 type BookCardProps = {
   coverUrl?: string | null;
   title: string;
+  titleLink?: string;
   author: string;
   topRight?: ReactNode;
   children?: ReactNode;
@@ -12,6 +13,7 @@ type BookCardProps = {
 function BookCard({
   coverUrl,
   title,
+  titleLink,
   author,
   topRight,
   children,
@@ -35,7 +37,13 @@ function BookCard({
         <div className="space-y-4">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0">
-              <h2 className="text-xl font-semibold text-base-content break-words">{title}</h2>
+              {titleLink ? (
+                <a href={titleLink} className="text-xl font-semibold text-base-content break-words hover:underline">
+                  {title}
+                </a>
+              ) : (
+                <h2 className="text-xl font-semibold text-base-content break-words">{title}</h2>
+              )}
               <p className="text-sm text-base-content/60 truncate">{author}</p>
             </div>
             {topRight && <div className="min-w-0 flex-shrink-0">{topRight}</div>}

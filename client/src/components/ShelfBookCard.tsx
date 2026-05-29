@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 
 import BookCard from './BookCard';
+import DateDisplay from './DateDisplay';
 import StarRating from './StarRating';
 
 import type { GetShelfResponse, ShelfStatus } from '../../../server/src/api/types';
@@ -23,19 +24,6 @@ const statusClass: Record<ShelfStatus, string> = {
   want_to_read: 'badge badge-ghost gap-2',
   read: 'badge badge-success gap-2',
   dnf: 'badge badge-error gap-2',
-};
-
-const formatFinishDate = (dateString: string) => {
-  const date = new Date(dateString);
-  if (Number.isNaN(date.getTime())) {
-    return dateString;
-  }
-
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const year = String(date.getFullYear());
-
-  return `${day}/${month}/${year}`;
 };
 
 function ShelfBookCard({ book, status, onRate }: ShelfBookCardProps) {
@@ -70,8 +58,7 @@ function ShelfBookCard({ book, status, onRate }: ShelfBookCardProps) {
                 {book.finish_date && (
                   <div className="text-sm text-base-content/70">
                     Finished on
-                    {' '}
-                    {formatFinishDate(book.finish_date)}
+                    <DateDisplay value={book.finish_date} />
                   </div>
                 )}
                 <div className="flex flex-wrap gap-2 text-sm text-base-content/70">

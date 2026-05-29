@@ -1,4 +1,5 @@
 import StarRating from '../StarRating';
+import DateDisplay from '../DateDisplay';
 
 import type { GetShelfResponse } from '../../../../server/src/api/types';
 
@@ -21,22 +22,6 @@ const statusClass: Record<NonNullable<GetShelfResponse[number]['status']>, strin
   dnf: 'badge badge-error gap-2',
 };
 
-const formatDate = (dateString: string | null) => {
-  if (!dateString) {
-    return 'Not set';
-  }
-
-  const date = new Date(dateString);
-  if (Number.isNaN(date.getTime())) {
-    return dateString;
-  }
-
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const year = String(date.getFullYear());
-
-  return `${day}/${month}/${year}`;
-};
 
 function BookShelfInfoDisplay({ entry, onEdit }: BookShelfInfoDisplayProps) {
   return (
@@ -62,7 +47,7 @@ function BookShelfInfoDisplay({ entry, onEdit }: BookShelfInfoDisplayProps) {
 
           <div className="space-y-2">
             <div className="font-semibold">Added</div>
-            <div>{formatDate(entry.added_at)}</div>
+            <DateDisplay value={entry.added_at} />
           </div>
         </div>
 
@@ -81,7 +66,7 @@ function BookShelfInfoDisplay({ entry, onEdit }: BookShelfInfoDisplayProps) {
 
                 <div className="space-y-2">
                   <div className="font-semibold">Finished</div>
-                  <div>{entry.finish_date ? formatDate(entry.finish_date) : 'Not set'}</div>
+                  <div>{entry.finish_date ? <DateDisplay value={entry.finish_date} /> : 'Not set'}</div>
                 </div>
               </div>
             )

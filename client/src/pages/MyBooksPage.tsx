@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 import PageCard from '../components/PageCard';
 import PageSectionHeader from '../components/PageSectionHeader';
+import ShelfStatCard from '../components/ShelfStatCard';
 import { useAuth } from '../context/useAuth';
 import { useToast } from '../context/useToast';
 import { useAsync } from '../hooks/useAsync';
@@ -101,34 +102,34 @@ function MyBooksPage() {
               <h3 className="text-lg font-semibold">Exclusive Shelves</h3>
             </div>
             <div className="grid grid-cols-2 divide-x divide-y divide-base-200">
-              <div className="flex flex-col items-center gap-3 p-4">
-                <BookOpen size={28} className="text-primary/50" />
-                <div className="text-3xl font-bold">{isLoading ? <span className="loading loading-spinner loading-md" /> : stats.reading}</div>
-                <Link to="/my-books/reading" className="text-sm font-semibold text-primary hover:underline">
-                  Currently Reading
-                </Link>
-              </div>
-              <div className="flex flex-col items-center gap-3 p-4">
-                <Bookmark size={28} className="text-primary/50" />
-                <div className="text-3xl font-bold">{isLoading ? <span className="loading loading-spinner loading-md" /> : stats.want_to_read}</div>
-                <Link to="/my-books/want_to_read" className="text-sm font-semibold text-primary hover:underline">
-                  To Read
-                </Link>
-              </div>
-              <div className="flex flex-col items-center gap-3 p-4">
-                <CheckCircle size={28} className="text-primary/50" />
-                <div className="text-3xl font-bold">{isLoading ? <span className="loading loading-spinner loading-md" /> : stats.read}</div>
-                <Link to="/my-books/read" className="text-sm font-semibold text-primary hover:underline">
-                  Read
-                </Link>
-              </div>
-              <div className="flex flex-col items-center gap-3 p-4">
-                <XCircle size={28} className="text-primary/50" />
-                <div className="text-3xl font-bold">{isLoading ? <span className="loading loading-spinner loading-md" /> : stats.dnf}</div>
-                <Link to="/my-books/dnf" className="text-sm font-semibold text-primary hover:underline">
-                  DNFed
-                </Link>
-              </div>
+              <ShelfStatCard
+                icon={<BookOpen size={28} className="text-primary/50" />}
+                count={stats.reading}
+                label="Currently Reading"
+                to="/my-books/reading"
+                loading={isLoading}
+              />
+              <ShelfStatCard
+                icon={<Bookmark size={28} className="text-primary/50" />}
+                count={stats.want_to_read}
+                label="To Read"
+                to="/my-books/want_to_read"
+                loading={isLoading}
+              />
+              <ShelfStatCard
+                icon={<CheckCircle size={28} className="text-primary/50" />}
+                count={stats.read}
+                label="Read"
+                to="/my-books/read"
+                loading={isLoading}
+              />
+              <ShelfStatCard
+                icon={<XCircle size={28} className="text-primary/50" />}
+                count={stats.dnf}
+                label="DNFed"
+                to="/my-books/dnf"
+                loading={isLoading}
+              />
             </div>
           </PageCard>
 
@@ -137,20 +138,20 @@ function MyBooksPage() {
               <h3 className="text-lg font-semibold">Additional Tags</h3>
             </div>
             <div className="grid grid-cols-2 divide-x divide-base-200">
-              <div className="flex flex-col items-center gap-3 p-4">
-                <Heart size={28} className="text-primary/50" />
-                <div className="text-3xl font-bold">{isLoading ? <span className="loading loading-spinner loading-md" /> : stats.favorites}</div>
-                <Link to="/my-books/favorites" className="text-sm font-semibold text-primary hover:underline">
-                  Favorites
-                </Link>
-              </div>
-              <div className="flex flex-col items-center gap-3 p-4">
-                <Package size={28} className="text-primary/50" />
-                <div className="text-3xl font-bold">{isLoading ? <span className="loading loading-spinner loading-md" /> : stats.physical_copy}</div>
-                <Link to="/my-books/physical_copy" className="text-sm font-semibold text-primary hover:underline">
-                  Physical copies
-                </Link>
-              </div>
+              <ShelfStatCard
+                icon={<Heart size={28} className="text-primary/50" />}
+                count={stats.favorites}
+                label="Favorites"
+                to="/my-books/favorites"
+                loading={isLoading}
+              />
+              <ShelfStatCard
+                icon={<Package size={28} className="text-primary/50" />}
+                count={stats.physical_copy}
+                label="Physical copies"
+                to="/my-books/physical_copy"
+                loading={isLoading}
+              />
             </div>
           </PageCard>
         </div>

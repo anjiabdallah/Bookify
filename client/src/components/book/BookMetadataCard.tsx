@@ -39,8 +39,10 @@ function BookMetadataCard({ book }: BookMetadataCardProps) {
         {book.categories.length > 0 && (
           <div>
             <div className="font-semibold">Categories</div>
-            <div className="mt-2 text-sm text-base-content/80">
-              {book.categories.join(', ')}
+            <div className="mt-2 space-y-1 text-sm text-base-content/80">
+              {book.categories.map(category => (
+                <div key={category}>{category}</div>
+              ))}
             </div>
           </div>
         )}

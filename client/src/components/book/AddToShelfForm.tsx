@@ -24,6 +24,7 @@ type AddToShelfFormProps = {
   initialPhysicalCopy?: boolean;
   submitLabel?: string;
   onSuccess?: (response: AddToShelfResponse) => void;
+  onCancel?: () => void;
 };
 
 function AddToShelfForm({
@@ -35,6 +36,7 @@ function AddToShelfForm({
   initialPhysicalCopy = false,
   submitLabel = 'Save to shelf',
   onSuccess,
+  onCancel,
 }: AddToShelfFormProps) {
   const [selectedShelf, setSelectedShelf] = useState<ShelfStatus>(initialStatus);
   const [selectedRating, setSelectedRating] = useState<number>(initialRating);
@@ -91,6 +93,7 @@ function AddToShelfForm({
     <div className="mt-8 space-y-4">
       <ShelfFormFields
         book={{ title: book.title, author: book.authors[0] ?? 'Unknown' }}
+        showBookHeading={false}
         selectedShelf={selectedShelf}
         selectedRating={selectedRating}
         selectedFinishDate={selectedFinishDate}
@@ -109,14 +112,26 @@ function AddToShelfForm({
         statusOptions={shelfOptions}
       />
 
-      <button
-        type="button"
-        onClick={handleAddToShelf}
-        disabled={shelfSaver.loading}
-        className="btn btn-primary w-full"
-      >
-        {shelfSaver.loading ? 'Saving…' : submitLabel}
-      </button>
+      <div className="grid grid-cols-2 gap-3">
+        <button
+          type="button"
+          onClick={handleAddToShelf}
+          disabled={shelfSaver.loading}
+          className="btn btn-primary w-full"
+        >
+          {shelfSaver.loading ? 'Saving…' : submitLabel}
+        </button>
+        {onCancel && (
+          <button
+            type="button"
+            onClick={onCancel}
+            disabled={shelfSaver.loading}
+            className="btn btn-outline w-full"
+          >
+            Cancel
+          </button>
+        )}
+      </div>
     </div>
   );
 }

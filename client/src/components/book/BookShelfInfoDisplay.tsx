@@ -1,14 +1,12 @@
 import { Link } from 'react-router-dom';
 
 import DateDisplay from '../ui/DateDisplay';
-import PageSectionHeader from '../ui/PageSectionHeader';
 import StarRating from '../ui/StarRating';
 
 import type { GetShelfResponse } from '../../../../server/src/api/types';
 
 type BookShelfInfoDisplayProps = {
   entry: GetShelfResponse[number];
-  onEdit: () => void;
 };
 
 const statusLabel: Record<NonNullable<GetShelfResponse[number]['status']>, string> = {
@@ -18,22 +16,13 @@ const statusLabel: Record<NonNullable<GetShelfResponse[number]['status']>, strin
   dnf: 'DNFed',
 };
 
-function BookShelfInfoDisplay({ entry, onEdit }: BookShelfInfoDisplayProps) {
+function BookShelfInfoDisplay({ entry }: BookShelfInfoDisplayProps) {
   const ratingValue = typeof entry.rating === 'number'
     ? entry.rating
     : Number(entry.rating);
 
   return (
     <section className="border-t border-base-200 pt-4">
-      <PageSectionHeader
-        heading="Shelf Info"
-        right={(
-          <button type="button" className="btn btn-primary btn-sm" onClick={onEdit}>
-            Edit
-          </button>
-        )}
-        className="mb-4"
-      />
       <div className="flex flex-col gap-6">
 
         <div className="grid gap-4 sm:grid-cols-2">

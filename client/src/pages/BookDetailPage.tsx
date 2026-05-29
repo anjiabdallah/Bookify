@@ -49,25 +49,54 @@ function BookDetailPage() {
   let shelfSection = null;
 
   if (user && book) {
-    if (shelfEntry && !isShelfEditing) {
+    if (shelfEntry) {
       shelfSection = (
-        <BookShelfInfoDisplay
-          entry={shelfEntry}
-          onEdit={() => setIsShelfEditing(true)}
-        />
+        <PageCard>
+          <PageSectionHeader
+            heading="Shelf Info"
+            right={
+              !isShelfEditing
+                ? (
+                    <button
+                      type="button"
+                      className="btn btn-primary btn-sm"
+                      onClick={() => setIsShelfEditing(true)}
+                    >
+                      Edit
+                    </button>
+                  )
+                : undefined
+            }
+            className="mb-4"
+          />
+          {isShelfEditing
+            ? (
+                <AddToShelfForm
+                  book={book}
+                  initialStatus={shelfEntry.status}
+                  initialRating={shelfEntry.rating ?? 0}
+                  initialFinishDate={shelfEntry.finish_date ?? ''}
+                  initialFavorite={shelfEntry.favorite ?? false}
+                  initialPhysicalCopy={shelfEntry.physical_copy ?? false}
+                  submitLabel="Update shelf info"
+                  onSuccess={handleShelfSaved}
+                  onCancel={() => setIsShelfEditing(false)}
+                />
+              )
+            : (
+                <BookShelfInfoDisplay entry={shelfEntry} />
+              )}
+        </PageCard>
       );
     } else {
       shelfSection = (
-        <AddToShelfForm
-          book={book}
-          initialStatus={shelfEntry?.status}
-          initialRating={shelfEntry?.rating ?? 0}
-          initialFinishDate={shelfEntry?.finish_date ?? ''}
-          initialFavorite={shelfEntry?.favorite ?? false}
-          initialPhysicalCopy={shelfEntry?.physical_copy ?? false}
-          submitLabel={shelfEntry ? 'Update shelf info' : 'Save to shelf'}
-          onSuccess={handleShelfSaved}
-        />
+        <PageCard>
+          <AddToShelfForm
+            book={book}
+            submitLabel="Save to shelf"
+            onSuccess={handleShelfSaved}
+          />
+        </PageCard>
       );
     }
   }
@@ -78,8 +107,7 @@ function BookDetailPage() {
         <div className="mb-6">
           <BackButton className="btn-ghost mb-4" />
           <PageSectionHeader
-            label="Book Details"
-            heading={book?.title ?? 'Loading...'}
+            heading="Book Details"
           />
         </div>
 
@@ -105,11 +133,7 @@ function BookDetailPage() {
                 <BookDescriptionSection description={book.description} />
               </PageCard>
 
-              {shelfSection && (
-                <PageCard>
-                  {shelfSection}
-                </PageCard>
-              )}
+              {shelfSection}
             </div>
           </div>
         )}

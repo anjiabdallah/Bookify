@@ -10,6 +10,7 @@ type ShelfFormFieldsBook = {
 
 type ShelfFormFieldsProps = {
   book?: ShelfFormFieldsBook;
+  showBookHeading?: boolean;
   selectedShelf: ShelfStatus;
   selectedRating: number;
   selectedFinishDate: string;
@@ -31,6 +32,7 @@ const defaultStatusOptions: Array<[ShelfStatus, string]> = [
 
 function ShelfFormFields({
   book,
+  showBookHeading = true,
   selectedShelf,
   selectedRating,
   selectedFinishDate,
@@ -45,14 +47,14 @@ function ShelfFormFields({
 }: ShelfFormFieldsProps) {
   return (
     <div className="space-y-4">
-      {book && (
+      {showBookHeading && book && (
         <>
           <p className="mt-3 text-base-content/70">{book.title}</p>
           <p className="text-sm text-base-content/50">{book.author}</p>
         </>
       )}
 
-      <FieldGroup label="Shelf status">
+      <FieldGroup label="Shelf">
         <select
           className="select select-bordered w-full"
           value={selectedShelf}

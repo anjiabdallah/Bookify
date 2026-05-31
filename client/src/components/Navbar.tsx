@@ -24,10 +24,13 @@ function Navbar() {
           </Link>
         </div>
         <div className="flex-1" />
-        <div className="flex-none">
+        <div className="flex-none flex items-center gap-3">
           <Link to="/register" className="btn btn-primary btn-sm">
             Sign Up
           </Link>
+          <button onClick={toggleTheme} className="btn btn-ghost btn-circle btn-sm">
+            {isDark ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
         </div>
       </div>
     );

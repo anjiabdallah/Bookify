@@ -41,6 +41,9 @@ function HomePage() {
   const [activeTab, setActiveTab] = useState('All');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [readingProgress, setReadingProgress] = useState(62);
+  const [draftProgress, setDraftProgress] = useState(62);
+  const [isProgressSheetOpen, setIsProgressSheetOpen] = useState(false);
   const navigate = useNavigate();
   const shelfQuery = useAsync<GetShelfResponse>();
 
@@ -48,6 +51,20 @@ function HomePage() {
     if (!user) return;
     shelfQuery.execute(() => requestServer<GetShelfResponse>('/api/books/shelf'));
   }, [user]);
+
+  const handleOpenProgressSheet = () => {
+    setDraftProgress(readingProgress);
+    setIsProgressSheetOpen(true);
+  };
+
+  const handleCancelProgress = () => {
+    setIsProgressSheetOpen(false);
+  };
+
+  const handleSaveProgress = () => {
+    setReadingProgress(draftProgress);
+    setIsProgressSheetOpen(false);
+  };
 
   const filteredBooks = useMemo(() => {
     if (!shelfQuery.data) return [];
@@ -211,11 +228,11 @@ function HomePage() {
                   <h1 className="text-4xl font-bold">Your reading haven awaits.</h1>
                 </div>
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                  <button className="btn btn-primary gap-2" onClick={() => setIsModalOpen(true)}>
+                  <Link to="/search" className="btn btn-primary gap-2">
                     <Plus size={18} />
                     {' '}
                     Add a Book
-                  </button>
+                  </Link>
                   <Link to="/profile" className="btn btn-secondary">
                     View Profile
                   </Link>
@@ -271,12 +288,9 @@ function HomePage() {
             <PageCard>
               <PageSectionHeader
                 label="Currently Reading"
-                heading={currentReadingBook ? currentReadingBook.title : 'The Starlight Journal'}
+                heading={null}
               />
-              <Link
-                to={currentReadingBook ? `/book/${currentReadingBook.google_books_id}` : '/search'}
-                className="block rounded-3xl bg-base-100 p-5 transition hover:shadow-lg"
-              >
+              <div className="block rounded-3xl bg-base-100 p-5 transition hover:shadow-lg">
                 {currentReadingBook?.cover_url
                   ? (
                       <CoverImage
@@ -289,24 +303,42 @@ function HomePage() {
                       <div className="w-full rounded-3xl aspect-[2/3] bg-pink-100" />
                     )}
                 <div className="mt-6">
-                  <h3 className="text-lg font-semibold">{currentReadingBook ? currentReadingBook.title : 'The Starlight Journal'}</h3>
+                  <h3 className="text-lg font-semibold">
+                    <Link
+                      to={currentReadingBook ? `/book/${currentReadingBook.google_books_id}` : '/search'}
+                      className="hover:underline"
+                    >
+                      {currentReadingBook ? currentReadingBook.title : 'The Starlight Journal'}
+                    </Link>
+                  </h3>
                   <p className="text-sm text-base-content/70">
                     by
                     {' '}
                     {currentReadingBook ? currentReadingBook.author : 'Rowan Pierce'}
                   </p>
                 </div>
-                <div className="mt-6">
-                  <progress className="progress progress-primary w-full" value={62} max={100} />
-                  <div className="mt-3 flex items-center justify-between text-sm text-base-content/70">
-                    <span>62% complete</span>
-                    <span>7/18 chapters</span>
+                <div className="mt-6 space-y-4">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <span className="text-sm text-base-content/70">
+                      {readingProgress}
+                      {' % complete'}
+                    </span>
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-primary"
+                      onClick={handleOpenProgressSheet}
+                    >
+                      Update Progress
+                    </button>
+                  </div>
+                  <div className="h-2 overflow-hidden rounded-full bg-base-200">
+                    <div
+                      className="h-full rounded-full bg-primary transition-all duration-300"
+                      style={{ width: `${readingProgress}%` }}
+                    />
                   </div>
                 </div>
-                <div className="mt-6">
-                  <span className="btn btn-primary btn-block">Update Progress</span>
-                </div>
-              </Link>
+              </div>
             </PageCard>
 
             <PageCard>
@@ -357,6 +389,40 @@ function HomePage() {
               </button>
               <button className="btn btn-primary" onClick={() => setIsModalOpen(false)}>
                 Save Book
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isProgressSheetOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-base-content/60"
+            onClick={handleCancelProgress}
+          />
+          <div className="relative w-full max-w-sm rounded-3xl bg-base-100 p-6 shadow-2xl">
+            <h2 className="text-xl font-bold">Update Progress</h2>
+            <div className="mt-5 flex flex-col items-center gap-6">
+              <div className="text-5xl font-bold text-base-content">
+                {draftProgress}
+                {' %'}
+              </div>
+              <input
+                type="range"
+                min={0}
+                max={100}
+                value={draftProgress}
+                onChange={event => setDraftProgress(Number(event.target.value))}
+                className="range range-primary w-full"
+              />
+            </div>
+            <div className="mt-6 flex gap-3">
+              <button type="button" className="btn btn-ghost grow" onClick={handleCancelProgress}>
+                Cancel
+              </button>
+              <button type="button" className="btn btn-primary grow" onClick={handleSaveProgress}>
+                Save
               </button>
             </div>
           </div>

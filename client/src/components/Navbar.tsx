@@ -14,6 +14,25 @@ function Navbar() {
     setIsDark(!isDark);
   };
 
+  if (!user) {
+    return (
+      <div className="navbar bg-base-200 px-6 shadow-sm">
+        <div className="flex-none">
+          <Link to="/" className="flex items-center gap-2 text-xl font-bold text-primary">
+            <BookOpen size={24} />
+            Bookify
+          </Link>
+        </div>
+        <div className="flex-1" />
+        <div className="flex-none">
+          <Link to="/register" className="btn btn-primary btn-sm">
+            Sign Up
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="navbar bg-base-200 px-6 shadow-sm">
       <div className="flex-none">
@@ -22,7 +41,6 @@ function Navbar() {
           Bookify
         </Link>
       </div>
-
       <div className="flex-1 flex items-center justify-center gap-4">
         <NavLink
           to="/"
@@ -37,60 +55,33 @@ function Navbar() {
         >
           Search
         </NavLink>
-        {user && (
-          <>
-            <NavLink
-              to="/my-books"
-              className={({ isActive }) => `btn btn-ghost btn-sm ${isActive ? 'btn-active' : ''}`}
-            >
-              My Books
-            </NavLink>
-            <NavLink
-              to="/yearly"
-              className={({ isActive }) => `btn btn-ghost btn-sm ${isActive ? 'btn-active' : ''}`}
-            >
-              By Year
-            </NavLink>
-          </>
-        )}
-        {!user
-          ? (
-              <>
-                <NavLink
-                  to="/login"
-                  className={({ isActive }) => `btn btn-ghost btn-sm ${isActive ? 'btn-active' : ''}`}
-                >
-                  Login
-                </NavLink>
-                <NavLink
-                  to="/register"
-                  className={({ isActive }) => `btn btn-ghost btn-sm ${isActive ? 'btn-active' : ''}`}
-                >
-                  Register
-                </NavLink>
-              </>
-            )
-          : null}
+        <NavLink
+          to="/my-books"
+          className={({ isActive }) => `btn btn-ghost btn-sm ${isActive ? 'btn-active' : ''}`}
+        >
+          My Books
+        </NavLink>
+        <NavLink
+          to="/yearly"
+          className={({ isActive }) => `btn btn-ghost btn-sm ${isActive ? 'btn-active' : ''}`}
+        >
+          By Year
+        </NavLink>
       </div>
-
       <div className="flex-none flex items-center gap-4">
-        {user
-          ? (
-              <div className="dropdown dropdown-end">
-                <label tabIndex={0} className="btn btn-ghost btn-sm gap-2">
-                  {user.username}
-                </label>
-                <ul tabIndex={0} className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-40">
-                  <li>
-                    <Link to="/profile">Profile</Link>
-                  </li>
-                  <li>
-                    <button type="button" onClick={logout}>Logout</button>
-                  </li>
-                </ul>
-              </div>
-            )
-          : null}
+        <div className="dropdown dropdown-end">
+          <label tabIndex={0} className="btn btn-ghost btn-sm gap-2">
+            {user.username}
+          </label>
+          <ul tabIndex={0} className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-40">
+            <li>
+              <Link to="/profile">Profile</Link>
+            </li>
+            <li>
+              <button type="button" onClick={logout}>Logout</button>
+            </li>
+          </ul>
+        </div>
         <button onClick={toggleTheme} className="btn btn-ghost btn-circle btn-sm">
           {isDark ? <Sun size={18} /> : <Moon size={18} />}
         </button>

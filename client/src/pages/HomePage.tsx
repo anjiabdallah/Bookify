@@ -1,5 +1,5 @@
-import { BookOpen, Users, Plus, ChevronRight } from 'lucide-react';
-import { useState } from 'react';
+import { Users, Plus, ChevronRight } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import BookCard from '../components/book/BookCard';
@@ -8,6 +8,10 @@ import PageSectionHeader from '../components/ui/PageSectionHeader';
 import SearchBar from '../components/ui/SearchBar';
 import StarRating from '../components/ui/StarRating';
 import { useAuth } from '../context/useAuth';
+import { useAsync } from '../hooks/useAsync';
+import { requestServer } from '../lib/requestServer';
+
+import type { GetShelfResponse } from '../../../server/src/api/types';
 
 const trendingBooks = [
   { title: 'Moonlit Tales', author: 'Ava Hart', rating: 4.8 },
@@ -25,13 +29,6 @@ const genres = [
   'Romantasy',
 ];
 
-const myBooks = [
-  { title: 'A Wild Ember', author: 'June Hart', status: 'Reading' },
-  { title: 'Petals of Fate', author: 'Noor Lane', status: 'Want to Read' },
-  { title: 'Midnight Letters', author: 'Sia Brooks', status: 'Read' },
-  { title: 'Celestial Ink', author: 'Milo Reed', status: 'All' },
-];
-
 const communityUpdates = [
   { name: 'Ivy', action: 'finished Shadowbound', time: '2h ago' },
   { name: 'Noah', action: 'added a review for Wildflower Woods', time: '5h ago' },
@@ -44,8 +41,32 @@ function HomePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
+  const shelfQuery = useAsync<GetShelfResponse>();
 
-  const filteredBooks = myBooks.filter(book => activeTab === 'All' || book.status === activeTab);
+  useEffect(() => {
+    if (!user) return;
+    shelfQuery.execute(() => requestServer<GetShelfResponse>('/api/books/shelf'));
+  }, [user]);
+
+  const filteredBooks = useMemo(() => {
+    if (!shelfQuery.data) return [];
+    if (activeTab === 'All') return shelfQuery.data;
+
+    const tabMap: Record<string, 'reading' | 'want_to_read' | 'read' | null> = {
+      'All': null,
+      'Reading': 'reading',
+      'Want to Read': 'want_to_read',
+      'Read': 'read',
+    };
+
+    const status = tabMap[activeTab];
+    return status ? shelfQuery.data.filter(book => book.status === status) : shelfQuery.data;
+  }, [activeTab, shelfQuery.data]);
+
+  const currentReadingBook = useMemo(() => {
+    if (!shelfQuery.data) return null;
+    return shelfQuery.data.find(book => book.status === 'reading') ?? null;
+  }, [shelfQuery.data]);
 
   if (!user) {
     return (
@@ -182,6 +203,7 @@ function HomePage() {
                 <div>
                   <p className="text-lg font-semibold text-primary">
                     Welcome back,
+                    {' '}
                     {user.username}
                     ! ✨
                   </p>
@@ -217,11 +239,25 @@ function HomePage() {
                 ))}
               </div>
               <div className="mt-8 grid gap-4">
-                {filteredBooks.map(book => (
+                {shelfQuery.loading && (
+                  <div className="rounded-3xl bg-base-200 p-8 text-center text-base-content/70">
+                    Loading your books…
+                  </div>
+                )}
+
+                {!shelfQuery.loading && filteredBooks.length === 0 && (
+                  <div className="rounded-3xl bg-base-200 p-8 text-center text-base-content/70">
+                    No books found on your shelf yet. Add a book to see it here.
+                  </div>
+                )}
+
+                {!shelfQuery.loading && filteredBooks.map(book => (
                   <BookCard
-                    key={book.title}
+                    key={book.google_books_id}
                     title={book.title}
+                    titleLink={`/book/${book.google_books_id}`}
                     author={book.author}
+                    coverUrl={book.cover_url}
                     topRight={<span className="badge badge-outline">{book.status}</span>}
                     className="shadow-sm"
                   />
@@ -234,14 +270,29 @@ function HomePage() {
             <PageCard>
               <PageSectionHeader
                 label="Currently Reading"
-                heading="The Starlight Journal"
-                right={<BookOpen size={28} className="text-primary" />}
+                heading={currentReadingBook ? currentReadingBook.title : 'The Starlight Journal'}
               />
-              <div className="rounded-3xl bg-base-100 p-5">
-                <div className="h-52 rounded-3xl bg-pink-100" />
+              <Link
+                to={currentReadingBook ? `/book/${currentReadingBook.google_books_id}` : '/search'}
+                className="block rounded-3xl bg-base-100 p-5 transition hover:shadow-lg"
+              >
+                {currentReadingBook?.cover_url
+                  ? (
+                      <img
+                        src={currentReadingBook.cover_url}
+                        alt={currentReadingBook.title}
+                        className="h-96 w-full rounded-3xl object-cover"
+                      />
+                    )
+                  : (
+                      <div className="h-96 rounded-3xl bg-pink-100" />
+                    )}
                 <div className="mt-6">
-                  <h3 className="text-lg font-semibold">The Starlight Journal</h3>
-                  <p className="text-sm text-base-content/70">by Rowan Pierce</p>
+                  <h3 className="text-lg font-semibold">{currentReadingBook ? currentReadingBook.title : 'The Starlight Journal'}</h3>
+                  <p className="text-sm text-base-content/70">
+                    by
+                    {currentReadingBook ? currentReadingBook.author : 'Rowan Pierce'}
+                  </p>
                 </div>
                 <div className="mt-6">
                   <progress className="progress progress-primary w-full" value={62} max={100} />
@@ -250,8 +301,10 @@ function HomePage() {
                     <span>7/18 chapters</span>
                   </div>
                 </div>
-                <button className="btn btn-primary btn-block mt-6">Update Progress</button>
-              </div>
+                <div className="mt-6">
+                  <span className="btn btn-primary btn-block">Update Progress</span>
+                </div>
+              </Link>
             </PageCard>
 
             <PageCard>

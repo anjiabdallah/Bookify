@@ -1,6 +1,6 @@
 import { BookOpen, Moon, Sun } from 'lucide-react';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 
 import { useAuth } from '../context/useAuth';
 
@@ -24,18 +24,50 @@ function Navbar() {
       </div>
 
       <div className="flex-1 flex items-center justify-center gap-4">
-        <Link to="/search" className="btn btn-ghost btn-sm">Search</Link>
+        <NavLink
+          to="/"
+          end
+          className={({ isActive }) => `btn btn-ghost btn-sm ${isActive ? 'btn-active' : ''}`}
+        >
+          Home
+        </NavLink>
+        <NavLink
+          to="/search"
+          className={({ isActive }) => `btn btn-ghost btn-sm ${isActive ? 'btn-active' : ''}`}
+        >
+          Search
+        </NavLink>
         {user && (
           <>
-            <Link to="/my-books" className="btn btn-ghost btn-sm">My Books</Link>
-            <Link to="/yearly" className="btn btn-ghost btn-sm">By Year</Link>
+            <NavLink
+              to="/my-books"
+              className={({ isActive }) => `btn btn-ghost btn-sm ${isActive ? 'btn-active' : ''}`}
+            >
+              My Books
+            </NavLink>
+            <NavLink
+              to="/yearly"
+              className={({ isActive }) => `btn btn-ghost btn-sm ${isActive ? 'btn-active' : ''}`}
+            >
+              By Year
+            </NavLink>
           </>
         )}
         {!user
           ? (
               <>
-                <Link to="/login" className="btn btn-ghost btn-sm">Login</Link>
-                <Link to="/register" className="btn btn-primary btn-sm">Register</Link>
+                <NavLink
+                  to="/login"
+                  className={({ isActive }) => `btn btn-ghost btn-sm ${isActive ? 'btn-active' : ''}`}
+                >
+                  Login
+                </NavLink>
+                <NavLink
+                  to="/register"
+                  className={({ isActive }) => `btn btn-ghost btn-sm ${isActive ? 'btn-active' : ''}`}
+                >
+                  Register
+                </NavLink>
               </>
             )
           : null}

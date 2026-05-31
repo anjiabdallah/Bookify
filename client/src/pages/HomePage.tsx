@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import BookCard from '../components/book/BookCard';
+import CoverImage from '../components/book/CoverImage';
 import PageCard from '../components/ui/PageCard';
 import PageSectionHeader from '../components/ui/PageSectionHeader';
 import SearchBar from '../components/ui/SearchBar';
@@ -278,19 +279,20 @@ function HomePage() {
               >
                 {currentReadingBook?.cover_url
                   ? (
-                      <img
+                      <CoverImage
                         src={currentReadingBook.cover_url}
                         alt={currentReadingBook.title}
-                        className="h-96 w-full rounded-3xl object-cover"
+                        className="w-full rounded-3xl aspect-[2/3]"
                       />
                     )
                   : (
-                      <div className="h-96 rounded-3xl bg-pink-100" />
+                      <div className="w-full rounded-3xl aspect-[2/3] bg-pink-100" />
                     )}
                 <div className="mt-6">
                   <h3 className="text-lg font-semibold">{currentReadingBook ? currentReadingBook.title : 'The Starlight Journal'}</h3>
                   <p className="text-sm text-base-content/70">
                     by
+                    {' '}
                     {currentReadingBook ? currentReadingBook.author : 'Rowan Pierce'}
                   </p>
                 </div>

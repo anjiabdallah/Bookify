@@ -1,6 +1,8 @@
 import { type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 
+import CoverImage from './CoverImage';
+
 type BookCardProps = {
   coverUrl?: string | null;
   title: string;
@@ -23,10 +25,10 @@ function BookCard({
   return (
     <article className={`rounded-2xl border border-base-200 bg-base-100 p-5 ${className}`.trim()}>
       <div className="grid gap-5 lg:grid-cols-[100px_1fr_auto] lg:items-start">
-        <div className="h-36 w-full overflow-hidden rounded-xl bg-base-200">
+        <div className="h-36 w-full rounded-xl bg-base-200">
           {coverUrl
             ? (
-                <img src={coverUrl} alt={title} className="h-full w-full object-cover" />
+                <CoverImage src={coverUrl} alt={title} className="h-full w-full rounded-xl" />
               )
             : (
                 <div className="flex h-full items-center justify-center text-xs text-base-content/30">

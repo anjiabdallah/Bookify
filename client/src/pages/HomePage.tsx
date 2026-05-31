@@ -200,61 +200,63 @@ function HomePage() {
           </section>
 
           <aside className="space-y-8">
-            <PageCard>
-              <PageSectionHeader
-                label="Currently Reading"
-                heading={null}
-              />
-              <div className="block rounded-3xl bg-base-100 p-5 transition hover:shadow-lg">
-                {currentReadingBook?.cover_url
-                  ? (
-                      <CoverImage
-                        src={currentReadingBook.cover_url}
-                        alt={currentReadingBook.title}
-                        className="w-full rounded-3xl aspect-[2/3]"
+            {currentReadingBook && (
+              <PageCard>
+                <PageSectionHeader
+                  label="Currently Reading"
+                  heading={null}
+                />
+                <div className="block rounded-3xl bg-base-100 p-5 transition hover:shadow-lg">
+                  {currentReadingBook.cover_url
+                    ? (
+                        <CoverImage
+                          src={currentReadingBook.cover_url}
+                          alt={currentReadingBook.title}
+                          className="w-full rounded-3xl aspect-[2/3]"
+                        />
+                      )
+                    : (
+                        <div className="w-full rounded-3xl aspect-[2/3] bg-pink-100" />
+                      )}
+                  <div className="mt-6">
+                    <h3 className="text-lg font-semibold">
+                      <Link
+                        to={`/book/${currentReadingBook.google_books_id}`}
+                        className="hover:underline"
+                      >
+                        {currentReadingBook.title}
+                      </Link>
+                    </h3>
+                    <p className="text-sm text-base-content/70">
+                      by
+                      {' '}
+                      {currentReadingBook.author}
+                    </p>
+                  </div>
+                  <div className="mt-6 space-y-4">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                      <span className="text-sm text-base-content/70">
+                        {readingProgress}
+                        {' % complete'}
+                      </span>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-primary"
+                        onClick={handleOpenProgressSheet}
+                      >
+                        Update Progress
+                      </button>
+                    </div>
+                    <div className="h-2 overflow-hidden rounded-full bg-base-200">
+                      <div
+                        className="h-full rounded-full bg-primary transition-all duration-300"
+                        style={{ width: `${readingProgress}%` }}
                       />
-                    )
-                  : (
-                      <div className="w-full rounded-3xl aspect-[2/3] bg-pink-100" />
-                    )}
-                <div className="mt-6">
-                  <h3 className="text-lg font-semibold">
-                    <Link
-                      to={currentReadingBook ? `/book/${currentReadingBook.google_books_id}` : '/search'}
-                      className="hover:underline"
-                    >
-                      {currentReadingBook ? currentReadingBook.title : 'The Starlight Journal'}
-                    </Link>
-                  </h3>
-                  <p className="text-sm text-base-content/70">
-                    by
-                    {' '}
-                    {currentReadingBook ? currentReadingBook.author : 'Rowan Pierce'}
-                  </p>
-                </div>
-                <div className="mt-6 space-y-4">
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <span className="text-sm text-base-content/70">
-                      {readingProgress}
-                      {' % complete'}
-                    </span>
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-primary"
-                      onClick={handleOpenProgressSheet}
-                    >
-                      Update Progress
-                    </button>
-                  </div>
-                  <div className="h-2 overflow-hidden rounded-full bg-base-200">
-                    <div
-                      className="h-full rounded-full bg-primary transition-all duration-300"
-                      style={{ width: `${readingProgress}%` }}
-                    />
+                    </div>
                   </div>
                 </div>
-              </div>
-            </PageCard>
+              </PageCard>
+            )}
 
             <PageCard>
               <PageSectionHeader

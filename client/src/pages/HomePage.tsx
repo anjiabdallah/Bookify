@@ -102,24 +102,6 @@ function HomePage() {
                 }}
               />
             </div>
-            <div className="w-full max-w-xl rounded-3xl bg-base-100 p-8 shadow-xl">
-              <div className="grid gap-6">
-                <div className="bg-pink-100 rounded-3xl p-6">
-                  <div className="text-xs uppercase tracking-[0.3em] text-pink-600 mb-4">Featured Story</div>
-                  <div className="h-64 rounded-3xl bg-pink-200" />
-                </div>
-                <div className="grid grid-cols-2 gap-4 text-sm text-base-content/80">
-                  <div className="rounded-3xl bg-base-200 p-4">
-                    <div className="font-semibold">Daily picks</div>
-                    <p className="mt-2">Curated reads for your next cozy night.</p>
-                  </div>
-                  <div className="rounded-3xl bg-base-200 p-4">
-                    <div className="font-semibold">Magic meter</div>
-                    <p className="mt-2">Track your bookish spark all week.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </section>
       </div>

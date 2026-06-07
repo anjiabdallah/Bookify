@@ -25,6 +25,9 @@ function Navbar() {
         </div>
         <div className="flex-1" />
         <div className="flex-none flex items-center gap-3">
+          <Link to="/login" className="btn btn-outline btn-sm">
+            Login
+          </Link>
           <Link to="/register" className="btn btn-primary btn-sm">
             Sign Up
           </Link>

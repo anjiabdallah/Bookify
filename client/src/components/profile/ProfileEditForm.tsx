@@ -16,6 +16,7 @@ type ProfileEditFormProps = {
   avatarError?: string;
   currentAvatarUrl?: string | null;
   selectedAvatarPreviewUrl?: string | null;
+  bioValue: string;
   onAvatarSelect: (file: File | null) => void;
   isSubmitting: boolean;
   onSubmit: (values: ProfileFormData) => Promise<void>;
@@ -32,6 +33,7 @@ function ProfileEditForm({
   avatarError,
   currentAvatarUrl,
   selectedAvatarPreviewUrl,
+  bioValue,
   onAvatarSelect,
   isSubmitting,
   onSubmit,
@@ -128,7 +130,10 @@ function ProfileEditForm({
         <div className="relative">
           <textarea
             placeholder="Tell other readers a little about your tastes..."
-            className="textarea textarea-bordered w-full bg-base-100 pr-10"
+            className="textarea textarea-bordered w-full bg-base-100 pr-10 break-all whitespace-pre-wrap"
+            wrap="soft"
+            style={{ overflowWrap: 'anywhere', wordBreak: 'break-word' }}
+            maxLength={160}
             {...register('bio')}
             rows={5}
           />
@@ -136,6 +141,11 @@ function ProfileEditForm({
             ✿
           </div>
         </div>
+        <p className="text-right text-xs text-base-content/50">
+          {bioValue.length}
+          {' '}
+          / 160
+        </p>
       </FieldGroup>
 
       <div className="flex flex-wrap items-center gap-4">

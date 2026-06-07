@@ -54,7 +54,10 @@ function ProfileDisplayView({ profile, onEdit }: ProfileDisplayViewProps) {
         <PageCard variant="bordered" className="space-y-4 shadow-none">
           <div>
             <div className="text-sm font-semibold text-base-content/70">About you</div>
-            <p className="mt-2 text-base text-base-content/80">
+            <p
+              className="mt-2 text-base text-base-content/80 break-words"
+              style={{ overflowWrap: 'anywhere', wordBreak: 'break-word' }}
+            >
               {profile.bio ? profile.bio : 'No bio added yet.'}
             </p>
           </div>

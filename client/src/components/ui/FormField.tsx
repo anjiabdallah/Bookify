@@ -1,5 +1,5 @@
-import { useState, type InputHTMLAttributes } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
+import { useState, type InputHTMLAttributes } from 'react';
 
 type FormFieldProps = {
   id: string;
@@ -25,16 +25,18 @@ function FormField({ id, label, error, className = '', type, ...inputProps }: Fo
           className={`input input-bordered w-full ${isPasswordField ? 'pr-10' : ''} ${className}`.trim()}
           {...inputProps}
         />
-        {isPasswordField ? (
-          <button
-            type="button"
-            onClick={() => setIsPasswordVisible(prev => !prev)}
-            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-1 text-base-content/70 hover:text-base-content hover:cursor-pointer"
-            aria-label={isPasswordVisible ? 'Hide password' : 'Show password'}
-          >
-            {isPasswordVisible ? <Eye size={18} /> : <EyeOff size={18} />}
-          </button>
-        ) : null}
+        {isPasswordField
+          ? (
+              <button
+                type="button"
+                onClick={() => setIsPasswordVisible(prev => !prev)}
+                className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-1 text-base-content/70 hover:text-base-content hover:cursor-pointer"
+                aria-label={isPasswordVisible ? 'Hide password' : 'Show password'}
+              >
+                {isPasswordVisible ? <Eye size={18} /> : <EyeOff size={18} />}
+              </button>
+            )
+          : null}
       </div>
       <div className="min-h-1">
         {error ? <span className="text-sm text-error block">{error}</span> : null}

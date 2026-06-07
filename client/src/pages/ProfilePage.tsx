@@ -55,6 +55,13 @@ function ProfilePage() {
     },
   });
 
+  const profile = savedProfile ?? profileLoader.data ?? {
+    age: user?.age ?? null,
+    bio: user?.bio ?? null,
+    favoriteCategories: user?.favoriteCategories ?? [],
+    profileImageUrl: user?.profileImageUrl ?? undefined,
+  };
+
   const favoriteCategories
     = useWatch({
       control,
@@ -62,12 +69,11 @@ function ProfilePage() {
       defaultValue: [],
     }) ?? [];
 
-  const profile = savedProfile ?? profileLoader.data ?? {
-    age: user?.age ?? null,
-    bio: user?.bio ?? null,
-    favoriteCategories: user?.favoriteCategories ?? [],
-    profileImageUrl: user?.profileImageUrl ?? undefined,
-  };
+  const bioValue = useWatch({
+    control,
+    name: 'bio',
+    defaultValue: profile.bio ?? '',
+  }) ?? '';
 
   const resetFormValues = (data: ProfileResponse | null | undefined) => {
     const source = data ?? profile;
@@ -221,6 +227,7 @@ function ProfilePage() {
                   favoriteCategories={favoriteCategories}
                   ageError={ageError}
                   bioError={bioError}
+                  bioValue={bioValue}
                   avatarError={avatarError ?? undefined}
                   isSubmitting={isSubmitting}
                   currentAvatarUrl={profile.profileImageUrl}

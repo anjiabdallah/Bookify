@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 const profileCoreSchema = z.object({
-  bio: z.string().max(500).optional(),
+  bio: z.string().max(160, { message: 'Bio must be 160 characters or less' }).optional(),
   favoriteCategories: z.array(z.string()).optional(),
 });
 

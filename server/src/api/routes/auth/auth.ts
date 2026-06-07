@@ -93,7 +93,7 @@ const registerSchema = z.object({
 
 const profileSchema = z.object({
   age: z.number().int().min(6).max(100).nullable().optional(),
-  bio: z.string().max(500).nullable().optional(),
+  bio: z.string().max(160, { message: 'Bio must be 160 characters or less' }).nullable().optional(),
   favorite_categories: z.array(z.string().min(1)).nullable().optional(),
   profile_image_url: z.string().url().nullable().optional(),
 });
